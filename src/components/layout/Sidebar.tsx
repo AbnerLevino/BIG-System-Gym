@@ -32,19 +32,10 @@ interface SidebarProps {
 
 export function Sidebar({ role }: SidebarProps) {
   return (
-    <aside className="flex h-screen w-60 flex-col gap-1 border-r border-slate-800 bg-slate-950 p-4">
-      <p className="mb-4 text-xl font-bold text-gold">BigGym</p>
+    <aside>
+      <p>BigGym</p>
       {NAV_ITEMS[role].map((item) => (
-        <NavLink
-          key={item.to}
-          to={item.to}
-          end
-          className={({ isActive }) =>
-            `rounded-lg px-3 py-2 text-sm font-medium transition ${
-              isActive ? 'bg-gold text-slate-950' : 'text-slate-300 hover:bg-slate-800'
-            }`
-          }
-        >
+        <NavLink key={item.to} to={item.to} end>
           {item.label}
         </NavLink>
       ))}

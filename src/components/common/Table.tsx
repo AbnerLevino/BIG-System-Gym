@@ -14,27 +14,23 @@ interface TableProps<T> {
 
 export function Table<T>({ columns, rows, rowKey, emptyMessage = 'Nenhum registro encontrado.' }: TableProps<T>) {
   if (rows.length === 0) {
-    return <p className="py-6 text-center text-sm text-slate-400">{emptyMessage}</p>
+    return <p>{emptyMessage}</p>
   }
 
   return (
-    <table className="w-full text-left text-sm">
+    <table>
       <thead>
-        <tr className="border-b border-slate-800 text-slate-400">
+        <tr>
           {columns.map((column) => (
-            <th key={column.header} className="py-2 font-medium">
-              {column.header}
-            </th>
+            <th key={column.header}>{column.header}</th>
           ))}
         </tr>
       </thead>
       <tbody>
         {rows.map((row) => (
-          <tr key={rowKey(row)} className="border-b border-slate-800/60 text-slate-200">
+          <tr key={rowKey(row)}>
             {columns.map((column) => (
-              <td key={column.header} className="py-2">
-                {column.render(row)}
-              </td>
+              <td key={column.header}>{column.render(row)}</td>
             ))}
           </tr>
         ))}

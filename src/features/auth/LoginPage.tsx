@@ -38,9 +38,9 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
-      <Card title="Entrar no BigGym" className="w-full max-w-sm">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <div>
+      <Card title="Entrar no BigGym">
+        <form onSubmit={handleSubmit}>
           <Input
             id="email"
             label="E-mail"
@@ -57,11 +57,11 @@ export function LoginPage() {
             onChange={(event) => setPassword(event.target.value)}
             required
           />
-          {error ? <p className="text-sm text-red-400">{error}</p> : null}
+          {error ? <p>{error}</p> : null}
           <Button type="submit">Entrar</Button>
         </form>
-        <div className="mt-6 flex flex-col gap-2 border-t border-slate-800 pt-4">
-          <p className="text-xs text-slate-400">Atalhos de demonstracao:</p>
+        <div>
+          <p>Atalhos de demonstracao:</p>
           <Button variant="secondary" onClick={() => handleDemoLogin('admin')}>
             Entrar como Admin
           </Button>

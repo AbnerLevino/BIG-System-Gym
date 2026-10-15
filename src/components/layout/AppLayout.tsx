@@ -23,16 +23,16 @@ export function AppLayout({ children }: AppLayoutProps) {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-100">
+    <div>
       <Sidebar role={currentUser.role} />
-      <div className="flex-1">
-        <header className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
-          <span className="text-sm text-slate-400">{currentUser.email}</span>
+      <div>
+        <header>
+          <span>{currentUser.email}</span>
           <Button variant="secondary" onClick={handleLogout}>
             Sair
           </Button>
         </header>
-        <main className="p-6">{children}</main>
+        <main>{children}</main>
       </div>
     </div>
   )
