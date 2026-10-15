@@ -39,5 +39,9 @@ Thumbs.db
 .cache/
 *.tsbuildinfo
 
+# Gerado pelo "tsc -b" ao compilar o projeto node (tsconfig.node.json inclui vite.config.ts)
+vite.config.js
+vite.config.d.ts
+
 # Vitest / cobertura de testes
 coverage/

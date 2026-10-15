@@ -1,3 +1,5 @@
+// O aluno/assinante. currentPlanId é a referência direta ao plano atual;
+// trocas de plano ficam registradas separado em PlanHistory, sem editar isso aqui.
 export interface Subscriber {
   id: string
   fullName: string

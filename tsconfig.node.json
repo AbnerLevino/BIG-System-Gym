@@ -1,3 +1,4 @@
+// Config separada só para o vite.config.ts (ele roda em Node, não no navegador, por isso tem regras próprias).
 {
   "compilerOptions": {
     "composite": true,

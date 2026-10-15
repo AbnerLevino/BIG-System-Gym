@@ -1,3 +1,5 @@
+// Barrel: reúne todos os tipos num só import. Em vez de "from '../types/subscriber'",
+// o resto do código usa só "from '../types'".
 export * from './user'
 export * from './gym'
 export * from './professional'

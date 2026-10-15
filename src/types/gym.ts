@@ -1,3 +1,4 @@
+// Dados da própria academia (hoje só uma, por isso é simples — fica mais relevante na Fase 2 multi-tenant).
 export interface Gym {
   id: string
   name: string

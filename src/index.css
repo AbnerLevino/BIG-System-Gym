@@ -1,3 +1,4 @@
+/* As 3 linhas @tailwind injetam as classes utilitárias do Tailwind no projeto. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

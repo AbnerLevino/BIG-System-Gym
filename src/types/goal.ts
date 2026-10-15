@@ -1,3 +1,5 @@
+// Metas só existem pra alunos com vínculo 'personal' ativo (regra de negócio, não
+// imposta pelo tipo aqui — quem cria a Goal tem que checar isso antes).
 export type GoalType = 'weight' | 'measurement' | 'frequency'
 export type GoalStatus = 'inProgress' | 'completed' | 'late'
 

@@ -1,5 +1,6 @@
 // Estado global de sessão: guarda quem está logado agora, acessível por qualquer
 // componente (sidebar, topbar, rotas) sem precisar de relação de pai/filho entre eles.
+
 import { create } from 'zustand'
 import type { User, UserRole } from '../types'
 import { findUserByCredentials, findDemoUserByRole } from '../data'

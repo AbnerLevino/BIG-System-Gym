@@ -1,3 +1,5 @@
+// Só existe um Workout com active=true por aluno; criar um novo desativa o anterior
+// (preserva histórico em vez de sobrescrever).
 export interface WorkoutExercise {
   name: string
   sets: number

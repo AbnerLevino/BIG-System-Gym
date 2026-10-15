@@ -1,3 +1,5 @@
+// Regras que o TypeScript usa para checar o código em src/ (quão estrito é, pra qual JS traduzir).
+// "strict: true" liga as verificações rígidas (ex: não deixa usar algo que pode ser null sem checar antes).
 {
   "compilerOptions": {
     "target": "ES2020",
