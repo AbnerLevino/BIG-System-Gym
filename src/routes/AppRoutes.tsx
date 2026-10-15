@@ -1,6 +1,7 @@
 // Mapa central de todas as URLs do app — bate com a seção 5 (Mapa de Paginas) do spec.
 // Fica num arquivo só pra dar pra ver todas as rotas existentes numa olhada.
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { HomePage } from '../features/home/HomePage'
 import { LoginPage } from '../features/auth/LoginPage'
 import { AdminDashboardPage } from '../features/admin/AdminDashboardPage'
 import { ProfessionalDashboardPage } from '../features/professional/ProfessionalDashboardPage'
@@ -35,7 +36,7 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<HomePage />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   )
