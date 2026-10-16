@@ -1,14 +1,14 @@
 // Menu lateral que muda de acordo com o papel logado. As URLs ficam em português
 // (quem usa o sistema vê em português); só os nomes de arquivo/variável ficam em inglês.
 import { NavLink } from 'react-router-dom'
-import type { UserRole } from '../../types'
+import type { PapelUsuario } from '../../types'
 
 interface NavItem {
   to: string
   label: string
 }
 
-const NAV_ITEMS: Record<UserRole, NavItem[]> = {
+const NAV_ITEMS: Record<PapelUsuario, NavItem[]> = {
   admin: [
     { to: '/admin', label: 'Dashboard' },
     { to: '/admin/alunos', label: 'Alunos' },
@@ -27,7 +27,7 @@ const NAV_ITEMS: Record<UserRole, NavItem[]> = {
 }
 
 interface SidebarProps {
-  role: UserRole
+  role: PapelUsuario
 }
 
 export function Sidebar({ role }: SidebarProps) {

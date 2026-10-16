@@ -1,28 +1,28 @@
 // Dados de exemplo que populam o sistema na primeira vez que alguém abre o app
 // (consumidos por ensureSeeded nos *Repository.ts). Sem isso o app abriria vazio.
 import type {
-  User,
-  Gym,
-  Professional,
-  Subscriber,
-  Plan,
-  Payment,
-  Assignment,
-  Workout,
-  Goal,
-  PhysicalAssessment,
+  Usuario,
+  Academia,
+  Profissional,
+  Aluno,
+  Plano,
+  Pagamento,
+  Atendimento,
+  Treino,
+  Meta,
+  AvaliacaoFisica,
 } from '../types'
 
-export const seedGyms: Gym[] = [
+export const seedAcademias: Academia[] = [
   { id: 'gym-1', name: 'BigGym Centro', address: 'Rua das Academias, 100', phone: '(11) 4000-0000' },
 ]
 
-export const seedPlans: Plan[] = [
+export const seedPlanos: Plano[] = [
   { id: 'plan-1', name: 'Mensal Basico', price: 99.9, modalities: ['Musculacao'], conditions: 'Sem fidelidade' },
   { id: 'plan-2', name: 'Trimestral Plus', price: 259.9, modalities: ['Musculacao', 'Funcional'], conditions: '3 meses, 10% de desconto' },
 ]
 
-export const seedProfessionals: Professional[] = [
+export const seedProfissionais: Profissional[] = [
   {
     id: 'prof-1',
     name: 'Carla Mendes',
@@ -45,7 +45,7 @@ export const seedProfessionals: Professional[] = [
   },
 ]
 
-export const seedSubscribers: Subscriber[] = [
+export const seedAlunos: Aluno[] = [
   {
     id: 'sub-1',
     fullName: 'Joao Pereira',
@@ -56,7 +56,7 @@ export const seedSubscribers: Subscriber[] = [
     address: 'Rua A, 10',
     birthDate: '1995-02-20',
     notes: '',
-    currentPlanId: 'plan-1',
+    planoAtualId: 'plan-1',
     startDate: '2026-01-10',
   },
   {
@@ -69,17 +69,17 @@ export const seedSubscribers: Subscriber[] = [
     address: 'Rua B, 20',
     birthDate: '1998-07-15',
     notes: '',
-    currentPlanId: 'plan-2',
+    planoAtualId: 'plan-2',
     startDate: '2026-02-01',
   },
 ]
 
-export const seedPayments: Payment[] = [
+export const seedPagamentos: Pagamento[] = [
   {
     id: 'pay-1',
-    gymId: 'gym-1',
-    subscriberId: 'sub-1',
-    planId: 'plan-1',
+    academiaId: 'gym-1',
+    alunoId: 'sub-1',
+    planoId: 'plan-1',
     originalValue: 99.9,
     paidValue: 99.9,
     lateFee: 0,
@@ -91,9 +91,9 @@ export const seedPayments: Payment[] = [
   },
   {
     id: 'pay-2',
-    gymId: 'gym-1',
-    subscriberId: 'sub-2',
-    planId: 'plan-2',
+    academiaId: 'gym-1',
+    alunoId: 'sub-2',
+    planoId: 'plan-2',
     originalValue: 259.9,
     paidValue: null,
     lateFee: 0,
@@ -105,17 +105,17 @@ export const seedPayments: Payment[] = [
   },
 ]
 
-export const seedAssignments: Assignment[] = [
-  { id: 'assign-1', subscriberId: 'sub-1', professionalId: 'prof-1', type: 'standard' },
-  { id: 'assign-2', subscriberId: 'sub-2', professionalId: 'prof-1', type: 'standard' },
-  { id: 'assign-3', subscriberId: 'sub-1', professionalId: 'prof-2', type: 'personal', value: 150 },
+export const seedAtendimentos: Atendimento[] = [
+  { id: 'assign-1', alunoId: 'sub-1', profissionalId: 'prof-1', type: 'standard' },
+  { id: 'assign-2', alunoId: 'sub-2', profissionalId: 'prof-1', type: 'standard' },
+  { id: 'assign-3', alunoId: 'sub-1', profissionalId: 'prof-2', type: 'personal', value: 150 },
 ]
 
-export const seedWorkouts: Workout[] = [
+export const seedTreinos: Treino[] = [
   {
     id: 'workout-1',
-    subscriberId: 'sub-1',
-    assignmentId: 'assign-1',
+    alunoId: 'sub-1',
+    atendimentoId: 'assign-1',
     week: 1,
     exercises: [
       { name: 'Supino reto', sets: 4, reps: 10 },
@@ -127,8 +127,8 @@ export const seedWorkouts: Workout[] = [
   },
   {
     id: 'workout-2',
-    subscriberId: 'sub-2',
-    assignmentId: 'assign-2',
+    alunoId: 'sub-2',
+    atendimentoId: 'assign-2',
     week: 1,
     exercises: [
       { name: 'Leg press', sets: 3, reps: 15 },
@@ -140,11 +140,11 @@ export const seedWorkouts: Workout[] = [
   },
 ]
 
-export const seedGoals: Goal[] = [
+export const seedMetas: Meta[] = [
   {
     id: 'goal-1',
-    subscriberId: 'sub-1',
-    professionalId: 'prof-2',
+    alunoId: 'sub-1',
+    profissionalId: 'prof-2',
     description: 'Reduzir percentual de gordura',
     type: 'measurement',
     targetValue: 18,
@@ -153,10 +153,10 @@ export const seedGoals: Goal[] = [
   },
 ]
 
-export const seedPhysicalAssessments: PhysicalAssessment[] = [
+export const seedAvaliacoesFisicas: AvaliacaoFisica[] = [
   {
     id: 'assessment-1',
-    subscriberId: 'sub-1',
+    alunoId: 'sub-1',
     objective: 'Emagrecimento',
     description: 'Avaliacao inicial',
     notes: '',
@@ -166,7 +166,7 @@ export const seedPhysicalAssessments: PhysicalAssessment[] = [
   },
   {
     id: 'assessment-2',
-    subscriberId: 'sub-2',
+    alunoId: 'sub-2',
     objective: 'Condicionamento',
     description: 'Avaliacao inicial',
     notes: '',
@@ -176,7 +176,7 @@ export const seedPhysicalAssessments: PhysicalAssessment[] = [
   },
 ]
 
-export const seedUsers: User[] = [
+export const seedUsuarios: Usuario[] = [
   { id: 'user-admin', email: 'admin@biggym.com', password: 'admin123', role: 'admin', refId: 'gym-1' },
   { id: 'user-prof', email: 'profissional@biggym.com', password: 'prof123', role: 'professional', refId: 'prof-1' },
   { id: 'user-sub', email: 'aluno@biggym.com', password: 'aluno123', role: 'subscriber', refId: 'sub-1' },

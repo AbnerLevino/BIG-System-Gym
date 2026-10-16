@@ -4,9 +4,9 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/authStore'
 import { Button, Card, Input } from '../../components/common'
-import type { UserRole } from '../../types'
+import type { PapelUsuario } from '../../types'
 
-const ROLE_HOME: Record<UserRole, string> = {
+const ROLE_HOME: Record<PapelUsuario, string> = {
   admin: '/admin',
   professional: '/profissional',
   subscriber: '/aluno',
@@ -28,11 +28,11 @@ export function LoginPage() {
       return
     }
     setError('')
-    const user = useAuthStore.getState().currentUser
-    if (user) navigate(ROLE_HOME[user.role])
+    const usuario = useAuthStore.getState().usuarioAtual
+    if (usuario) navigate(ROLE_HOME[usuario.role])
   }
 
-  function handleDemoLogin(role: UserRole) {
+  function handleDemoLogin(role: PapelUsuario) {
     const success = loginAsDemo(role)
     if (success) navigate(ROLE_HOME[role])
   }

@@ -1,5 +1,5 @@
-// Genérico (<T>) de propósito: a mesma Table serve pra desenhar uma lista de Subscriber,
-// de Payment, de qualquer entidade — ela só sabe o formato das colunas, não o dado em si.
+// Genérico (<T>) de propósito: a mesma Table serve pra desenhar uma lista de Aluno,
+// de Pagamento, de qualquer entidade — ela só sabe o formato das colunas, não o dado em si.
 interface Column<T> {
   header: string
   render: (row: T) => React.ReactNode

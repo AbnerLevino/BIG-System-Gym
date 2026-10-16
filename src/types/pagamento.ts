@@ -1,18 +1,18 @@
 // Pagamento é gerado automaticamente a partir do plano vigente, nunca lançado manualmente.
 // Fluxo: pending -> paid (ou late se passar de dueDate, com lateFee calculado).
-export type PaymentStatus = 'pending' | 'paid' | 'late'
+export type StatusPagamento = 'pending' | 'paid' | 'late'
 
-export interface Payment {
+export interface Pagamento {
   id: string
-  gymId: string
-  subscriberId: string
-  planId: string
+  academiaId: string
+  alunoId: string
+  planoId: string
   originalValue: number
   paidValue: number | null
   lateFee: number
   paymentMethod: string | null
   dueDate: string
   paymentDate: string | null
-  status: PaymentStatus
+  status: StatusPagamento
   receiptNumber: string | null
 }

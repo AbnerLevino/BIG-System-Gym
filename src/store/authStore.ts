@@ -2,49 +2,49 @@
 // componente (sidebar, topbar, rotas) sem precisar de relação de pai/filho entre eles.
 
 import { create } from 'zustand'
-import type { User, UserRole } from '../types'
-import { findUserByCredentials, findDemoUserByRole } from '../data'
+import type { Usuario, PapelUsuario } from '../types'
+import { buscarUsuarioPorCredenciais, buscarUsuarioDemoPorPapel } from '../data'
 
 const SESSION_KEY = 'biggym:session'
 
 interface AuthState {
-  currentUser: User | null
+  usuarioAtual: Usuario | null
   login: (email: string, password: string) => boolean
-  loginAsDemo: (role: UserRole) => boolean
+  loginAsDemo: (role: PapelUsuario) => boolean
   logout: () => void
 }
 
-function loadSession(): User | null {
+function loadSession(): Usuario | null {
   const raw = localStorage.getItem(SESSION_KEY)
-  return raw ? (JSON.parse(raw) as User) : null
+  return raw ? (JSON.parse(raw) as Usuario) : null
 }
 
-function persistSession(user: User | null): void {
-  if (user) {
-    localStorage.setItem(SESSION_KEY, JSON.stringify(user))
+function persistSession(usuario: Usuario | null): void {
+  if (usuario) {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(usuario))
   } else {
     localStorage.removeItem(SESSION_KEY)
   }
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  currentUser: loadSession(),
+  usuarioAtual: loadSession(),
   login: (email, password) => {
-    const user = findUserByCredentials(email, password)
-    if (!user) return false
-    persistSession(user)
-    set({ currentUser: user })
+    const usuario = buscarUsuarioPorCredenciais(email, password)
+    if (!usuario) return false
+    persistSession(usuario)
+    set({ usuarioAtual: usuario })
     return true
   },
   loginAsDemo: (role) => {
-    const user = findDemoUserByRole(role)
-    if (!user) return false
-    persistSession(user)
-    set({ currentUser: user })
+    const usuario = buscarUsuarioDemoPorPapel(role)
+    if (!usuario) return false
+    persistSession(usuario)
+    set({ usuarioAtual: usuario })
     return true
   },
   logout: () => {
     persistSession(null)
-    set({ currentUser: null })
+    set({ usuarioAtual: null })
   },
 }))

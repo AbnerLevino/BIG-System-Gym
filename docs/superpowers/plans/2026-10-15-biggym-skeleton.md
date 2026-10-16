@@ -10,8 +10,8 @@
 
 ## Global Constraints
 
-- Código (nomes de arquivo, tipos, variáveis, funções) em **inglês**. Textos de UI, rotas de URL, documentação e mensagens de commit em **português**.
-- Entidades em inglês conforme mapeamento: `User`, `Gym`, `Professional`, `Subscriber`, `Plan`, `PlanHistory`, `Assignment`, `Workout`, `Goal`, `PhysicalAssessment`, `Payment`, `Financial`.
+- **Atualizado em 2026-10-16:** nomes de entidades, tipos, funções e variáveis de negócio agora em **português** (decisão revertida — ver nota abaixo). Pastas estruturais do projeto (`types`, `data`, `store`, `components`, `routes`, `features`) continuam em inglês por serem termos padrão de qualquer projeto React. Textos de UI, rotas de URL, documentação e mensagens de commit continuam em **português**.
+- Entidades em português, batendo com o vocabulário da spec de negócio: `Usuario`, `Academia`, `Profissional`, `Aluno`, `Plano`, `HistoricoPlano`, `Atendimento`, `Treino`, `Meta`, `AvaliacaoFisica`, `Pagamento`, `Financeiro`. (Regra original deste plano, "código em inglês", ficou valendo só até a Task 10 de integração; foi revertida depois.)
 - Pastas de feature em inglês: `src/features/{admin, professional, subscriber, auth, financial}`.
 - Nenhuma feature importa de outra feature. Qualquer coisa compartilhada sobe para `components`, `utils`, `data` ou `types`.
 - Sem backend real — toda persistência é `localStorage`, com seed inicial se a chave não existir.

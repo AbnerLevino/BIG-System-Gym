@@ -4,28 +4,28 @@
 import type { ReactNode } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
-import type { UserRole } from '../types'
+import type { PapelUsuario } from '../types'
 
-const ROLE_HOME: Record<UserRole, string> = {
+const ROLE_HOME: Record<PapelUsuario, string> = {
   admin: '/admin',
   professional: '/profissional',
   subscriber: '/aluno',
 }
 
 interface ProtectedRouteProps {
-  allowedRole: UserRole
+  allowedRole: PapelUsuario
   children: ReactNode
 }
 
 export function ProtectedRoute({ allowedRole, children }: ProtectedRouteProps) {
-  const currentUser = useAuthStore((state) => state.currentUser)
+  const usuarioAtual = useAuthStore((state) => state.usuarioAtual)
 
-  if (!currentUser) {
+  if (!usuarioAtual) {
     return <Navigate to="/login" replace />
   }
 
-  if (currentUser.role !== allowedRole) {
-    return <Navigate to={ROLE_HOME[currentUser.role]} replace />
+  if (usuarioAtual.role !== allowedRole) {
+    return <Navigate to={ROLE_HOME[usuarioAtual.role]} replace />
   }
 
   return <>{children}</>

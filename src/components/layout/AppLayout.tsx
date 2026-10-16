@@ -11,11 +11,11 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-  const currentUser = useAuthStore((state) => state.currentUser)
+  const usuarioAtual = useAuthStore((state) => state.usuarioAtual)
   const logout = useAuthStore((state) => state.logout)
   const navigate = useNavigate()
 
-  if (!currentUser) return null
+  if (!usuarioAtual) return null
 
   function handleLogout() {
     logout()
@@ -24,10 +24,10 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div>
-      <Sidebar role={currentUser.role} />
+      <Sidebar role={usuarioAtual.role} />
       <div>
         <header>
-          <span>{currentUser.email}</span>
+          <span>{usuarioAtual.email}</span>
           <Button variant="secondary" onClick={handleLogout}>
             Sair
           </Button>

@@ -55,4 +55,4 @@ Quando o PR for aprovado e "mergeado" no `main`, volte ao passo 1 para a proxima
 - **Nunca** use `git push --force` ou `git push origin main` direto.
 - Cada feature so pode importar de `types`, `data`, `store`, `components` e `utils` — nunca de outra feature (ex: a feature `admin` nao importa nada de dentro de `features/subscriber`).
 - Se precisar de algo que esta em outra feature, avise quem revisa o projeto antes de duplicar codigo.
-- Nomes de arquivos, tipos e variaveis em ingles. Textos de tela, rotas e commits em portugues.
+- Nomes de entidades, tipos, funcoes e variaveis de negocio em portugues (ex: `Aluno`, `Treino`, `obterAlunoPorId`). Pastas estruturais do projeto (`types`, `data`, `store`, `components`, `routes`, `features`) ficam em ingles por serem termos padrao de qualquer projeto React. Textos de tela, rotas e commits tambem em portugues.

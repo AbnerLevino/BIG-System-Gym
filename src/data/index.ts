@@ -1,31 +1,31 @@
-import { initUsers } from './userRepository'
-import { initSubscribers } from './subscriberRepository'
-import { initProfessionals } from './professionalRepository'
-import { initPlans } from './planRepository'
-import { initPayments } from './paymentRepository'
-import { initAssignments } from './assignmentRepository'
-import { initWorkouts } from './workoutRepository'
-import { initGoals } from './goalRepository'
-import { initPhysicalAssessments } from './physicalAssessmentRepository'
+import { inicializarUsuarios } from './usuarioRepository'
+import { inicializarAlunos } from './alunoRepository'
+import { inicializarProfissionais } from './profissionalRepository'
+import { inicializarPlanos } from './planoRepository'
+import { inicializarPagamentos } from './pagamentoRepository'
+import { inicializarAtendimentos } from './atendimentoRepository'
+import { inicializarTreinos } from './treinoRepository'
+import { inicializarMetas } from './metaRepository'
+import { inicializarAvaliacoesFisicas } from './avaliacaoFisicaRepository'
 
-export * from './userRepository'
-export * from './subscriberRepository'
-export * from './professionalRepository'
-export * from './planRepository'
-export * from './paymentRepository'
-export * from './assignmentRepository'
-export * from './workoutRepository'
-export * from './goalRepository'
-export * from './physicalAssessmentRepository'
+export * from './usuarioRepository'
+export * from './alunoRepository'
+export * from './profissionalRepository'
+export * from './planoRepository'
+export * from './pagamentoRepository'
+export * from './atendimentoRepository'
+export * from './treinoRepository'
+export * from './metaRepository'
+export * from './avaliacaoFisicaRepository'
 
-export function initAllData(): void {
-  initUsers()
-  initSubscribers()
-  initProfessionals()
-  initPlans()
-  initPayments()
-  initAssignments()
-  initWorkouts()
-  initGoals()
-  initPhysicalAssessments()
+export function inicializarTodosOsDados(): void {
+  inicializarUsuarios()
+  inicializarAlunos()
+  inicializarProfissionais()
+  inicializarPlanos()
+  inicializarPagamentos()
+  inicializarAtendimentos()
+  inicializarTreinos()
+  inicializarMetas()
+  inicializarAvaliacoesFisicas()
 }
