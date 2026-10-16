@@ -1,6 +1,17 @@
 // Dados de exemplo que populam o sistema na primeira vez que alguém abre o app
 // (consumidos por ensureSeeded nos *Repository.ts). Sem isso o app abriria vazio.
-import type { User, Gym, Professional, Subscriber, Plan, Payment } from '../types'
+import type {
+  User,
+  Gym,
+  Professional,
+  Subscriber,
+  Plan,
+  Payment,
+  Assignment,
+  Workout,
+  Goal,
+  PhysicalAssessment,
+} from '../types'
 
 export const seedGyms: Gym[] = [
   { id: 'gym-1', name: 'BigGym Centro', address: 'Rua das Academias, 100', phone: '(11) 4000-0000' },
@@ -91,6 +102,77 @@ export const seedPayments: Payment[] = [
     paymentDate: null,
     status: 'pending',
     receiptNumber: null,
+  },
+]
+
+export const seedAssignments: Assignment[] = [
+  { id: 'assign-1', subscriberId: 'sub-1', professionalId: 'prof-1', type: 'standard' },
+  { id: 'assign-2', subscriberId: 'sub-2', professionalId: 'prof-1', type: 'standard' },
+  { id: 'assign-3', subscriberId: 'sub-1', professionalId: 'prof-2', type: 'personal', value: 150 },
+]
+
+export const seedWorkouts: Workout[] = [
+  {
+    id: 'workout-1',
+    subscriberId: 'sub-1',
+    assignmentId: 'assign-1',
+    week: 1,
+    exercises: [
+      { name: 'Supino reto', sets: 4, reps: 10 },
+      { name: 'Agachamento', sets: 4, reps: 12 },
+    ],
+    startDate: '2026-10-01',
+    active: true,
+    origin: 'manual',
+  },
+  {
+    id: 'workout-2',
+    subscriberId: 'sub-2',
+    assignmentId: 'assign-2',
+    week: 1,
+    exercises: [
+      { name: 'Leg press', sets: 3, reps: 15 },
+      { name: 'Puxada alta', sets: 3, reps: 12 },
+    ],
+    startDate: '2026-10-05',
+    active: true,
+    origin: 'manual',
+  },
+]
+
+export const seedGoals: Goal[] = [
+  {
+    id: 'goal-1',
+    subscriberId: 'sub-1',
+    professionalId: 'prof-2',
+    description: 'Reduzir percentual de gordura',
+    type: 'measurement',
+    targetValue: 18,
+    deadline: '2026-12-31',
+    status: 'inProgress',
+  },
+]
+
+export const seedPhysicalAssessments: PhysicalAssessment[] = [
+  {
+    id: 'assessment-1',
+    subscriberId: 'sub-1',
+    objective: 'Emagrecimento',
+    description: 'Avaliacao inicial',
+    notes: '',
+    assessmentDate: '2026-10-01',
+    weight: 82,
+    measurements: { peito: 100, braco: 35, cintura: 88 },
+  },
+  {
+    id: 'assessment-2',
+    subscriberId: 'sub-2',
+    objective: 'Condicionamento',
+    description: 'Avaliacao inicial',
+    notes: '',
+    assessmentDate: '2026-10-05',
+    weight: 65,
+    measurements: { peito: 88, braco: 26, cintura: 68 },
   },
 ]
 
