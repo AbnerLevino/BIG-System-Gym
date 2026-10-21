@@ -1,15 +1,21 @@
 import { useEffect, useState } from 'react'
 import QRCode from 'qrcode'
-import { Button, Card } from '../../components/common'
-import { processarPagamento, gerarReciboPDF } from '../../data/pagamentoService'
-import { formatarNumeroCartao, formatarValidadeCartao } from '../../utils/mascaras'
+import { Check } from 'lucide-react'
+import { Button, Card } from '../common'
+import { processarPagamento } from '../../data/pagamentoService'
+import { formatarNumeroCartao, formatarValidadeCartao, detectarBandeiraCartao } from '../../utils/mascaras'
 import type { MetodoPagamento, Pagamento } from '../../types'
+import { ComprovantePagamento } from './ComprovantePagamento'
 
 const CHAVE_PIX_FAKE = 'academia@biggym.com'
+
+type EstadoPagamento = 'selecionando' | 'processando' | 'check' | 'aprovado'
 
 interface PagamentoCheckoutProps {
   pagamento: Pagamento
   nomeAluno: string
+  cpf: string
+  planoNome: string
   onAprovado: (pagamentoAtualizado: Pagamento) => void
 }
 
@@ -21,17 +27,19 @@ const METODOS: { id: MetodoPagamento; label: string }[] = [
 ]
 
 // Dado de cartao (numero/validade/cvv) fica só neste estado local e nunca é
-// persistido em nenhum repository — some quando o componente desmonta.
-export function PagamentoCheckout({ pagamento, nomeAluno, onAprovado }: PagamentoCheckoutProps) {
+// persistido em nenhum repository — some quando o componente desmonta. Só a
+// bandeira e os ultimos 4 digitos (derivados) chegam no comprovante.
+export function PagamentoCheckout({ pagamento, nomeAluno, cpf, planoNome, onAprovado }: PagamentoCheckoutProps) {
+  const [estado, setEstado] = useState<EstadoPagamento>('selecionando')
   const [metodo, setMetodo] = useState<MetodoPagamento | null>(null)
   const [numeroCartao, setNumeroCartao] = useState('')
   const [validadeCartao, setValidadeCartao] = useState('')
   const [cvv, setCvv] = useState('')
   const [nomeCartao, setNomeCartao] = useState('')
   const [qrCodeUrl, setQrCodeUrl] = useState('')
-  const [processando, setProcessando] = useState(false)
   const [erro, setErro] = useState('')
   const [copiado, setCopiado] = useState(false)
+  const [pagamentoAprovado, setPagamentoAprovado] = useState<Pagamento | null>(null)
 
   const codigoPixSimulado = `PIX-SIMULADO-${pagamento.id}-${pagamento.originalValue.toFixed(2)}`
 
@@ -40,20 +48,26 @@ export function PagamentoCheckout({ pagamento, nomeAluno, onAprovado }: Pagament
     QRCode.toDataURL(codigoPixSimulado).then(setQrCodeUrl)
   }, [metodo, codigoPixSimulado])
 
+  useEffect(() => {
+    if (estado !== 'check') return
+    const timer = setTimeout(() => setEstado('aprovado'), 600)
+    return () => clearTimeout(timer)
+  }, [estado])
+
   async function handleConfirmar() {
     if (!metodo) return
     setErro('')
-    setProcessando(true)
+    setEstado('processando')
     const { aprovado, pagamentoAtualizado } = await processarPagamento(pagamento, metodo)
-    setProcessando(false)
 
     if (!aprovado) {
       setErro('Pagamento recusado. Tente novamente ou escolha outro metodo.')
+      setEstado('selecionando')
       return
     }
 
-    gerarReciboPDF(pagamentoAtualizado, nomeAluno)
-    onAprovado(pagamentoAtualizado)
+    setPagamentoAprovado(pagamentoAtualizado)
+    setEstado('check')
   }
 
   function handleCopiarCodigoPix() {
@@ -64,6 +78,45 @@ export function PagamentoCheckout({ pagamento, nomeAluno, onAprovado }: Pagament
 
   const cartaoValido =
     numeroCartao.replace(/\D/g, '').length === 16 && validadeCartao.length === 5 && cvv.length >= 3 && nomeCartao.trim().length > 0
+
+  if (estado === 'processando') {
+    return (
+      <Card title="Pagamento">
+        <div className="flex flex-col items-center gap-3 py-10">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-rose-800" />
+          <p className="text-sm text-slate-600">Processando pagamento...</p>
+        </div>
+      </Card>
+    )
+  }
+
+  if (estado === 'check') {
+    return (
+      <Card title="Pagamento">
+        <div className="flex flex-col items-center gap-3 py-10">
+          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+            <Check size={32} />
+          </span>
+          <p className="text-sm font-medium text-emerald-700">Pagamento confirmado</p>
+        </div>
+      </Card>
+    )
+  }
+
+  if (estado === 'aprovado' && pagamentoAprovado) {
+    const ehCartao = pagamentoAprovado.paymentMethod === 'creditCard' || pagamentoAprovado.paymentMethod === 'debitCard'
+    return (
+      <ComprovantePagamento
+        pagamento={pagamentoAprovado}
+        nomeAluno={nomeAluno}
+        cpf={cpf}
+        planoNome={planoNome}
+        bandeira={ehCartao ? detectarBandeiraCartao(numeroCartao) : undefined}
+        ultimosDigitos={ehCartao ? numeroCartao.replace(/\D/g, '').slice(-4) : undefined}
+        onContinuar={() => onAprovado(pagamentoAprovado)}
+      />
+    )
+  }
 
   return (
     <Card title="Pagamento">
@@ -153,10 +206,10 @@ export function PagamentoCheckout({ pagamento, nomeAluno, onAprovado }: Pagament
         <Button
           type="button"
           className="mt-4"
-          disabled={processando || ((metodo === 'creditCard' || metodo === 'debitCard') && !cartaoValido)}
+          disabled={(metodo === 'creditCard' || metodo === 'debitCard') && !cartaoValido}
           onClick={handleConfirmar}
         >
-          {processando ? 'Processando...' : 'Confirmar pagamento'}
+          Confirmar pagamento
         </Button>
       ) : null}
     </Card>
