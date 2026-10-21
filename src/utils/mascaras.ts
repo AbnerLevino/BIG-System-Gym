@@ -44,3 +44,10 @@ export function formatarValidadeCartao(valor: string): string {
   if (digitos.length <= 2) return digitos
   return `${digitos.slice(0, 2)}/${digitos.slice(2)}`
 }
+
+export function detectarBandeiraCartao(numero: string): string {
+  const digitos = numero.replace(/\D/g, '')
+  if (digitos.startsWith('4')) return 'Visa'
+  if (digitos.startsWith('5')) return 'Mastercard'
+  return 'Cartao'
+}
