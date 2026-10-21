@@ -5,10 +5,10 @@ import { obterPagamentos, salvarPagamento } from './pagamentoRepository'
 const DELAY_SIMULADO_MS = 1200
 const CHANCE_DE_RECUSA = 0.1
 
-function proximoNumeroRecibo(): string {
+function proximoNumeroComprovante(): string {
   const pagamentos = obterPagamentos()
-  const quantidadeComRecibo = pagamentos.filter((pagamento) => pagamento.receiptNumber).length
-  return `REC-${String(quantidadeComRecibo + 1).padStart(4, '0')}`
+  const quantidadeComComprovante = pagamentos.filter((pagamento) => pagamento.receiptNumber).length
+  return `CMP-${String(quantidadeComComprovante + 1).padStart(4, '0')}`
 }
 
 export interface ResultadoProcessamento {
@@ -37,7 +37,7 @@ export async function processarPagamento(
     paymentMethod,
     paymentDate: new Date().toISOString().slice(0, 10),
     status: 'paid',
-    receiptNumber: proximoNumeroRecibo(),
+    receiptNumber: proximoNumeroComprovante(),
   }
 
   salvarPagamento(pagamentoAtualizado)
@@ -45,15 +45,15 @@ export async function processarPagamento(
   return { aprovado: true, pagamentoAtualizado }
 }
 
-export function gerarReciboPDF(pagamento: Pagamento, nomeAluno: string): void {
+export function gerarComprovantePDF(pagamento: Pagamento, nomeAluno: string): void {
   const doc = new jsPDF()
   doc.setFontSize(16)
-  doc.text('BigGym - Recibo de Pagamento', 20, 20)
+  doc.text('BigGym - Comprovante de Pagamento', 20, 20)
   doc.setFontSize(12)
-  doc.text(`Recibo: ${pagamento.receiptNumber ?? ''}`, 20, 40)
+  doc.text(`Comprovante: ${pagamento.receiptNumber ?? ''}`, 20, 40)
   doc.text(`Aluno: ${nomeAluno}`, 20, 50)
   doc.text(`Valor pago: R$ ${(pagamento.paidValue ?? 0).toFixed(2)}`, 20, 60)
   doc.text(`Data do pagamento: ${pagamento.paymentDate ?? ''}`, 20, 70)
   doc.text(`Metodo: ${pagamento.paymentMethod ?? ''}`, 20, 80)
-  doc.save(`${pagamento.receiptNumber ?? 'recibo'}.pdf`)
+  doc.save(`${pagamento.receiptNumber ?? 'comprovante'}.pdf`)
 }
