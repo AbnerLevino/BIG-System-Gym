@@ -77,10 +77,12 @@ export function PagamentoCheckout({ pagamento, nomeAluno, cpf, planoNome, onApro
     setTimeout(() => setCopiado(false), 2000)
   }
 
+  const digitosCartao = numeroCartao.replace(/\D/g, '')
+  const bandeiraDigitada = digitosCartao.length > 0 ? detectarBandeiraCartao(numeroCartao) : null
+  // American Express tem 15 digitos de verdade, nao 16 — as outras bandeiras usam 16.
+  const tamanhoEsperadoCartao = bandeiraDigitada === 'American Express' ? 15 : 16
   const cartaoValido =
-    numeroCartao.replace(/\D/g, '').length === 16 && validadeCartao.length === 5 && cvv.length >= 3 && nomeCartao.trim().length > 0
-
-  const bandeiraDigitada = numeroCartao.replace(/\D/g, '').length > 0 ? detectarBandeiraCartao(numeroCartao) : null
+    digitosCartao.length === tamanhoEsperadoCartao && validadeCartao.length === 5 && cvv.length >= 3 && nomeCartao.trim().length > 0
 
   if (estado === 'processando') {
     return (

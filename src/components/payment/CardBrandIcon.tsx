@@ -2,9 +2,12 @@ import images from 'react-payment-inputs/images'
 
 // Mapeia o label que `detectarBandeiraCartao` devolve (usado no texto da tela)
 // para a chave do SVG real dentro de `react-payment-inputs/images`.
+// Elo nao tem SVG nesta lib — fica de fora do mapa e cai no placeholder.
 const CHAVE_POR_BANDEIRA: Record<string, string> = {
   Visa: 'visa',
   Mastercard: 'mastercard',
+  Hipercard: 'hipercard',
+  'American Express': 'amex',
 }
 
 interface CardBrandIconProps {

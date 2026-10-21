@@ -45,8 +45,13 @@ export function formatarValidadeCartao(valor: string): string {
   return `${digitos.slice(0, 2)}/${digitos.slice(2)}`
 }
 
+// Prefixos mais especificos primeiro: Elo (5067) e Hipercard (6062) cairiam no
+// cheque generico de Mastercard/Visa se a ordem fosse invertida.
 export function detectarBandeiraCartao(numero: string): string {
   const digitos = numero.replace(/\D/g, '')
+  if (digitos.startsWith('6062')) return 'Hipercard'
+  if (digitos.startsWith('6363') || digitos.startsWith('5067')) return 'Elo'
+  if (digitos.startsWith('34') || digitos.startsWith('37')) return 'American Express'
   if (digitos.startsWith('4')) return 'Visa'
   if (digitos.startsWith('5')) return 'Mastercard'
   return 'Cartao'
