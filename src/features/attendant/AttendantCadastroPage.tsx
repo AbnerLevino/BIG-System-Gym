@@ -6,7 +6,7 @@ import { Button, Card, Input, SeletorDdi } from '../../components/common'
 import { obterPlanos, salvarAluno, salvarUsuario, buscarUsuarioPorEmail } from '../../data'
 import type { Aluno, Pagamento, Usuario } from '../../types'
 import { FaceIdPreview } from './FaceIdPreview'
-import { PagamentoCheckout } from '../../components/pagamento'
+import { PagamentoCheckout } from '../../components/payment'
 import { PAISES_DDI, formatarCpf, formatarTelefone } from '../../utils/mascaras'
 
 type Etapa = 'formulario' | 'pagamento' | 'captura' | 'sucesso'

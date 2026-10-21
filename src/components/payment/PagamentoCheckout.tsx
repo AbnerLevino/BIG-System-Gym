@@ -6,6 +6,7 @@ import { processarPagamento } from '../../data/pagamentoService'
 import { formatarNumeroCartao, formatarValidadeCartao, detectarBandeiraCartao } from '../../utils/mascaras'
 import type { MetodoPagamento, Pagamento } from '../../types'
 import { ComprovantePagamento } from './ComprovantePagamento'
+import { CardBrandIcon } from './CardBrandIcon'
 
 const CHAVE_PIX_FAKE = 'academia@biggym.com'
 
@@ -78,6 +79,8 @@ export function PagamentoCheckout({ pagamento, nomeAluno, cpf, planoNome, onApro
 
   const cartaoValido =
     numeroCartao.replace(/\D/g, '').length === 16 && validadeCartao.length === 5 && cvv.length >= 3 && nomeCartao.trim().length > 0
+
+  const bandeiraDigitada = numeroCartao.replace(/\D/g, '').length > 0 ? detectarBandeiraCartao(numeroCartao) : null
 
   if (estado === 'processando') {
     return (
@@ -156,12 +159,18 @@ export function PagamentoCheckout({ pagamento, nomeAluno, cpf, planoNome, onApro
         <div className="mt-4 flex flex-col gap-3 rounded-md border border-slate-200 p-4">
           <label className="block text-sm font-medium text-slate-700">
             Numero do cartao
-            <input
-              value={numeroCartao}
-              onChange={(e) => setNumeroCartao(formatarNumeroCartao(e.target.value))}
-              placeholder="0000 0000 0000 0000"
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-rose-800 focus:outline-none focus:ring-2 focus:ring-rose-800/30"
-            />
+            <div className="relative mt-1">
+              <input
+                value={numeroCartao}
+                onChange={(e) => setNumeroCartao(formatarNumeroCartao(e.target.value))}
+                placeholder="0000 0000 0000 0000"
+                className="block w-full rounded-md border border-slate-300 px-3 py-2 pr-11 text-slate-900 shadow-sm focus:border-rose-800 focus:outline-none focus:ring-2 focus:ring-rose-800/30"
+              />
+              <CardBrandIcon
+                bandeira={bandeiraDigitada}
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+              />
+            </div>
           </label>
           <label className="block text-sm font-medium text-slate-700">
             Nome impresso no cartao

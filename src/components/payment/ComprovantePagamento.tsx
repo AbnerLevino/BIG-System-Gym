@@ -1,8 +1,10 @@
+import type { ReactNode } from 'react'
 import { Check, Download } from 'lucide-react'
 import { Button } from '../common'
 import { gerarComprovantePDF } from '../../data/pagamentoService'
 import biggymIcon from '../../assets/biggym-icon-black.png'
 import type { Pagamento } from '../../types'
+import { CardBrandIcon } from './CardBrandIcon'
 
 const CHAVE_PIX_FAKE = 'academia@biggym.com'
 
@@ -39,7 +41,7 @@ function calcularProximoVencimento(dataPagamento: string | null): string {
   return formatarData(data.toISOString().slice(0, 10))
 }
 
-function LinhaComprovante({ label, valor }: { label: string; valor: string }) {
+function LinhaComprovante({ label, valor }: { label: string; valor: ReactNode }) {
   return (
     <div className="flex items-center justify-between border-b border-slate-100 py-2 text-sm">
       <span className="text-slate-500">{label}</span>
@@ -80,7 +82,15 @@ export function ComprovantePagamento({
         <LinhaComprovante label="Plano" valor={planoNome} />
         <LinhaComprovante label="Forma de pagamento" valor={LABEL_METODO[pagamento.paymentMethod ?? ''] ?? ''} />
         {bandeira && ultimosDigitos ? (
-          <LinhaComprovante label="Bandeira" valor={`${bandeira} •••• ${ultimosDigitos}`} />
+          <LinhaComprovante
+            label="Bandeira"
+            valor={
+              <span className="flex items-center gap-2">
+                <CardBrandIcon bandeira={bandeira} />
+                {bandeira} •••• {ultimosDigitos}
+              </span>
+            }
+          />
         ) : null}
         {pagamento.paymentMethod === 'pix' ? <LinhaComprovante label="Chave Pix" valor={CHAVE_PIX_FAKE} /> : null}
         <LinhaComprovante label="Data do pagamento" valor={formatarData(pagamento.paymentDate)} />
