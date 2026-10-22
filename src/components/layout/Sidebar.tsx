@@ -80,11 +80,11 @@ export function Sidebar() {
   return (
     <aside className="flex w-60 shrink-0 flex-col self-stretch overflow-hidden rounded-2xl bg-white">
       <div className="flex h-16 shrink-0 items-center px-5 py-5">
-        {/* O arquivo de origem é um silhueta branca; usamos como máscara CSS pra pintar de vermelho sem precisar de um segundo asset. */}
+        {/* O arquivo de origem é um silhueta branca; usamos como máscara CSS pra pintar de verde sem precisar de um segundo asset. */}
         <span
           role="img"
           aria-label="BigGym"
-          className="h-11 w-28 bg-rose-700"
+          className="h-11 w-28 bg-emerald-700"
           style={{
             WebkitMaskImage: `url(${biggymLogoBranco})`,
             maskImage: `url(${biggymLogoBranco})`,
@@ -109,8 +109,8 @@ export function Sidebar() {
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200 ease-out hover:scale-105 ${
                   isActive
-                    ? 'bg-[#FDECEF] text-rose-700'
-                    : 'text-zinc-500 hover:bg-zinc-50 hover:text-rose-700'
+                    ? 'bg-[#E7F6EF] text-emerald-700'
+                    : 'text-zinc-500 hover:bg-zinc-50 hover:text-emerald-700'
                 }`
               }
             >
@@ -136,7 +136,7 @@ export function Sidebar() {
                 className="h-12 w-12 rounded-full object-cover"
               />
             ) : (
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-rose-50 text-base font-semibold text-rose-700">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-base font-semibold text-emerald-700">
                 {usuarioAtual.nome.charAt(0).toUpperCase()}
               </div>
             )}
@@ -155,7 +155,7 @@ export function Sidebar() {
           type="button"
           onClick={handleLogout}
           className="flex items-center gap-2 rounded-xl px-2 py-2 text-sm font-medium text-zinc-500
-            transition-colors hover:bg-zinc-50 hover:text-rose-700"
+            transition-colors hover:bg-zinc-50 hover:text-emerald-700"
         >
           <LogOut size={16} className="shrink-0" />
           Sair
