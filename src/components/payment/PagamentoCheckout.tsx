@@ -88,7 +88,7 @@ export function PagamentoCheckout({ pagamento, nomeAluno, cpf, planoNome, onApro
     return (
       <Card title="Pagamento">
         <div className="flex flex-col items-center gap-3 py-10">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-rose-800" />
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-emerald-700" />
           <p className="text-sm text-slate-600">Processando pagamento...</p>
         </div>
       </Card>
@@ -139,7 +139,7 @@ export function PagamentoCheckout({ pagamento, nomeAluno, cpf, planoNome, onApro
               setErro('')
             }}
             className={`rounded-md border-2 p-3 text-sm font-medium transition-colors ${
-              metodo === item.id ? 'border-rose-800 bg-rose-50 text-rose-800' : 'border-slate-200 text-slate-700 hover:border-slate-300'
+              metodo === item.id ? 'border-emerald-700 bg-emerald-50 text-emerald-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'
             }`}
           >
             {item.label}
@@ -166,7 +166,7 @@ export function PagamentoCheckout({ pagamento, nomeAluno, cpf, planoNome, onApro
                 value={numeroCartao}
                 onChange={(e) => setNumeroCartao(formatarNumeroCartao(e.target.value))}
                 placeholder="0000 0000 0000 0000"
-                className="block w-full rounded-md border border-slate-300 px-3 py-2 pr-11 text-slate-900 shadow-sm focus:border-rose-800 focus:outline-none focus:ring-2 focus:ring-rose-800/30"
+                className="block w-full rounded-md border border-slate-300 px-3 py-2 pr-11 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
               />
               <CardBrandIcon
                 bandeira={bandeiraDigitada}
@@ -179,7 +179,7 @@ export function PagamentoCheckout({ pagamento, nomeAluno, cpf, planoNome, onApro
             <input
               value={nomeCartao}
               onChange={(e) => setNomeCartao(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-rose-800 focus:outline-none focus:ring-2 focus:ring-rose-800/30"
+              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
             />
           </label>
           <div className="flex gap-3">
@@ -189,7 +189,7 @@ export function PagamentoCheckout({ pagamento, nomeAluno, cpf, planoNome, onApro
                 value={validadeCartao}
                 onChange={(e) => setValidadeCartao(formatarValidadeCartao(e.target.value))}
                 placeholder="MM/AA"
-                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-rose-800 focus:outline-none focus:ring-2 focus:ring-rose-800/30"
+                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
               />
             </label>
             <label className="block flex-1 text-sm font-medium text-slate-700">
@@ -198,7 +198,7 @@ export function PagamentoCheckout({ pagamento, nomeAluno, cpf, planoNome, onApro
                 value={cvv}
                 onChange={(e) => setCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
                 placeholder="000"
-                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-rose-800 focus:outline-none focus:ring-2 focus:ring-rose-800/30"
+                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
               />
             </label>
           </div>
