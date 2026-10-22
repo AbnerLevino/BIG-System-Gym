@@ -2,6 +2,10 @@
 // Fluxo: pending -> paid (ou late se passar de dueDate, com lateFee calculado).
 export type StatusPagamento = 'pending' | 'paid' | 'late'
 
+// 'partner' nunca é escolhido na tela — é gerado automático quando o plano é via
+// TotalPass/Wellhub (ver Plano.origin).
+export type MetodoPagamento = 'cash' | 'creditCard' | 'debitCard' | 'pix' | 'partner'
+
 export interface Pagamento {
   id: string
   academiaId: string
@@ -10,7 +14,7 @@ export interface Pagamento {
   originalValue: number
   paidValue: number | null
   lateFee: number
-  paymentMethod: string | null
+  paymentMethod: MetodoPagamento | null
   dueDate: string
   paymentDate: string | null
   status: StatusPagamento

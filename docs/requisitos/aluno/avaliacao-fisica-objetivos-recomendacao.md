@@ -11,6 +11,7 @@ O aluno deve conseguir:
 3. Visualizar os exercícios correspondentes aos grupos selecionados, com nome, descrição e dificuldades técnicas/físicas.
 
 ## Critério de aceite
+
 - Seleção de grupo muscular permite múltipla escolha simultânea.
 - Lista de exercícios recomendados é a união dos exercícios de todos os grupos selecionados, sem duplicar exercício que pertence a mais de um grupo.
 

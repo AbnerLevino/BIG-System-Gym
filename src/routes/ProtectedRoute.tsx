@@ -8,6 +8,7 @@ import type { PapelUsuario } from '../types'
 
 const ROLE_HOME: Record<PapelUsuario, string> = {
   admin: '/admin',
+  atendente: '/atendente',
   professional: '/profissional',
   subscriber: '/aluno',
 }

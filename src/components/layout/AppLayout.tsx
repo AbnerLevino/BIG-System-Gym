@@ -23,7 +23,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="relative flex min-h-screen bg-slate-50">
       <Sidebar role={usuarioAtual.role} />
       <div className="flex flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">

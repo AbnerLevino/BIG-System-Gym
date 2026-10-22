@@ -8,6 +8,7 @@ import type { PapelUsuario } from '../../types'
 
 const ROLE_HOME: Record<PapelUsuario, string> = {
   admin: '/admin',
+  atendente: '/atendente',
   professional: '/profissional',
   subscriber: '/aluno',
 }
@@ -65,6 +66,9 @@ export function LoginPage() {
           <div className="flex flex-col gap-2">
             <Button variant="secondary" onClick={() => handleDemoLogin('admin')}>
               Entrar como Admin
+            </Button>
+            <Button variant="secondary" onClick={() => handleDemoLogin('atendente')}>
+              Entrar como Atendente
             </Button>
             <Button variant="secondary" onClick={() => handleDemoLogin('professional')}>
               Entrar como Profissional

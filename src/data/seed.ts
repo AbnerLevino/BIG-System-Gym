@@ -4,6 +4,7 @@ import type {
   Usuario,
   Academia,
   Profissional,
+  Atendente,
   Aluno,
   Plano,
   Pagamento,
@@ -11,6 +12,7 @@ import type {
   Treino,
   Meta,
   AvaliacaoFisica,
+  CheckIn,
 } from '../types'
 
 export const seedAcademias: Academia[] = [
@@ -18,8 +20,8 @@ export const seedAcademias: Academia[] = [
 ]
 
 export const seedPlanos: Plano[] = [
-  { id: 'plan-1', name: 'Mensal Basico', price: 99.9, modalities: ['Musculacao'], conditions: 'Sem fidelidade' },
-  { id: 'plan-2', name: 'Trimestral Plus', price: 259.9, modalities: ['Musculacao', 'Funcional'], conditions: '3 meses, 10% de desconto' },
+  { id: 'plan-1', name: 'Mensal Basico', price: 99.9, modalities: ['Musculacao'], conditions: 'Sem fidelidade', origin: 'direct' },
+  { id: 'plan-2', name: 'Trimestral Plus', price: 259.9, modalities: ['Musculacao', 'Funcional'], conditions: '3 meses, 10% de desconto', origin: 'direct' },
 ]
 
 export const seedProfissionais: Profissional[] = [
@@ -45,6 +47,10 @@ export const seedProfissionais: Profissional[] = [
   },
 ]
 
+export const seedAtendentes: Atendente[] = [
+  { id: 'attendant-1', name: 'Paula Rocha', cpf: '555.555.555-55', phone: '(11) 90000-0003', cargo: 'Recepcao' },
+]
+
 export const seedAlunos: Aluno[] = [
   {
     id: 'sub-1',
@@ -58,6 +64,7 @@ export const seedAlunos: Aluno[] = [
     notes: '',
     planoAtualId: 'plan-1',
     startDate: '2026-01-10',
+    status: 'active',
   },
   {
     id: 'sub-2',
@@ -71,6 +78,7 @@ export const seedAlunos: Aluno[] = [
     notes: '',
     planoAtualId: 'plan-2',
     startDate: '2026-02-01',
+    status: 'active',
   },
 ]
 
@@ -178,6 +186,9 @@ export const seedAvaliacoesFisicas: AvaliacaoFisica[] = [
 
 export const seedUsuarios: Usuario[] = [
   { id: 'user-admin', email: 'admin@biggym.com', password: 'admin123', role: 'admin', refId: 'gym-1' },
+  { id: 'user-atendente', email: 'atendente@biggym.com', password: 'atendente123', role: 'atendente', refId: 'attendant-1' },
   { id: 'user-prof', email: 'profissional@biggym.com', password: 'prof123', role: 'professional', refId: 'prof-1' },
   { id: 'user-sub', email: 'aluno@biggym.com', password: 'aluno123', role: 'subscriber', refId: 'sub-1' },
 ]
+
+export const seedCheckins: CheckIn[] = []
