@@ -78,7 +78,7 @@ export function FaceIdPreview({ onCapturar, rotulo }: FaceIdPreviewProps) {
         autoPlay
         muted
         playsInline
-        className="aspect-square w-full rounded-full border-4 border-rose-800/30 object-cover"
+        className="aspect-square w-full rounded-full border-4 border-emerald-700/30 object-cover"
       />
       {carregando ? <p className="text-sm text-slate-600">Carregando reconhecimento facial...</p> : null}
       {erro ? <p className="text-sm text-red-600">{erro}</p> : null}
@@ -86,7 +86,7 @@ export function FaceIdPreview({ onCapturar, rotulo }: FaceIdPreviewProps) {
         type="button"
         disabled={carregando}
         onClick={handleCapturar}
-        className="inline-flex items-center justify-center rounded-md bg-rose-800 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-900 disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex items-center justify-center rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {rotulo ?? 'Capturar rosto'}
       </button>

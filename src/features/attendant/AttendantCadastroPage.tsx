@@ -32,9 +32,9 @@ function IndicadorDePassos({ atual }: { atual: Etapa }) {
               <span
                 className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-semibold ${
                   concluido
-                    ? 'bg-rose-800 text-white'
+                    ? 'bg-emerald-700 text-white'
                     : ativo
-                      ? 'border-2 border-rose-800 text-rose-800'
+                      ? 'border-2 border-emerald-700 text-emerald-700'
                       : 'border border-slate-300 text-slate-400'
                 }`}
               >
@@ -42,7 +42,7 @@ function IndicadorDePassos({ atual }: { atual: Etapa }) {
               </span>
               <span
                 className={`text-xs font-medium ${
-                  ativo ? 'text-rose-800' : concluido ? 'text-slate-600' : 'text-slate-400'
+                  ativo ? 'text-emerald-700' : concluido ? 'text-slate-600' : 'text-slate-400'
                 }`}
               >
                 {passo.label}
@@ -176,7 +176,7 @@ export function AttendantCadastroPage() {
               type="checkbox"
               checked={visitaTeste}
               onChange={(e) => setVisitaTeste(e.target.checked)}
-              className="h-4 w-4 accent-rose-800"
+              className="h-4 w-4 accent-emerald-700"
             />
             Visita teste (sem plano, sem login — so cadastro basico)
           </label>
@@ -198,7 +198,7 @@ export function AttendantCadastroPage() {
                     onChange={(e) => setPhone(formatarTelefone(e.target.value))}
                     placeholder="(00) 00000-0000"
                     required
-                    className="block h-10 w-full rounded-md border border-slate-300 px-3 text-slate-900 shadow-sm focus:border-rose-800 focus:outline-none focus:ring-2 focus:ring-rose-800/30"
+                    className="block h-10 w-full rounded-md border border-slate-300 px-3 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
                   />
                 </div>
               </div>
@@ -247,16 +247,16 @@ export function AttendantCadastroPage() {
                           type="button"
                           onClick={() => setPlanoAtualId(plano.id)}
                           className={`relative flex flex-col items-start rounded-lg border-2 p-4 text-left transition-colors ${
-                            selecionado ? 'border-rose-800 bg-rose-50' : 'border-slate-200 hover:border-slate-300'
+                            selecionado ? 'border-emerald-700 bg-emerald-50' : 'border-slate-200 hover:border-slate-300'
                           }`}
                         >
                           {selecionado ? (
-                            <span className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-rose-800 text-white">
+                            <span className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-700 text-white">
                               <Check size={12} />
                             </span>
                           ) : null}
                           <p className="font-semibold text-slate-900">{plano.name}</p>
-                          <p className="mt-1 text-2xl font-bold text-rose-800">R$ {plano.price.toFixed(2)}</p>
+                          <p className="mt-1 text-2xl font-bold text-emerald-700">R$ {plano.price.toFixed(2)}</p>
                           <p className="mt-2 text-xs text-slate-500">{plano.modalities.join(' · ')}</p>
                         </button>
                       )
