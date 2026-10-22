@@ -29,7 +29,7 @@ export function SeletorDdi({ value, onChange }: SeletorDdiProps) {
       <button
         type="button"
         onClick={() => setAberto((estaAberto) => !estaAberto)}
-        className="flex h-10 items-center gap-2 rounded-md border border-slate-300 px-3 text-slate-900 shadow-sm focus:border-rose-800 focus:outline-none focus:ring-2 focus:ring-rose-800/30"
+        className="flex h-10 items-center gap-2 rounded-md border border-slate-300 px-3 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
       >
         <span className={`fi fi-${paisSelecionado.iso}`} />
         <span className="text-sm">{paisSelecionado.ddi}</span>
@@ -47,7 +47,7 @@ export function SeletorDdi({ value, onChange }: SeletorDdiProps) {
                   setAberto(false)
                 }}
                 className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-slate-50 ${
-                  pais.ddi === value ? 'bg-rose-50 text-rose-800' : 'text-slate-700'
+                  pais.ddi === value ? 'bg-emerald-50 text-emerald-700' : 'text-slate-700'
                 }`}
               >
                 <span className={`fi fi-${pais.iso}`} />
