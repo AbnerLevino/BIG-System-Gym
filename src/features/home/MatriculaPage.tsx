@@ -58,6 +58,7 @@ export function MatriculaPage() {
     }
     const usuario: Usuario = {
       id: crypto.randomUUID(),
+      nome: fullName,
       email,
       password,
       role: 'subscriber',

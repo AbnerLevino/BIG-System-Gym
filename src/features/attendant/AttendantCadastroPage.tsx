@@ -143,6 +143,7 @@ export function AttendantCadastroPage() {
     if (!visitaTeste) {
       const usuario: Usuario = {
         id: crypto.randomUUID(),
+        nome: fullName,
         email,
         password,
         role: 'subscriber',

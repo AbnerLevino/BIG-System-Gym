@@ -185,10 +185,10 @@ export const seedAvaliacoesFisicas: AvaliacaoFisica[] = [
 ]
 
 export const seedUsuarios: Usuario[] = [
-  { id: 'user-admin', email: 'admin@biggym.com', password: 'admin123', role: 'admin', refId: 'gym-1' },
-  { id: 'user-atendente', email: 'atendente@biggym.com', password: 'atendente123', role: 'atendente', refId: 'attendant-1' },
-  { id: 'user-prof', email: 'profissional@biggym.com', password: 'prof123', role: 'professional', refId: 'prof-1' },
-  { id: 'user-sub', email: 'aluno@biggym.com', password: 'aluno123', role: 'subscriber', refId: 'sub-1' },
+  { id: 'user-admin', nome: 'Camila Duarte', email: 'admin@biggym.com', password: 'admin123', role: 'admin', refId: 'gym-1' },
+  { id: 'user-atendente', nome: 'Paula Rocha', email: 'atendente@biggym.com', password: 'atendente123', role: 'atendente', refId: 'attendant-1' },
+  { id: 'user-prof', nome: 'Carla Mendes', email: 'profissional@biggym.com', password: 'prof123', role: 'professional', refId: 'prof-1' },
+  { id: 'user-sub', nome: 'Joao Pereira', email: 'aluno@biggym.com', password: 'aluno123', role: 'subscriber', refId: 'sub-1' },
 ]
 
 export const seedCheckins: CheckIn[] = []
