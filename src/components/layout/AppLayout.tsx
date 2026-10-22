@@ -17,9 +17,9 @@ export function AppLayout({ children }: AppLayoutProps) {
   if (!usuarioAtual) return null
 
   return (
-    <div className="flex h-screen gap-6 overflow-hidden bg-slate-50 p-6">
+    <div className="flex h-screen gap-6 overflow-hidden bg-zinc-100 p-6">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto rounded-2xl bg-white p-6 shadow-sm">{children}</main>
+      <main className="flex-1 overflow-y-auto rounded-2xl bg-white p-6">{children}</main>
     </div>
   )
 }
