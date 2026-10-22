@@ -17,4 +17,4 @@ O atendente deve vincular o aluno a um plano, com data de início de matrícula.
 
 ## Regras de negócio relacionadas
 - Aluno tem um `planoAtualId` direto; trocas de plano ao longo do tempo ficam em `HistoricoPlano`, sem reescrever o histórico financeiro retroativamente.
-- Quando o plano é via parceiro (TotalPass/Wellhub), o pagamento desse aluno nasce automaticamente como pago — ver `docs/requisitos/admin/financeiro-calculo-pagamento-regras.md`.
+- Quando o plano é via parceiro (TotalPass/Wellhub), o pagamento desse aluno nasce automaticamente como pago (regra já existente no sistema, fora do escopo dos requisitos novos de hoje).

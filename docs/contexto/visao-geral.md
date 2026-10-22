@@ -69,7 +69,7 @@ Pasta onde cada papel tem suas telas. **Regra de ouro: a pasta de uma feature nu
 
 - `docs/pesquisa-mercado/` — quem são os clientes-alvo em Limeira, perfis reais pesquisados.
 - `docs/decisoes/` — decisões de arquitetura e de estratégia de produto, com o porquê.
-- `docs/requisitos/{atendente,aluno,profissional,admin}/` — requisito funcional por funcionalidade, um arquivo por capacidade.
+- `docs/requisitos/{atendente,aluno}/` — requisito funcional por funcionalidade, um arquivo por capacidade.
 - `docs/aulas/` — explicação dos conceitos de React/TypeScript usados no esqueleto do projeto.
 - `docs/superpowers/` — histórico de planos de implementação já executados (como cada feature foi construída, passo a passo).
 - `CONTRIBUTING.md` — fluxo de Git (branch e Pull Request).

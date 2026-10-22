@@ -15,7 +15,7 @@ O aluno deve conseguir:
 - Lista de exercícios recomendados é a união dos exercícios de todos os grupos selecionados, sem duplicar exercício que pertence a mais de um grupo.
 
 ## Nota técnica — conflito de nome com o que já existe
-Já existe uma entidade `AvaliacaoFisica` no sistema (`src/types/avaliacaoFisica.ts`), mas ela representa outra coisa: um registro de medidas corporais (peso, medidas em cm) feito **pelo profissional**, não um questionário de objetivos respondido pelo próprio aluno. São dois conceitos diferentes com nome parecido — precisam de nomes distintos no código (ex: `QuestionarioObjetivo` vs `AvaliacaoFisicaMedidas`) pra não colidir. Ver `docs/requisitos/profissional/metas-avaliacao-fisica-profissional.md`.
+Já existe uma entidade `AvaliacaoFisica` no sistema (`src/types/avaliacaoFisica.ts`), mas ela representa outra coisa: um registro de medidas corporais (peso, medidas em cm) feito pelo profissional, não um questionário de objetivos respondido pelo próprio aluno. São dois conceitos diferentes com nome parecido — precisam de nomes distintos no código (ex: `QuestionarioObjetivo` vs `AvaliacaoFisicaMedidas`) pra não colidir.
 
 ## Questão aberta — decisão de negócio pendente
 **Qual é a regra exata de correspondência entre objetivo/grupo muscular selecionado e exercício recomendado?** Hoje está descrito como "mostra os exercícios correspondentes" — precisa virar uma regra explícita (tabela exercício → grupo muscular → nível recomendado por objetivo) antes de implementar. Isso é o motor de recomendação do sistema, não uma tela simples de listagem.

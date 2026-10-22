@@ -13,4 +13,4 @@ O atendente deve conseguir cadastrar nome completo, CPF, data de nascimento, tel
 - Sistema impede salvar CPF já existente, com mensagem de erro clara.
 
 ## Regras de negócio relacionadas
-- CPF é identificador imutável do aluno após criado (não editável em `edicao-cancelamento-aluno.md`).
+- CPF é identificador imutável do aluno após criado (não editável em `gestao-busca-consulta-edicao-cancelamento.md`).

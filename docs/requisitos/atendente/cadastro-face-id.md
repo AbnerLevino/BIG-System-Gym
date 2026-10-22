@@ -5,7 +5,7 @@
 **Status:** Já implementado (simulado — ver nota abaixo)
 
 ## Descrição
-O atendente deve capturar e associar a biometria facial do aluno ao cadastro, pra uso posterior no check-in (ver `checkin-faceid-catraca.md`).
+O atendente deve capturar e associar a biometria facial do aluno ao cadastro, pra uso posterior no check-in.
 
 ## Depende de
 - `cadastro-dados-pessoais.md`
