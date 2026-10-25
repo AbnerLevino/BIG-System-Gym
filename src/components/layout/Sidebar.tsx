@@ -78,7 +78,7 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="flex w-60 shrink-0 flex-col self-stretch overflow-hidden rounded-2xl bg-white">
+    <aside className="flex w-60 shrink-0 flex-col self-stretch overflow-hidden rounded-2xl border border-zinc-900/10 bg-white">
       <div className="flex h-16 shrink-0 items-center px-5 py-5">
         {/* O arquivo de origem é um silhueta branca; usamos como máscara CSS pra pintar de verde sem precisar de um segundo asset. */}
         <span

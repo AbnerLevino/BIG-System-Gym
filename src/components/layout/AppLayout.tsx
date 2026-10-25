@@ -19,7 +19,9 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <div className="flex h-screen gap-6 overflow-hidden bg-zinc-100 p-6">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto rounded-2xl bg-white p-6">{children}</main>
+      <main className="flex-1 overflow-y-auto rounded-2xl border border-zinc-900/10 bg-white p-6">
+        {children}
+      </main>
     </div>
   )
 }
