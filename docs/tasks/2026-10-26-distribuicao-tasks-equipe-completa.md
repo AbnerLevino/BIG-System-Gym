@@ -201,10 +201,34 @@ A ideia: cada bloco agrupa tasks da mesma área, pra quem pegar não ficar pulan
 
 ---
 
+## Status de implementação (atualizado em 2026-10-29)
+
+Resumo do que já tem código no repositório, pra quem for pegar uma task não refazer o que já existe e já saber exatamente o que falta. Commit de referência: `655a0e7`.
+
+**Task 1 — Catálogo de exercícios: só o type, resto falta.**
+- ✅ `src/types/exercicio.ts` criado: `Exercicio` (id, nome, descricao, grupoMuscular, nivelDificuldade, equipamento, videoUrl?, animacaoUrl?), `GrupoMuscular` e `NivelDificuldadeExercicio`.
+- ❌ Falta `exercicioRepository.ts`, seed em `src/data/seed.ts` e registro em `inicializarTodosOsDados()`. Os exercícios que aparecem na tela (Task 3) hoje são um array mockado dentro da própria página (`exerciciosMock` em `SubscriberTreinoPage.tsx`), só pra validar o visual — não é fonte de dado real, quem pegar a Task 1 substitui isso.
+
+**Task 3 — Treino do aluno sem personal: só a tela de catálogo (visual), sem lógica de treino.**
+- ✅ `src/features/subscriber/SubscriberTreinoPage.tsx` criado e rota `/aluno/treino` registrada em `AppRoutes.tsx` (o Sidebar já tinha o link previsto, faltava só a rota).
+- ✅ Grid de cards de exercício (gif/imagem, chip de dificuldade, chip de equipamento, grupo muscular) + modal de detalhe (usa o novo `size="lg"` do `Modal`) com espaço reservado pra vídeo-aula.
+- ❌ Falta a regra de negócio da task em si: `Treino` (`src/types/treino.ts`) ainda não tem dia da semana nem referência ao catálogo; não existe fluxo de "selecionar exercício pra um dia"; não tem filtro por grupo muscular (os 4 exercícios mockados aparecem todos juntos); não consome `exercicioRepository` (ainda não existe) nem `treinoRepository`.
+
+**Task 5 — Dashboard do atendente: UI de busca/listagem com dado mockado, falta tudo que grava/edita.**
+- ✅ `AttendantDashboardPage.tsx` deixou de ser placeholder: busca por nome/matrícula, filtros (em dia / atrasado / vence hoje / vence essa semana) e tabela paginada (11 linhas por página).
+- ❌ A lista (`ALUNOS_MOCK`) é estática dentro do próprio arquivo, não vem de `alunoRepository`. Ainda não tem edição de dados do aluno, cancelamento de matrícula, nem os acessos rápidos pra cadastro/check-in/pagamento — isso é o que falta pra fechar a Task 5 de fato.
+
+**Melhorias de base, já disponíveis pra todo mundo reaproveitar:**
+- `Modal` (`src/components/common/Modal.tsx`) ganhou a prop `size?: 'md' | 'lg'` (`md` é o comportamento de antes, `lg` é mais largo) e o conteúdo interno agora rola (`overflow-y-auto`) quando passa da altura da tela — útil pra qualquer modal com mais conteúdo.
+- `tailwind.config.js` ganhou a animação `animate-aurora-sweep` (usada no botão "Ver mais" do card de exercício — brilho deslizando no hover). Se for fazer outro botão com hover "chamativo", a classe já está pronta, não reinventar.
+- `src/assets/waving-hand-3d.png` — ícone de mão acenando usado no cabeçalho de boas-vindas do atendente (`Boas-Vindas, {nome}!`); disponível pra reaproveitar em outro dashboard que também queira esse padrão de saudação.
+
+---
+
 ## As 14 tasks
 
 ### Task 1 — Fundação: catálogo de exercícios (bloqueia Tasks 3 e 4)
-**Requisito:** não existe formalizado ainda — regra abaixo + `docs/requisitos/aluno/treino-semana-selecao-exercicio.md` como referência de uso.
+**Requisito:** `docs/requisitos/fundacao/catalogo-exercicios.md` (RF-FUND-01).
 **O que fazer:** criar o catálogo de exercícios que ainda não existe. Hoje `Treino.exercises` é só `{name, sets, reps}` — sem grupo muscular, dificuldade, descrição ou vídeo/animação. Criar entidade nova (ex: `src/types/exercicio.ts`): nome, descrição, grupo(s) muscular(es), nível de dificuldade, URL de vídeo-aula, URL de animação (gif em loop — já pesquisado: [ExerciseDB](https://exercisedb.dev/) tem banco gratuito pronto, free tier sem chave; só guardar a URL, não implementar geração de animação).
 **Onde mexer:** `src/types/exercicio.ts` (novo), `src/data/exercicioRepository.ts` (novo), `src/data/seed.ts` (seed de exemplo).
 **Onde NÃO mexer:** `src/types/treino.ts` ainda não — isso é da Task 3.
@@ -247,6 +271,7 @@ A ideia: cada bloco agrupa tasks da mesma área, pra quem pegar não ficar pulan
 ---
 
 ### Task 6 — Fundação: motor de cobrança automática e inadimplência (bloqueia Tasks 9 e 14)
+**Requisito:** `docs/requisitos/fundacao/motor-cobranca-inadimplencia.md` (RF-FUND-02).
 **O que fazer:** implementar D1, D3, D4, D5, D7. Gerar `Pagamento` automaticamente quando o ciclo do `Atendimento`/`Plano` ativo vira (mensal), lendo o `Plano.price` vigente naquele momento (+ `Atendimento.value` se tiver personal — ver Task 12). Calcular/atualizar `status` (`pending`→`late`) comparando hoje com `dueDate`, aplicando a carência de 5 dias (D4). Expor função simples (ex: `alunoEstaInadimplente(alunoId)`) pra `AttendantCheckinPage.tsx` bloquear o check-in usando a mensagem `latePayment` que já existe sem uso.
 **Onde mexer:** `src/data/pagamentoService.ts` ou novo `src/data/cobrancaService.ts`, `AttendantCheckinPage.tsx` (só consumir a função).
 **Onde NÃO mexer:** `processarPagamento` (já funciona); não implementar `lateFee` (D5).
@@ -254,6 +279,7 @@ A ideia: cada bloco agrupa tasks da mesma área, pra quem pegar não ficar pulan
 ---
 
 ### Task 7 — Admin: gestão de planos
+**Requisito:** `docs/requisitos/distribuicao/gestao-planos.md` (RF-ADM-01).
 **O que fazer:** tela de listagem, criação e edição de `Plano` (nome, preço, modalidades, condições, origem/parceiro), em `/admin/planos` (path já previsto no Sidebar). Confere visualmente que mudar preço não altera pagamento já gerado (isso é garantido pela Task 6, não lógica nova aqui).
 **Onde mexer:** `src/features/admin/` (telas novas), consumir `planoRepository.ts`.
 **Onde NÃO mexer:** não criar plano "descontinuado" (D2).
@@ -261,6 +287,7 @@ A ideia: cada bloco agrupa tasks da mesma área, pra quem pegar não ficar pulan
 ---
 
 ### Task 8 — Admin: cadastro e gestão de funcionários (RH)
+**Requisito:** `docs/requisitos/distribuicao/cadastro-funcionarios-rh.md` (RF-ADM-02/03).
 **O que fazer:** implementar D9 — estender `Atendente` e `Profissional` com os campos de RH, criar telas de cadastro/edição/listagem em `/admin/profissionais` (path já previsto no Sidebar; incluir também atendentes nessa gestão, ou criar sub-rota equivalente — decidir com o grupo qual URL usar pra atendente se precisar de uma separada).
 **Onde mexer:** `src/types/atendente.ts`, `src/types/profissional.ts`, `atendenteRepository.ts`, `profissionalRepository.ts`, telas novas em `src/features/admin/`.
 **Onde NÃO mexer:** não criar módulo de contas a pagar/folha (D10) — só cadastro.
@@ -268,6 +295,7 @@ A ideia: cada bloco agrupa tasks da mesma área, pra quem pegar não ficar pulan
 ---
 
 ### Task 9 — Admin: dashboard financeiro (depende da Task 6)
+**Requisito:** `docs/requisitos/distribuicao/dashboard-financeiro.md` (RF-ADM-04/05/06/07).
 **O que fazer:** substituir o placeholder de `AdminDashboardPage.tsx` por: receita do mês por competência (D3), lista de inadimplentes com dias de atraso (D4), alunos ativos, aniversariantes do mês. Path `/admin` (já existe) ou `/admin/financeiro` (já previsto no Sidebar) pra uma visão financeira mais detalhada — decidir com o grupo se divide em duas telas ou uma só.
 **Onde mexer:** `src/features/admin/AdminDashboardPage.tsx`, possivelmente `src/features/financial/` pra lógica de agregação compartilhável.
 **Onde NÃO mexer:** não implementar geração/cálculo de pagamento aqui (é a Task 6) — esta task só consome.
@@ -275,6 +303,7 @@ A ideia: cada bloco agrupa tasks da mesma área, pra quem pegar não ficar pulan
 ---
 
 ### Task 10 — Profissional: dashboard e alunos vinculados (depende da Task 11)
+**Requisito:** `docs/requisitos/profissional/dashboard-alunos-vinculados.md` (RF-PRO-01/02).
 **O que fazer:** substituir o placeholder de `ProfessionalDashboardPage.tsx` por lista dos alunos com `Atendimento` tipo `personal` vinculados a esse profissional (D11), mostrando a agenda (Task 11) junto. Preparar link pra lançar avaliação física (Task 13) de cada aluno.
 **Onde mexer:** `ProfessionalDashboardPage.tsx` e telas novas na mesma pasta.
 **Onde NÃO mexer:** não montar a vitrine de contratação aqui — isso é visão do aluno (Task 12).
@@ -282,6 +311,7 @@ A ideia: cada bloco agrupa tasks da mesma área, pra quem pegar não ficar pulan
 ---
 
 ### Task 11 — Fundação: agenda semanal do profissional (bloqueia Tasks 10 e 12)
+**Requisito:** `docs/requisitos/fundacao/agenda-semanal-profissional.md` (RF-FUND-03).
 **O que fazer:** implementar D13/D14 — entidade nova (ex: `src/types/agendaProfissional.ts`) com grade semanal recorrente (dia da semana + horário início/fim), editável pelo próprio profissional. Repository novo e tela de edição em `src/features/professional/`.
 **Onde mexer:** type novo, repository novo, tela nova em `src/features/professional/`.
 **Onde NÃO mexer:** não implementar bloqueio de data pontual (férias/falta) — fora de escopo (D13).
@@ -289,6 +319,7 @@ A ideia: cada bloco agrupa tasks da mesma área, pra quem pegar não ficar pulan
 ---
 
 ### Task 12 — Aluno standard: vitrine de personal trainers e contratação (depende da Task 11)
+**Requisito:** `docs/requisitos/aluno/vitrine-contratacao-personal.md` (RF-ALU-09).
 **O que fazer:** implementar D11/D12 — tela pro aluno `standard` ver os personal trainers disponíveis (nome, especialização, agenda da Task 11) e contratar um, criando/atualizando o `Atendimento` (`type: 'personal'`, `profissionalId`, `value`). O valor extra entra no próximo `Pagamento` da Task 6.
 **Onde mexer:** telas novas em `src/features/subscriber/`, consumir `atendimentoRepository.ts` e a agenda da Task 11.
 **Onde NÃO mexer:** não criar fluxo de pagamento separado pra contratação — é tudo via o `Pagamento` normal (D12).
@@ -296,6 +327,7 @@ A ideia: cada bloco agrupa tasks da mesma área, pra quem pegar não ficar pulan
 ---
 
 ### Task 13 — Avaliação física: avaliação principal e mensais
+**Requisitos:** `docs/requisitos/profissional/lancamento-avaliacao-fisica.md` (RF-PRO-03) + `docs/requisitos/aluno/evolucao-fisica-visualizacao.md` (RF-ALU-10).
 **O que fazer:** implementar D19 — campo de tipo em `AvaliacaoFisica` (ex: `tipo: 'principal' | 'mensal'`). Tela do profissional pra lançar (principal na primeira vez, mensal depois) e tela do aluno pra visualizar evolução, path `/aluno/evolucao` (já previsto no Sidebar).
 **Onde mexer:** `src/types/avaliacaoFisica.ts`, `avaliacaoFisicaRepository.ts`, telas novas em `src/features/professional/` (lançar) e `src/features/subscriber/` (visualizar).
 **Onde NÃO mexer:** não criar entidade nova (D19/D17 — mesma lógica que já levou a não duplicar `Meta`/`ObjetivoAluno`).
@@ -303,6 +335,7 @@ A ideia: cada bloco agrupa tasks da mesma área, pra quem pegar não ficar pulan
 ---
 
 ### Task 14 — Aluno: dashboard geral e pagamento dentro do app (depende da Task 6)
+**Requisito:** `docs/requisitos/aluno/dashboard-geral-pagamento-app.md` (RF-ALU-11/12/13).
 **O que fazer:** implementar D7 — substituir o placeholder de `SubscriberDashboardPage.tsx` por: próximo pagamento (pending/late, da Task 6), treino do dia (se a Task 3 já estiver pronta), meta ativa. Botão de pagar o `Pagamento` pendente dentro do app, reaproveitando o checkout simulado já usado pelo atendente. Path `/aluno/financeiro` (já previsto no Sidebar) pra extrato/histórico, e `/aluno` pro resumo.
 **Onde mexer:** `SubscriberDashboardPage.tsx`, reaproveitar `pagamentoService.ts` / componente de checkout já usado pelo atendente.
 **Onde NÃO mexer:** não implementar gateway real nem geração de pagamento aqui (é a Task 6) — esta task só consome e deixa o aluno pagar.
