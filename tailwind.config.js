@@ -9,6 +9,15 @@ export default {
         sans: ['"Instrument Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         heading: ['"Outfit"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
+      keyframes: {
+        'aurora-sweep': {
+          '0%, 100%': { transform: 'translateX(-15%)' },
+          '50%': { transform: 'translateX(15%)' },
+        },
+      },
+      animation: {
+        'aurora-sweep': 'aurora-sweep 4s ease-in-out infinite',
+      },
     },
   },
   plugins: [],

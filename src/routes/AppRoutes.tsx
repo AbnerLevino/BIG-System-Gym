@@ -11,6 +11,7 @@ import { AttendantCheckinPage } from '../features/attendant/AttendantCheckinPage
 import { AttendantPagamentoPage } from '../features/attendant/AttendantPagamentoPage'
 import { ProfessionalDashboardPage } from '../features/professional/ProfessionalDashboardPage'
 import { SubscriberDashboardPage } from '../features/subscriber/SubscriberDashboardPage'
+import { SubscriberTreinoPage } from '../features/subscriber/SubscriberTreinoPage'
 import { ProtectedRoute } from './ProtectedRoute'
 
 export function AppRoutes() {
@@ -71,6 +72,14 @@ export function AppRoutes() {
         element={
           <ProtectedRoute allowedRole="subscriber">
             <SubscriberDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/aluno/treino"
+        element={
+          <ProtectedRoute allowedRole="subscriber">
+            <SubscriberTreinoPage />
           </ProtectedRoute>
         }
       />
