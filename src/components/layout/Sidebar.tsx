@@ -1,8 +1,12 @@
 // Menu lateral que muda de acordo com o papel logado. As URLs ficam em português
 // (quem usa o sistema vê em português); só os nomes de arquivo/variável ficam em inglês.
 //
-// Sempre aberta (ícone + label visíveis), sem recolher/expandir. O rodapé mostra
-// quem está logado (com indicador de sessão ativa) e o botão de sair.
+// Fica sempre visível no modo ícone (~64px), no topo esquerdo (position:
+// fixed) — o AppLayout reserva esse espaço no <main>. Um botão com seta (">"),
+// colado na borda direita, abre/fecha (~256px, revelando labels) por clique;
+// nesse estado expandido ela flutua por cima do conteúdo como overlay, sem
+// depender de hover.
+import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
@@ -17,6 +21,8 @@ import {
   TrendingUp,
   User,
   LogOut,
+  ChevronRight,
+  ChevronLeft,
   type LucideIcon,
 } from 'lucide-react'
 import type { PapelUsuario } from '../../types'
@@ -70,6 +76,8 @@ export function Sidebar() {
   const logout = useAuthStore((state) => state.logout)
   const navigate = useNavigate()
 
+  const [open, setOpen] = useState(false)
+
   if (!usuarioAtual) return null
 
   function handleLogout() {
@@ -77,14 +85,37 @@ export function Sidebar() {
     navigate('/login')
   }
 
+  const labelClasses = `whitespace-nowrap overflow-hidden transition-all duration-300 ease-in-out ${
+    open ? 'max-w-[160px] opacity-100' : 'max-w-0 opacity-0'
+  }`
+
   return (
-    <aside className="flex w-60 shrink-0 flex-col self-stretch overflow-hidden rounded-2xl border border-zinc-900/10 bg-white">
-      <div className="flex h-16 shrink-0 items-center px-5 py-5">
+    <div
+      className={`fixed left-6 top-6 z-40 transition-all duration-300 ease-in-out ${
+        open ? 'w-64' : 'w-16'
+      }`}
+    >
+      {/* Fora do <aside> (que tem overflow-hidden pros cantos arredondados), senão
+          a metade do botão que sobra pra fora da borda direita fica cortada. */}
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-label={open ? 'Recolher menu' : 'Expandir menu'}
+        className="absolute right-0 top-1/2 z-50 flex h-6 w-6 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-zinc-900/10 bg-white text-zinc-500 shadow-[0_2px_8px_rgba(0,0,0,0.1)] transition-colors hover:text-emerald-700"
+      >
+        {open ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
+      </button>
+
+      <aside className="flex h-full w-full flex-col overflow-hidden rounded-[20px] border border-zinc-900/10 bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
+      <div className="flex h-16 shrink-0 items-center px-4 py-5">
         {/* O arquivo de origem é um silhueta branca; usamos como máscara CSS pra pintar de verde sem precisar de um segundo asset. */}
         <span
           role="img"
           aria-label="BigGym"
-          className="h-11 w-28 bg-emerald-700"
+          className={`h-11 shrink-0 bg-emerald-700 transition-all duration-300 ease-in-out ${
+            open ? 'w-28' : 'w-8'
+          }`}
           style={{
             WebkitMaskImage: `url(${biggymLogoBranco})`,
             maskImage: `url(${biggymLogoBranco})`,
@@ -107,7 +138,7 @@ export function Sidebar() {
               to={item.to}
               end
               className={({ isActive }) =>
-                `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200 ease-out hover:scale-105 ${
+                `flex items-center gap-3 overflow-hidden rounded-md px-3 py-2 text-sm font-medium transition-all duration-200 ease-out hover:scale-105 ${
                   isActive
                     ? 'bg-[#E7F6EF] text-emerald-700'
                     : 'text-zinc-500 hover:bg-zinc-50 hover:text-emerald-700'
@@ -115,7 +146,7 @@ export function Sidebar() {
               }
             >
               <Icon size={18} className="shrink-0" />
-              <span className="whitespace-nowrap">{item.label}</span>
+              <span className={labelClasses}>{item.label}</span>
             </NavLink>
           )
         })}
@@ -126,23 +157,29 @@ export function Sidebar() {
         {/* Abrir o perfil da funcionária ainda não existe como tela — por ora é só visual. */}
         <button
           type="button"
-          className="flex items-center gap-3 rounded-xl p-2 text-left transition-all duration-200 ease-out hover:scale-105 hover:bg-zinc-50"
+          className="flex items-center gap-3 overflow-hidden rounded-xl p-2 text-left transition-all duration-200 ease-out hover:scale-105 hover:bg-zinc-50"
         >
           <div className="relative shrink-0">
             {FOTOS_DEMO[usuarioAtual.role] ? (
               <img
                 src={FOTOS_DEMO[usuarioAtual.role]}
                 alt={usuarioAtual.nome}
-                className="h-12 w-12 rounded-full object-cover"
+                className={`rounded-full object-cover transition-all duration-300 ease-in-out ${
+                  open ? 'h-12 w-12' : 'h-9 w-9'
+                }`}
               />
             ) : (
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-base font-semibold text-emerald-700">
+              <div
+                className={`flex items-center justify-center rounded-full bg-emerald-50 font-semibold text-emerald-700 transition-all duration-300 ease-in-out ${
+                  open ? 'h-12 w-12 text-base' : 'h-9 w-9 text-sm'
+                }`}
+              >
                 {usuarioAtual.nome.charAt(0).toUpperCase()}
               </div>
             )}
             <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-emerald-400" />
           </div>
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <div className={`flex min-w-0 flex-1 flex-col gap-1 ${labelClasses}`}>
             <p className="truncate text-sm font-semibold text-zinc-800">{usuarioAtual.nome}</p>
             <p className="truncate text-xs text-zinc-400">{usuarioAtual.email}</p>
             <p className="text-[11px] uppercase tracking-wide text-zinc-400">
@@ -154,13 +191,14 @@ export function Sidebar() {
         <button
           type="button"
           onClick={handleLogout}
-          className="flex items-center gap-2 rounded-xl px-2 py-2 text-sm font-medium text-zinc-500
+          className="flex items-center gap-2 overflow-hidden rounded-xl px-2 py-2 text-sm font-medium text-zinc-500
             transition-colors hover:bg-zinc-50 hover:text-emerald-700"
         >
           <LogOut size={16} className="shrink-0" />
-          Sair
+          <span className={labelClasses}>Sair</span>
         </button>
       </div>
-    </aside>
+      </aside>
+    </div>
   )
 }

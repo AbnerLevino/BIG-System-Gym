@@ -6,6 +6,7 @@ import { inicializarPlanos } from './planoRepository'
 import { inicializarPagamentos } from './pagamentoRepository'
 import { inicializarAtendimentos } from './atendimentoRepository'
 import { inicializarTreinos } from './treinoRepository'
+import { inicializarExercicios } from './exercicioRepository'
 import { inicializarMetas } from './metaRepository'
 import { inicializarAvaliacoesFisicas } from './avaliacaoFisicaRepository'
 import { inicializarCheckins } from './checkinRepository'
@@ -18,6 +19,7 @@ export * from './planoRepository'
 export * from './pagamentoRepository'
 export * from './atendimentoRepository'
 export * from './treinoRepository'
+export * from './exercicioRepository'
 export * from './metaRepository'
 export * from './avaliacaoFisicaRepository'
 export * from './checkinRepository'
@@ -31,6 +33,7 @@ export function inicializarTodosOsDados(): void {
   inicializarPagamentos()
   inicializarAtendimentos()
   inicializarTreinos()
+  inicializarExercicios()
   inicializarMetas()
   inicializarAvaliacoesFisicas()
   inicializarCheckins()

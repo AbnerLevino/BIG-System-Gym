@@ -1,55 +1,21 @@
 import { useState } from 'react'
-import { ArrowRight, Backpack, BicepsFlexed, Dumbbell, Footprints, Grid3x3, HandMetal, Shirt, Video } from 'lucide-react'
+import {
+  ArrowRight,
+  Backpack,
+  BicepsFlexed,
+  ChevronDown,
+  Dumbbell,
+  Footprints,
+  Grid3x3,
+  HandMetal,
+  Shirt,
+  Video,
+} from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { AppLayout } from '../../components/layout'
 import { Modal } from '../../components/common'
+import { obterExercicios } from '../../data'
 import type { Exercicio } from '../../types'
-
-// Mock temporário só pra validar visualmente o formato do Exercicio (GIF real do
-// ExerciseDB + descrição) e o grid de lista antes de escrever o script de import
-// da Task 1. Os 4 itens reaproveitam o mesmo GIF de placeholder.
-const exerciciosMock: Exercicio[] = [
-  {
-    id: 'supino-inclinado-barra-pegada-media',
-    nome: 'Supino inclinado com barra - pegada média',
-    descricao:
-      'Deitado no banco inclinado, pegada na barra um pouco mais larga que os ombros. Desça a barra devagar até tocar a parte superior do peito, pause e empurre de volta estendendo os braços, contraindo o peitoral no topo do movimento.',
-    grupoMuscular: 'peito',
-    nivelDificuldade: 'iniciante',
-    equipamento: 'Barra',
-    animacaoUrl: 'https://static.exercisedb.dev/media/3TZduzM.gif',
-  },
-  {
-    id: 'agachamento-livre-barra',
-    nome: 'Agachamento livre com barra',
-    descricao:
-      'Barra apoiada na parte superior das costas, pés na largura dos ombros. Desça flexionando quadril e joelhos até as coxas ficarem paralelas ao chão, peito erguido e joelhos alinhados com os pés. Suba empurrando o chão com os calcanhares.',
-    grupoMuscular: 'perna',
-    nivelDificuldade: 'intermediario',
-    equipamento: 'Barra',
-    animacaoUrl: 'https://static.exercisedb.dev/media/3TZduzM.gif',
-  },
-  {
-    id: 'puxada-frontal-polia',
-    nome: 'Puxada frontal na polia',
-    descricao:
-      'Sentado de frente para o aparelho, pegada aberta na barra. Puxe até a altura do queixo contraindo as costas e levando os cotovelos para baixo. Retorne controlando o peso até o braço estender por completo.',
-    grupoMuscular: 'costas',
-    nivelDificuldade: 'iniciante',
-    equipamento: 'Polia',
-    animacaoUrl: 'https://static.exercisedb.dev/media/3TZduzM.gif',
-  },
-  {
-    id: 'elevacao-lateral-halteres',
-    nome: 'Elevação lateral com halteres',
-    descricao:
-      'Em pé, halteres ao lado do corpo. Eleve os braços lateralmente até a altura dos ombros, cotovelos levemente flexionados, sem balançar o tronco. Desça controlando o peso até a posição inicial.',
-    grupoMuscular: 'ombro',
-    nivelDificuldade: 'intermediario',
-    equipamento: 'Halteres',
-    animacaoUrl: 'https://static.exercisedb.dev/media/3TZduzM.gif',
-  },
-]
 
 const LABEL_GRUPO_MUSCULAR: Record<Exercicio['grupoMuscular'], string> = {
   peito: 'Peito',
@@ -68,6 +34,8 @@ const ICONE_GRUPO_MUSCULAR: Record<Exercicio['grupoMuscular'], LucideIcon> = {
   abdomen: Grid3x3,
   perna: Footprints,
 }
+
+const GRUPOS_ORDEM: Exercicio['grupoMuscular'][] = ['peito', 'costas', 'ombro', 'braco', 'abdomen', 'perna']
 
 // Nível de dificuldade usa cor semântica (farol verde/âmbar/vermelho), não a cor
 // da marca — assim a cor comunica o nível em vez de só decorar o card.
@@ -119,47 +87,39 @@ function ExercicioImagem({ exercicio, alto }: { exercicio: Exercicio; alto?: boo
   )
 }
 
-function BotaoVerMais({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={(event) => {
-        event.stopPropagation()
-        onClick()
-      }}
-      className="group relative mt-auto inline-flex w-full items-center justify-center gap-1.5 overflow-hidden rounded-full bg-emerald-700 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-emerald-800"
-    >
-      {/* Auréola: uma única faixa de gradiente (clara → escura → clara), bem mais
-          larga que o botão, deslizando devagar de um lado pro outro — um
-          movimento só, contínuo, em vez de blobs independentes. */}
-      <span className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100">
-        <span className="absolute -left-full h-full w-[300%] animate-aurora-sweep bg-gradient-to-r from-emerald-300 via-emerald-900 to-emerald-300 blur-xl motion-reduce:animate-none" />
-      </span>
-      <span className="relative inline-flex items-center gap-1.5">
-        Ver mais
-        <ArrowRight size={14} className="transition-transform duration-200 ease-out group-hover:translate-x-1" />
-      </span>
-    </button>
-  )
-}
-
-function ExercicioCard({ exercicio, onAbrir }: { exercicio: Exercicio; onAbrir: (exercicio: Exercicio) => void }) {
+// Linha compacta pro dropdown: imagem pequena na lateral (não em cima, como no
+// modal) + nome/chips no meio + "Ver mais" pra abrir o detalhe completo. Com 100
+// exercícios agrupados, o card grande de antes não cabe — isso é pra navegar
+// rápido, o modal continua sendo onde o exercício aparece por inteiro.
+function ExercicioLinha({ exercicio, onAbrir }: { exercicio: Exercicio; onAbrir: (exercicio: Exercicio) => void }) {
   return (
     <div
       onClick={() => onAbrir(exercicio)}
-      className="flex w-80 cursor-pointer flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+      className="flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-slate-50"
     >
-      <ExercicioImagem exercicio={exercicio} />
-      <div className="flex items-center gap-2">
-        <ChipDificuldade nivel={exercicio.nivelDificuldade} />
-        <ChipEquipamento equipamento={exercicio.equipamento} />
+      <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-zinc-900">
+        {exercicio.animacaoUrl ? (
+          <img src={exercicio.animacaoUrl} alt={exercicio.nome} className="h-full w-full object-contain" />
+        ) : null}
       </div>
-      <div className="flex flex-col gap-2">
-        <GrupoMuscularLabel grupo={exercicio.grupoMuscular} />
-        <h2 className="font-heading text-lg font-semibold text-zinc-900">{exercicio.nome}</h2>
-        <p className="line-clamp-3 text-sm text-slate-600">{exercicio.descricao}</p>
+      <div className="min-w-0 flex-1">
+        <h3 className="truncate text-sm font-semibold text-zinc-900">{exercicio.nome}</h3>
+        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+          <ChipDificuldade nivel={exercicio.nivelDificuldade} />
+          <ChipEquipamento equipamento={exercicio.equipamento} />
+        </div>
       </div>
-      <BotaoVerMais onClick={() => onAbrir(exercicio)} />
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation()
+          onAbrir(exercicio)
+        }}
+        className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-800"
+      >
+        Ver mais
+        <ArrowRight size={12} className="shrink-0" />
+      </button>
     </div>
   )
 }
@@ -204,15 +164,48 @@ function ExercicioDetalheModal({ exercicio, onClose }: { exercicio: Exercicio | 
 
 export function SubscriberTreinoPage() {
   const [exercicioSelecionado, setExercicioSelecionado] = useState<Exercicio | null>(null)
+  const [dropdownAberto, setDropdownAberto] = useState(false)
+  const exercicios = obterExercicios()
 
   return (
     <AppLayout>
-      <h1 className="mb-4 font-heading text-2xl text-zinc-800">Treino</h1>
-      <div className="flex flex-wrap gap-4">
-        {exerciciosMock.map((exercicio) => (
-          <ExercicioCard key={exercicio.id} exercicio={exercicio} onAbrir={setExercicioSelecionado} />
-        ))}
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="font-heading text-2xl text-zinc-800">Treino</h1>
+        <button
+          type="button"
+          onClick={() => setDropdownAberto((aberto) => !aberto)}
+          aria-expanded={dropdownAberto}
+          className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 shadow-sm transition-colors hover:bg-slate-50"
+        >
+          Exercícios
+          <ChevronDown
+            size={16}
+            className={`shrink-0 transition-transform duration-200 ${dropdownAberto ? 'rotate-180' : ''}`}
+          />
+        </button>
       </div>
+
+      {dropdownAberto ? (
+        <div className="mb-6 max-h-[32rem] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          {GRUPOS_ORDEM.map((grupo) => {
+            const itensDoGrupo = exercicios.filter((exercicio) => exercicio.grupoMuscular === grupo)
+            if (itensDoGrupo.length === 0) return null
+            return (
+              <div key={grupo} className="mb-5 last:mb-0">
+                <GrupoMuscularLabel grupo={grupo} />
+                <div className="mt-2 flex flex-col divide-y divide-slate-100">
+                  {itensDoGrupo.map((exercicio) => (
+                    <ExercicioLinha key={exercicio.id} exercicio={exercicio} onAbrir={setExercicioSelecionado} />
+                  ))}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      ) : (
+        <p className="text-sm text-slate-500">Abra "Exercícios" pra escolher o que vai treinar.</p>
+      )}
+
       <ExercicioDetalheModal exercicio={exercicioSelecionado} onClose={() => setExercicioSelecionado(null)} />
     </AppLayout>
   )
