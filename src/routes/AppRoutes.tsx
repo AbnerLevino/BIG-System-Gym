@@ -13,6 +13,7 @@ import { ProfessionalDashboardPage } from '../features/professional/Professional
 import { SubscriberDashboardPage } from '../features/subscriber/SubscriberDashboardPage'
 import { SubscriberTreinoPage } from '../features/subscriber/SubscriberTreinoPage'
 import { ProtectedRoute } from './ProtectedRoute'
+import { AdminFuncionariosPage } from '../features/admin/AdminFuncionariosPage'
 
 export function AppRoutes() {
   return (
@@ -85,6 +86,10 @@ export function AppRoutes() {
       />
       <Route path="/" element={<HomePage />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route
+  path="/admin/funcionarios"
+  element={<AdminFuncionariosPage />}
+/>
     </Routes>
   )
 }

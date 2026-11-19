@@ -37,13 +37,14 @@ interface NavItem {
 }
 
 const NAV_ITEMS: Record<PapelUsuario, NavItem[]> = {
-  admin: [
-    { to: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/admin/alunos', label: 'Alunos', icon: Users },
-    { to: '/admin/planos', label: 'Planos', icon: CreditCard },
-    { to: '/admin/profissionais', label: 'Profissionais', icon: UserCog },
-    { to: '/admin/financeiro', label: 'Financeiro', icon: Wallet },
-  ],
+ admin: [
+  { to: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/admin/alunos', label: 'Alunos', icon: Users },
+  { to: '/admin/planos', label: 'Planos', icon: CreditCard },
+  { to: '/admin/profissionais', label: 'Profissionais', icon: UserCog },
+  { to: '/admin/funcionarios', label: 'Funcionários', icon: Users },
+  { to: '/admin/financeiro', label: 'Financeiro', icon: Wallet },
+],
   atendente: [
     { to: '/atendente', label: 'Atendimento', icon: UserCheck },
     { to: '/atendente/cadastro', label: 'Cadastrar aluno', icon: UserPlus },
