@@ -11,15 +11,19 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
   Users,
+<<<<<<< HEAD
   BriefcaseBusiness,
+=======
+  CalendarDays,
+>>>>>>> main
   CreditCard,
   UserCog,
   Wallet,
   UserCheck,
-  UserPlus,
   ScanFace,
   Dumbbell,
-  TrendingUp,
+  Target,
+  UserRoundCheck,
   User,
   LogOut,
   ChevronRight,
@@ -39,6 +43,7 @@ interface NavItem {
 
 const NAV_ITEMS: Record<PapelUsuario, NavItem[]> = {
  admin: [
+<<<<<<< HEAD
     { to: '/admin', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/admin/alunos', label: 'Alunos', icon: Users },
     { to: '/admin/planos', label: 'Planos', icon: CreditCard },
@@ -46,17 +51,34 @@ const NAV_ITEMS: Record<PapelUsuario, NavItem[]> = {
     { to: '/admin/financeiro', label: 'Financeiro', icon: Wallet },
     { to: '/rh', label: 'Recursos Humanos', icon: BriefcaseBusiness },
   ],
+=======
+  { to: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/admin/alunos', label: 'Alunos', icon: Users },
+  { to: '/admin/planos', label: 'Planos', icon: CreditCard },
+  { to: '/admin/profissionais', label: 'Profissionais', icon: UserCog },
+  { to: '/admin/funcionarios', label: 'Funcionários', icon: Users },
+  { to: '/admin/financeiro', label: 'Financeiro', icon: Wallet },
+],
+>>>>>>> main
   atendente: [
-    { to: '/atendente', label: 'Atendimento', icon: UserCheck },
-    { to: '/atendente/cadastro', label: 'Cadastrar aluno', icon: UserPlus },
+    { to: '/atendente', label: 'Central', icon: UserCheck },
     { to: '/atendente/checkin', label: 'Check-in', icon: ScanFace },
+    { to: '/atendente/planos', label: 'Planos', icon: CreditCard },
   ],
-  professional: [{ to: '/profissional', label: 'Dashboard', icon: LayoutDashboard }],
+  professional: [
+    { to: '/profissional', label: 'Central', icon: LayoutDashboard },
+    { to: '/profissional/alunos', label: 'Meus alunos', icon: Users },
+    { to: '/profissional/agenda', label: 'Minha agenda', icon: CalendarDays },
+  ],
+  // /aluno/evolucao (RF-ALU-10) fica fora do menu até a tela existir — o path
+  // continua reservado (o campo `tipo` da AvaliacaoFisica já foi entregue).
   subscriber: [
     { to: '/aluno', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/aluno/treino', label: 'Treino', icon: Dumbbell },
-    { to: '/aluno/evolucao', label: 'Evolucao', icon: TrendingUp },
+    { to: '/aluno/objetivos', label: 'Objetivos', icon: Target },
+    { to: '/aluno/personal', label: 'Personal', icon: UserRoundCheck },
     { to: '/aluno/financeiro', label: 'Financeiro', icon: Wallet },
+    { to: '/aluno/plano', label: 'Meu plano', icon: CreditCard },
     { to: '/aluno/perfil', label: 'Perfil', icon: User },
   ],
 }
@@ -140,7 +162,7 @@ export function Sidebar() {
               to={item.to}
               end
               className={({ isActive }) =>
-                `flex items-center gap-3 overflow-hidden rounded-md px-3 py-2 text-sm font-medium transition-all duration-200 ease-out hover:scale-105 ${
+                `flex items-center gap-3 overflow-hidden rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200 ease-out hover:scale-105 ${
                   isActive
                     ? 'bg-[#E7F6EF] text-emerald-700'
                     : 'text-zinc-500 hover:bg-zinc-50 hover:text-emerald-700'

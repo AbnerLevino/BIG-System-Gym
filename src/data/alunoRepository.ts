@@ -1,4 +1,5 @@
 import type { Aluno } from '../types'
+import { somenteDigitos } from '../utils/validacoes'
 import { readCollection, writeCollection, ensureSeeded } from './storage'
 import { seedAlunos } from './seed'
 
@@ -26,4 +27,14 @@ export function salvarAluno(aluno: Aluno): void {
     updated[index] = aluno
     writeCollection(KEY, updated)
   }
+}
+
+// Compara só os dígitos, pra "123.456.789-09" e "12345678909" serem o mesmo CPF.
+export function buscarAlunoPorCpf(cpf: string): Aluno | undefined {
+  const digitos = somenteDigitos(cpf)
+  return obterAlunos().find((aluno) => somenteDigitos(aluno.cpf) === digitos)
+}
+
+export function obterAlunosAtivosPorPlano(planoId: string): Aluno[] {
+  return obterAlunos().filter((aluno) => aluno.planoAtualId === planoId && aluno.status === 'active')
 }

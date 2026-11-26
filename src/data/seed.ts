@@ -14,15 +14,29 @@ import type {
   Meta,
   AvaliacaoFisica,
   CheckIn,
+  HistoricoPlano,
+  ConviteAtivacao,
+  ObjetivoAluno,
+  AgendaProfissional,
 } from '../types'
+
+// Datas dos pagamentos são relativas ao dia em que o seed é carregado, pra demo
+// sempre ter alguém "vence hoje", "vence essa semana" e "atrasado", seja qual for
+// o dia da apresentação. (O status 'late' é fixo aqui — o motor de cobrança da
+// Fundação, quando existir, passa a calcular isso sozinho.)
+function dataRelativa(dias: number): string {
+  const data = new Date()
+  data.setDate(data.getDate() + dias)
+  return data.toISOString().slice(0, 10)
+}
 
 export const seedAcademias: Academia[] = [
   { id: 'gym-1', name: 'BigGym Centro', address: 'Rua das Academias, 100', phone: '(11) 4000-0000' },
 ]
 
 export const seedPlanos: Plano[] = [
-  { id: 'plan-1', name: 'Mensal Basico', price: 99.9, modalities: ['Musculacao'], conditions: 'Sem fidelidade', origin: 'direct' },
-  { id: 'plan-2', name: 'Trimestral Plus', price: 259.9, modalities: ['Musculacao', 'Funcional'], conditions: '3 meses, 10% de desconto', origin: 'direct' },
+  { id: 'plan-1', name: 'Mensal Básico', price: 99.9, modalities: ['Musculação'], conditions: 'Sem fidelidade', origin: 'direct' },
+  { id: 'plan-2', name: 'Trimestral Plus', price: 259.9, modalities: ['Musculação', 'Funcional'], conditions: '3 meses, 10% de desconto', origin: 'direct' },
 ]
 
 export const seedProfissionais: Profissional[] = [
@@ -33,7 +47,7 @@ export const seedProfissionais: Profissional[] = [
     phone: '(11) 90000-0001',
     birthDate: '1990-04-12',
     baseType: 'instructor',
-    specialization: 'Musculacao',
+    specialization: 'Musculação',
     notes: '',
   },
   {
@@ -44,18 +58,40 @@ export const seedProfissionais: Profissional[] = [
     birthDate: '1988-09-03',
     baseType: 'personalTrainer',
     specialization: 'Treinamento funcional',
-    notes: '',
+    notes: 'Treinos dinâmicos com foco em mobilidade e condicionamento.',
+  },
+  // MOCK (vitrine de personal, RF-ALU-09): mais dois personal trainers de exemplo
+  // até o módulo Admin cadastrar profissionais de verdade.
+  {
+    id: 'prof-3',
+    name: 'Rafael Costa',
+    cpf: '333.444.555-66',
+    phone: '(11) 90000-0004',
+    birthDate: '1992-05-18',
+    baseType: 'personalTrainer',
+    specialization: 'Hipertrofia e força',
+    notes: 'Periodização de treino para ganho de massa muscular.',
+  },
+  {
+    id: 'prof-4',
+    name: 'Larissa Nunes',
+    cpf: '444.555.666-77',
+    phone: '(11) 90000-0005',
+    birthDate: '1995-12-02',
+    baseType: 'personalTrainer',
+    specialization: 'Emagrecimento',
+    notes: 'Acompanhamento de perto para quem está começando.',
   },
 ]
 
 export const seedAtendentes: Atendente[] = [
-  { id: 'attendant-1', name: 'Paula Rocha', cpf: '555.555.555-55', phone: '(11) 90000-0003', cargo: 'Recepcao' },
+  { id: 'attendant-1', name: 'Paula Rocha', cpf: '555.555.555-55', phone: '(11) 90000-0003', cargo: 'Recepção' },
 ]
 
 export const seedAlunos: Aluno[] = [
   {
     id: 'sub-1',
-    fullName: 'Joao Pereira',
+    fullName: 'João Pereira',
     weight: 82,
     height: 178,
     phone: '(11) 98888-0001',
@@ -79,6 +115,76 @@ export const seedAlunos: Aluno[] = [
     notes: '',
     planoAtualId: 'plan-2',
     startDate: '2026-02-01',
+    status: 'active',
+  },
+  {
+    id: 'sub-3',
+    fullName: 'Carlos Eduardo Lima',
+    weight: 90,
+    height: 182,
+    phone: '+55 (19) 98888-0003',
+    cpf: '529.982.247-25',
+    address: 'Rua C, 30',
+    birthDate: '1991-03-08',
+    notes: '',
+    planoAtualId: 'plan-1',
+    startDate: '2026-03-15',
+    status: 'active',
+  },
+  {
+    id: 'sub-4',
+    fullName: 'Fernanda Oliveira',
+    weight: 58,
+    height: 160,
+    phone: '+55 (19) 98888-0004',
+    cpf: '168.995.350-09',
+    address: 'Rua D, 40',
+    birthDate: '1999-11-21',
+    notes: 'Cancelou por mudança de cidade.',
+    planoAtualId: 'plan-1',
+    startDate: '2026-04-01',
+    status: 'cancelled',
+  },
+  {
+    id: 'sub-5',
+    fullName: 'Gabriel Santos',
+    weight: 75,
+    height: 175,
+    phone: '+55 (19) 98888-0005',
+    cpf: '390.533.447-05',
+    address: 'Rua E, 50',
+    birthDate: '2000-06-02',
+    notes: '',
+    planoAtualId: 'plan-2',
+    startDate: '2026-05-10',
+    status: 'active',
+  },
+  {
+    id: 'sub-6',
+    fullName: 'Juliana Costa',
+    weight: 62,
+    height: 168,
+    phone: '+55 (19) 98888-0006',
+    cpf: '714.602.380-01',
+    address: 'Rua F, 60',
+    birthDate: '1997-09-30',
+    notes: '',
+    planoAtualId: 'plan-1',
+    startDate: '2026-06-20',
+    status: 'active',
+  },
+  {
+    id: 'sub-7',
+    fullName: 'Patricia Almeida',
+    weight: 70,
+    height: 170,
+    phone: '+55 (19) 98888-0007',
+    cpf: '853.513.468-93',
+    address: 'Rua G, 70',
+    birthDate: '1993-01-17',
+    notes: '',
+    planoAtualId: 'plan-2',
+    startDate: '2026-07-05',
     status: 'active',
   },
 ]
@@ -107,10 +213,96 @@ export const seedPagamentos: Pagamento[] = [
     paidValue: null,
     lateFee: 0,
     paymentMethod: null,
-    dueDate: '2026-11-01',
+    dueDate: dataRelativa(10),
     paymentDate: null,
     status: 'pending',
     receiptNumber: null,
+  },
+  // Próxima mensalidade do aluno demo (sub-1) — é a que ele paga pelo app na demo.
+  // 249.90 = plano (99.90) + personal (150.00), somados no mesmo pagamento (D7).
+  {
+    id: 'pay-3',
+    academiaId: 'gym-1',
+    alunoId: 'sub-1',
+    planoId: 'plan-1',
+    originalValue: 249.9,
+    paidValue: null,
+    lateFee: 0,
+    paymentMethod: null,
+    dueDate: dataRelativa(3),
+    paymentDate: null,
+    status: 'pending',
+    receiptNumber: null,
+  },
+  {
+    id: 'pay-4',
+    academiaId: 'gym-1',
+    alunoId: 'sub-3',
+    planoId: 'plan-1',
+    originalValue: 99.9,
+    paidValue: null,
+    lateFee: 0,
+    paymentMethod: null,
+    dueDate: dataRelativa(-12),
+    paymentDate: null,
+    status: 'late',
+    receiptNumber: null,
+  },
+  {
+    id: 'pay-5',
+    academiaId: 'gym-1',
+    alunoId: 'sub-4',
+    planoId: 'plan-1',
+    originalValue: 99.9,
+    paidValue: 99.9,
+    lateFee: 0,
+    paymentMethod: 'cash',
+    dueDate: dataRelativa(-30),
+    paymentDate: dataRelativa(-31),
+    status: 'paid',
+    receiptNumber: 'REC-0002',
+  },
+  {
+    id: 'pay-6',
+    academiaId: 'gym-1',
+    alunoId: 'sub-5',
+    planoId: 'plan-2',
+    originalValue: 259.9,
+    paidValue: null,
+    lateFee: 0,
+    paymentMethod: null,
+    dueDate: dataRelativa(0),
+    paymentDate: null,
+    status: 'pending',
+    receiptNumber: null,
+  },
+  {
+    id: 'pay-7',
+    academiaId: 'gym-1',
+    alunoId: 'sub-6',
+    planoId: 'plan-1',
+    originalValue: 99.9,
+    paidValue: null,
+    lateFee: 0,
+    paymentMethod: null,
+    dueDate: dataRelativa(5),
+    paymentDate: null,
+    status: 'pending',
+    receiptNumber: null,
+  },
+  {
+    id: 'pay-8',
+    academiaId: 'gym-1',
+    alunoId: 'sub-7',
+    planoId: 'plan-2',
+    originalValue: 259.9,
+    paidValue: 259.9,
+    lateFee: 0,
+    paymentMethod: 'creditCard',
+    dueDate: dataRelativa(-2),
+    paymentDate: dataRelativa(-3),
+    status: 'paid',
+    receiptNumber: 'REC-0003',
   },
 ]
 
@@ -118,30 +310,54 @@ export const seedAtendimentos: Atendimento[] = [
   { id: 'assign-1', alunoId: 'sub-1', profissionalId: 'prof-1', type: 'standard' },
   { id: 'assign-2', alunoId: 'sub-2', profissionalId: 'prof-1', type: 'standard' },
   { id: 'assign-3', alunoId: 'sub-1', profissionalId: 'prof-2', type: 'personal', value: 150 },
+  { id: 'assign-4', alunoId: 'sub-3', profissionalId: 'prof-1', type: 'standard' },
+  { id: 'assign-5', alunoId: 'sub-4', profissionalId: 'prof-1', type: 'standard' },
+  // Gabriel é aluno personal da Carla (prof-1) — é o login de demonstração do profissional.
+  { id: 'assign-6', alunoId: 'sub-5', profissionalId: 'prof-1', type: 'personal', value: 150 },
+  // Juliana e Patricia também são alunas personal da Carla: com o Gabriel (sem avaliação),
+  // a Central do profissional mostra as três situações (sem avaliação / mensal pendente / em dia).
+  { id: 'assign-7', alunoId: 'sub-6', profissionalId: 'prof-1', type: 'personal', value: 150 },
+  { id: 'assign-8', alunoId: 'sub-7', profissionalId: 'prof-1', type: 'personal', value: 150 },
 ]
+
+export const seedHistoricoPlanos: HistoricoPlano[] = [
+  { id: 'plan-history-1', alunoId: 'sub-1', planoId: 'plan-1', startDate: '2026-01-10', endDate: null },
+  { id: 'plan-history-2', alunoId: 'sub-2', planoId: 'plan-2', startDate: '2026-02-01', endDate: null },
+  { id: 'plan-history-3', alunoId: 'sub-3', planoId: 'plan-1', startDate: '2026-03-15', endDate: null },
+  { id: 'plan-history-4', alunoId: 'sub-4', planoId: 'plan-1', startDate: '2026-04-01', endDate: '2026-10-20' },
+  { id: 'plan-history-5', alunoId: 'sub-5', planoId: 'plan-2', startDate: '2026-05-10', endDate: null },
+  { id: 'plan-history-6', alunoId: 'sub-6', planoId: 'plan-1', startDate: '2026-06-20', endDate: null },
+  { id: 'plan-history-7', alunoId: 'sub-7', planoId: 'plan-2', startDate: '2026-07-05', endDate: null },
+]
+
 
 export const seedTreinos: Treino[] = [
   {
+    // sub-1 tem personal vinculado (assign-3) -> a grade fica presa a esse vínculo;
+    // aluno e personal editam a mesma grade.
     id: 'workout-1',
     alunoId: 'sub-1',
-    atendimentoId: 'assign-1',
+    atendimentoId: 'assign-3',
+    recorrente: true,
     week: 1,
     exercises: [
-      { name: 'Supino reto', sets: 4, reps: 10 },
-      { name: 'Agachamento', sets: 4, reps: 12 },
+      { exercicioId: 'supino-reto-barra', diaSemana: 'segunda', sets: 4, reps: 10 },
+      { exercicioId: 'agachamento-livre-barra', diaSemana: 'quarta', sets: 4, reps: 12 },
     ],
     startDate: '2026-10-01',
     active: true,
     origin: 'manual',
   },
   {
+    // sub-2 não tem personal -> grade do Atendimento 'standard', o próprio aluno edita.
     id: 'workout-2',
     alunoId: 'sub-2',
     atendimentoId: 'assign-2',
+    recorrente: true,
     week: 1,
     exercises: [
-      { name: 'Leg press', sets: 3, reps: 15 },
-      { name: 'Puxada alta', sets: 3, reps: 12 },
+      { exercicioId: 'leg-press-horizontal-unilateral', diaSemana: 'terca', sets: 3, reps: 15 },
+      { exercicioId: 'puxada-frontal-polia', diaSemana: 'sexta', sets: 3, reps: 12 },
     ],
     startDate: '2026-10-05',
     active: true,
@@ -1168,9 +1384,10 @@ export const seedMetas: Meta[] = [
 export const seedAvaliacoesFisicas: AvaliacaoFisica[] = [
   {
     id: 'assessment-1',
+    tipo: 'principal',
     alunoId: 'sub-1',
     objective: 'Emagrecimento',
-    description: 'Avaliacao inicial',
+    description: 'Avaliação inicial',
     notes: '',
     assessmentDate: '2026-10-01',
     weight: 82,
@@ -1178,13 +1395,49 @@ export const seedAvaliacoesFisicas: AvaliacaoFisica[] = [
   },
   {
     id: 'assessment-2',
+    tipo: 'principal',
     alunoId: 'sub-2',
     objective: 'Condicionamento',
-    description: 'Avaliacao inicial',
+    description: 'Avaliação inicial',
     notes: '',
     assessmentDate: '2026-10-05',
     weight: 65,
     measurements: { peito: 88, braco: 26, cintura: 68 },
+  },
+  // Juliana (sub-6): principal + mensal, a última há mais de 30 dias -> "mensal pendente".
+  {
+    id: 'assessment-3',
+    tipo: 'principal',
+    alunoId: 'sub-6',
+    objective: 'Emagrecimento',
+    description: 'Avaliação inicial com bioimpedância',
+    notes: '',
+    assessmentDate: dataRelativa(-80),
+    weight: 74,
+    measurements: { peito: 96, braco: 30, cintura: 82, quadril: 104, coxa: 60 },
+  },
+  {
+    id: 'assessment-4',
+    tipo: 'mensal',
+    alunoId: 'sub-6',
+    objective: 'Emagrecimento',
+    description: 'Acompanhamento mensal',
+    notes: 'Boa adesão ao treino',
+    assessmentDate: dataRelativa(-45),
+    weight: 71.5,
+    measurements: { peito: 94, braco: 29.5, cintura: 78, quadril: 101, coxa: 58.5 },
+  },
+  // Patricia (sub-7): principal recente -> "em dia".
+  {
+    id: 'assessment-5',
+    tipo: 'principal',
+    alunoId: 'sub-7',
+    objective: 'Hipertrofia',
+    description: 'Avaliação inicial',
+    notes: '',
+    assessmentDate: dataRelativa(-10),
+    weight: 61,
+    measurements: { peito: 90, braco: 28, cintura: 70, quadril: 98, coxa: 55 },
   },
 ]
 
@@ -1192,7 +1445,35 @@ export const seedUsuarios: Usuario[] = [
   { id: 'user-admin', nome: 'Camila Duarte', email: 'admin@biggym.com', password: 'admin123', role: 'admin', refId: 'gym-1' },
   { id: 'user-atendente', nome: 'Paula Rocha', email: 'atendente@biggym.com', password: 'atendente123', role: 'atendente', refId: 'attendant-1' },
   { id: 'user-prof', nome: 'Carla Mendes', email: 'profissional@biggym.com', password: 'prof123', role: 'professional', refId: 'prof-1' },
-  { id: 'user-sub', nome: 'Joao Pereira', email: 'aluno@biggym.com', password: 'aluno123', role: 'subscriber', refId: 'sub-1' },
+  { id: 'user-sub', nome: 'João Pereira', email: 'aluno@biggym.com', password: 'aluno123', role: 'subscriber', refId: 'sub-1' },
+  { id: 'user-sub-2', nome: 'Marina Souza', email: 'marina@email.com', password: 'aluno123', role: 'subscriber', refId: 'sub-2' },
+  { id: 'user-sub-3', nome: 'Carlos Eduardo Lima', email: 'carlos@email.com', password: 'aluno123', role: 'subscriber', refId: 'sub-3' },
+  { id: 'user-sub-4', nome: 'Fernanda Oliveira', email: 'fernanda@email.com', password: 'aluno123', role: 'subscriber', refId: 'sub-4' },
+  { id: 'user-sub-5', nome: 'Gabriel Santos', email: 'gabriel@email.com', password: 'aluno123', role: 'subscriber', refId: 'sub-5' },
+  { id: 'user-sub-6', nome: 'Juliana Costa', email: 'juliana@email.com', password: 'aluno123', role: 'subscriber', refId: 'sub-6' },
+  { id: 'user-sub-7', nome: 'Patricia Almeida', email: 'patricia@email.com', password: 'aluno123', role: 'subscriber', refId: 'sub-7' },
 ]
 
 export const seedCheckins: CheckIn[] = []
+
+export const seedConvitesAtivacao: ConviteAtivacao[] = []
+
+export const seedObjetivosAlunos: ObjetivoAluno[] = []
+
+// MOCK (RF-FUND-03 ainda não implementado): agenda semanal recorrente de exemplo
+// dos personal trainers. A tela de edição do profissional substitui isso.
+export const seedAgendasProfissionais: AgendaProfissional[] = [
+  { id: 'agenda-10', profissionalId: 'prof-1', diaSemana: 'segunda', horaInicio: '08:00', horaFim: '12:00' },
+  { id: 'agenda-11', profissionalId: 'prof-1', diaSemana: 'terca', horaInicio: '14:00', horaFim: '18:00' },
+  { id: 'agenda-12', profissionalId: 'prof-1', diaSemana: 'quarta', horaInicio: '08:00', horaFim: '12:00' },
+  { id: 'agenda-13', profissionalId: 'prof-1', diaSemana: 'quinta', horaInicio: '14:00', horaFim: '18:00' },
+  { id: 'agenda-1', profissionalId: 'prof-2', diaSemana: 'segunda', horaInicio: '06:00', horaFim: '10:00' },
+  { id: 'agenda-2', profissionalId: 'prof-2', diaSemana: 'quarta', horaInicio: '06:00', horaFim: '10:00' },
+  { id: 'agenda-3', profissionalId: 'prof-2', diaSemana: 'sexta', horaInicio: '17:00', horaFim: '21:00' },
+  { id: 'agenda-4', profissionalId: 'prof-3', diaSemana: 'terca', horaInicio: '07:00', horaFim: '12:00' },
+  { id: 'agenda-5', profissionalId: 'prof-3', diaSemana: 'quinta', horaInicio: '07:00', horaFim: '12:00' },
+  { id: 'agenda-6', profissionalId: 'prof-3', diaSemana: 'sabado', horaInicio: '08:00', horaFim: '12:00' },
+  { id: 'agenda-7', profissionalId: 'prof-4', diaSemana: 'segunda', horaInicio: '18:00', horaFim: '22:00' },
+  { id: 'agenda-8', profissionalId: 'prof-4', diaSemana: 'quarta', horaInicio: '18:00', horaFim: '22:00' },
+  { id: 'agenda-9', profissionalId: 'prof-4', diaSemana: 'sexta', horaInicio: '06:00', horaFim: '09:00' },
+]

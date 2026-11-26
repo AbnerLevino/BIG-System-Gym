@@ -1,41 +1,32 @@
 import { useState } from 'react'
 import {
   ArrowRight,
-  Backpack,
-  BicepsFlexed,
+  Calendar,
   ChevronDown,
   Dumbbell,
-  Footprints,
-  Grid3x3,
-  HandMetal,
-  Shirt,
+  Minus,
+  Plus,
+  Trash2,
   Video,
 } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
 import { AppLayout } from '../../components/layout'
-import { Modal } from '../../components/common'
-import { obterExercicios } from '../../data'
-import type { Exercicio } from '../../types'
+import { Button, Modal } from '../../components/common'
+import {
+  DIAS_SEMANA,
+  adicionarExercicioAoTreino,
+  agruparExerciciosPorDia,
+  definirRecorrenciaDoTreino,
+  definirSemanaDoTreino,
+  diaSemanaDeHoje,
+  obterExercicios,
+  obterTreinoDoAluno,
+  removerExercicioDoTreino,
+} from '../../data'
+import { useAuthStore } from '../../store/authStore'
+import type { DiaSemana, Exercicio, Treino } from '../../types'
+import { GRUPOS_ORDEM, ICONE_GRUPO_MUSCULAR, LABEL_DIA_SEMANA, LABEL_GRUPO_MUSCULAR } from './rotulosExercicio'
 
-const LABEL_GRUPO_MUSCULAR: Record<Exercicio['grupoMuscular'], string> = {
-  peito: 'Peito',
-  costas: 'Costas',
-  ombro: 'Ombro',
-  braco: 'Braço',
-  abdomen: 'Abdômen',
-  perna: 'Perna',
-}
 
-const ICONE_GRUPO_MUSCULAR: Record<Exercicio['grupoMuscular'], LucideIcon> = {
-  peito: Shirt,
-  costas: Backpack,
-  ombro: HandMetal,
-  braco: BicepsFlexed,
-  abdomen: Grid3x3,
-  perna: Footprints,
-}
-
-const GRUPOS_ORDEM: Exercicio['grupoMuscular'][] = ['peito', 'costas', 'ombro', 'braco', 'abdomen', 'perna']
 
 // Nível de dificuldade usa cor semântica (farol verde/âmbar/vermelho), não a cor
 // da marca — assim a cor comunica o nível em vez de só decorar o card.
@@ -45,7 +36,7 @@ const NIVEL_CONFIG: Record<Exercicio['nivelDificuldade'], { label: string; dot: 
   avancado: { label: 'Avançado', dot: 'bg-rose-500', chip: 'border-rose-200 bg-rose-50 text-rose-700' },
 }
 
-function ChipDificuldade({ nivel }: { nivel: Exercicio['nivelDificuldade'] }) {
+export function ChipDificuldade({ nivel }: { nivel: Exercicio['nivelDificuldade'] }) {
   const config = NIVEL_CONFIG[nivel]
   return (
     <span
@@ -57,7 +48,7 @@ function ChipDificuldade({ nivel }: { nivel: Exercicio['nivelDificuldade'] }) {
   )
 }
 
-function ChipEquipamento({ equipamento }: { equipamento: string }) {
+export function ChipEquipamento({ equipamento }: { equipamento: string }) {
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">
       <Dumbbell size={12} className="shrink-0" />
@@ -124,7 +115,79 @@ function ExercicioLinha({ exercicio, onAbrir }: { exercicio: Exercicio; onAbrir:
   )
 }
 
-function ExercicioDetalheModal({ exercicio, onClose }: { exercicio: Exercicio | null; onClose: () => void }) {
+// Formulário embutido no modal de detalhe pra escolher dia/séries/repetições e
+// jogar o exercício no treino da semana.
+function AlocarExercicioForm({
+  diaPadrao,
+  onAdicionar,
+}: {
+  diaPadrao: DiaSemana
+  onAdicionar: (dia: DiaSemana, sets: number, reps: number) => void
+}) {
+  const [dia, setDia] = useState<DiaSemana>(diaPadrao)
+  const [sets, setSets] = useState(3)
+  const [reps, setReps] = useState(12)
+
+  return (
+    <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+      <div className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-emerald-800">
+        <Calendar size={16} className="shrink-0" />
+        Adicionar ao treino
+      </div>
+      <div className="grid grid-cols-3 gap-3">
+        <label className="col-span-3 text-xs font-medium text-slate-600 sm:col-span-1">
+          Dia
+          <select
+            value={dia}
+            onChange={(event) => setDia(event.target.value as DiaSemana)}
+            className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-2 py-2 text-sm text-slate-900 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
+          >
+            {DIAS_SEMANA.map((item) => (
+              <option key={item} value={item}>
+                {LABEL_DIA_SEMANA[item]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="text-xs font-medium text-slate-600">
+          Séries
+          <input
+            type="number"
+            min={1}
+            value={sets}
+            onChange={(event) => setSets(Number(event.target.value))}
+            className="mt-1 block w-full rounded-md border border-slate-300 px-2 py-2 text-sm text-slate-900 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
+          />
+        </label>
+        <label className="text-xs font-medium text-slate-600">
+          Repetições
+          <input
+            type="number"
+            min={1}
+            value={reps}
+            onChange={(event) => setReps(Number(event.target.value))}
+            className="mt-1 block w-full rounded-md border border-slate-300 px-2 py-2 text-sm text-slate-900 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
+          />
+        </label>
+      </div>
+      <Button type="button" className="mt-3 w-full justify-center" onClick={() => onAdicionar(dia, sets, reps)}>
+        Adicionar
+      </Button>
+    </div>
+  )
+}
+
+export function ExercicioDetalheModal({
+  exercicio,
+  onClose,
+  diaPadrao,
+  onAdicionar,
+}: {
+  exercicio: Exercicio | null
+  onClose: () => void
+  diaPadrao: DiaSemana
+  onAdicionar: (exercicioId: string, dia: DiaSemana, sets: number, reps: number) => void
+}) {
   return (
     <Modal open={exercicio !== null} title={exercicio?.nome ?? ''} onClose={onClose} size="lg">
       {exercicio ? (
@@ -143,29 +206,187 @@ function ExercicioDetalheModal({ exercicio, onClose }: { exercicio: Exercicio | 
               <Video size={16} className="shrink-0" />
               Vídeo-aula
             </div>
-            {exercicio.videoUrl ? (
-              <a
-                href={exercicio.videoUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm font-medium text-emerald-700 hover:underline"
-              >
-                Assistir vídeo-aula
-              </a>
-            ) : (
-              <p className="text-sm text-slate-500">Vídeo-aula ainda não disponível para este exercício.</p>
-            )}
+            {/* O catálogo ainda não tem vídeo próprio por exercício (videoUrl vazio);
+                enquanto isso, o link abre uma busca pela vídeo-aula do exercício. */}
+            <a
+              href={
+                exercicio.videoUrl ??
+                `https://www.youtube.com/results?search_query=${encodeURIComponent(`como fazer ${exercicio.nome}`)}`
+              }
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-medium text-emerald-700 hover:underline"
+            >
+              Assistir vídeo-aula
+            </a>
           </div>
+          <AlocarExercicioForm
+            diaPadrao={diaPadrao}
+            onAdicionar={(dia, sets, reps) => onAdicionar(exercicio.id, dia, sets, reps)}
+          />
         </div>
       ) : null}
     </Modal>
   )
 }
 
+// Grade semanal: chips de domingo a sábado (segunda primeiro) com a contagem de
+// exercícios de cada dia, e a lista do dia selecionado embaixo.
+function GradeSemanal({
+  treino,
+  diaSelecionado,
+  onSelecionarDia,
+  exerciciosPorId,
+  onRemover,
+}: {
+  treino: Treino
+  diaSelecionado: DiaSemana
+  onSelecionarDia: (dia: DiaSemana) => void
+  exerciciosPorId: Map<string, Exercicio>
+  onRemover: (exercicioId: string, dia: DiaSemana) => void
+}) {
+  const porDia = agruparExerciciosPorDia(treino)
+  const itensDoDia = porDia[diaSelecionado]
+
+  return (
+    <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="mb-3 flex flex-wrap gap-2">
+        {DIAS_SEMANA.map((dia) => {
+          const quantidade = porDia[dia].length
+          const ativo = dia === diaSelecionado
+          return (
+            <button
+              key={dia}
+              type="button"
+              onClick={() => onSelecionarDia(dia)}
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                ativo
+                  ? 'border-emerald-700 bg-emerald-700 text-white'
+                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              {LABEL_DIA_SEMANA[dia]}
+              {quantidade > 0 ? (
+                <span className={`rounded-full px-1.5 text-[10px] ${ativo ? 'bg-white/20' : 'bg-slate-100'}`}>
+                  {quantidade}
+                </span>
+              ) : null}
+            </button>
+          )
+        })}
+      </div>
+
+      {itensDoDia.length === 0 ? (
+        <p className="text-sm text-slate-500">Nenhum exercício nesse dia ainda. Abra "Exercícios" e escolha um.</p>
+      ) : (
+        <div className="flex flex-col divide-y divide-slate-100">
+          {itensDoDia.map((item, index) => {
+            const exercicio = exerciciosPorId.get(item.exercicioId)
+            if (!exercicio) return null
+            return (
+              <div key={`${item.exercicioId}-${index}`} className="flex items-center justify-between gap-3 py-2">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-zinc-900">{exercicio.nome}</p>
+                  <p className="text-xs text-slate-500">
+                    {item.sets}x{item.reps}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onRemover(item.exercicioId, diaSelecionado)}
+                  aria-label="Remover exercício"
+                  className="shrink-0 text-slate-400 transition-colors hover:text-rose-600"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ControleRecorrencia({
+  treino,
+  onAlterarRecorrencia,
+  onAlterarSemana,
+}: {
+  treino: Treino
+  onAlterarRecorrencia: (recorrente: boolean) => void
+  onAlterarSemana: (week: number) => void
+}) {
+  return (
+    <div className="mb-4 flex flex-wrap items-center gap-3">
+      <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 text-xs font-semibold">
+        <button
+          type="button"
+          onClick={() => onAlterarRecorrencia(true)}
+          className={`rounded-full px-3 py-1.5 transition-colors ${
+            treino.recorrente ? 'bg-emerald-700 text-white' : 'text-slate-600 hover:bg-slate-50'
+          }`}
+        >
+          Recorrente
+        </button>
+        <button
+          type="button"
+          onClick={() => onAlterarRecorrencia(false)}
+          className={`rounded-full px-3 py-1.5 transition-colors ${
+            !treino.recorrente ? 'bg-emerald-700 text-white' : 'text-slate-600 hover:bg-slate-50'
+          }`}
+        >
+          Por semana
+        </button>
+      </div>
+      {!treino.recorrente ? (
+        <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600">
+          <button
+            type="button"
+            onClick={() => onAlterarSemana(treino.week - 1)}
+            aria-label="Semana anterior"
+            className="text-slate-400 hover:text-slate-700"
+          >
+            <Minus size={14} />
+          </button>
+          Semana {treino.week}
+          <button
+            type="button"
+            onClick={() => onAlterarSemana(treino.week + 1)}
+            aria-label="Próxima semana"
+            className="text-slate-400 hover:text-slate-700"
+          >
+            <Plus size={14} />
+          </button>
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
 export function SubscriberTreinoPage() {
+  const alunoId = useAuthStore((state) => state.usuarioAtual!.refId)
   const [exercicioSelecionado, setExercicioSelecionado] = useState<Exercicio | null>(null)
   const [dropdownAberto, setDropdownAberto] = useState(false)
+  const [diaSelecionado, setDiaSelecionado] = useState<DiaSemana>(diaSemanaDeHoje)
+  const [treino, setTreino] = useState(() => obterTreinoDoAluno(alunoId))
+
   const exercicios = obterExercicios()
+  const exerciciosPorId = new Map(exercicios.map((exercicio) => [exercicio.id, exercicio]))
+
+  const recarregarTreino = () => setTreino(obterTreinoDoAluno(alunoId))
+
+  const handleAdicionar = (exercicioId: string, dia: DiaSemana, sets: number, reps: number) => {
+    adicionarExercicioAoTreino(treino.id, exercicioId, dia, sets, reps)
+    recarregarTreino()
+    setDiaSelecionado(dia)
+    setExercicioSelecionado(null)
+  }
+
+  const handleRemover = (exercicioId: string, dia: DiaSemana) => {
+    removerExercicioDoTreino(treino.id, exercicioId, dia)
+    recarregarTreino()
+  }
 
   return (
     <AppLayout>
@@ -185,6 +406,26 @@ export function SubscriberTreinoPage() {
         </button>
       </div>
 
+      <ControleRecorrencia
+        treino={treino}
+        onAlterarRecorrencia={(recorrente) => {
+          definirRecorrenciaDoTreino(treino.id, recorrente)
+          recarregarTreino()
+        }}
+        onAlterarSemana={(week) => {
+          definirSemanaDoTreino(treino.id, week)
+          recarregarTreino()
+        }}
+      />
+
+      <GradeSemanal
+        treino={treino}
+        diaSelecionado={diaSelecionado}
+        onSelecionarDia={setDiaSelecionado}
+        exerciciosPorId={exerciciosPorId}
+        onRemover={handleRemover}
+      />
+
       {dropdownAberto ? (
         <div className="mb-6 max-h-[32rem] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           {GRUPOS_ORDEM.map((grupo) => {
@@ -202,11 +443,14 @@ export function SubscriberTreinoPage() {
             )
           })}
         </div>
-      ) : (
-        <p className="text-sm text-slate-500">Abra "Exercícios" pra escolher o que vai treinar.</p>
-      )}
+      ) : null}
 
-      <ExercicioDetalheModal exercicio={exercicioSelecionado} onClose={() => setExercicioSelecionado(null)} />
+      <ExercicioDetalheModal
+        exercicio={exercicioSelecionado}
+        onClose={() => setExercicioSelecionado(null)}
+        diaPadrao={diaSelecionado}
+        onAdicionar={handleAdicionar}
+      />
     </AppLayout>
   )
 }

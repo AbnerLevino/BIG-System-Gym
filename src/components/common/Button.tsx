@@ -9,14 +9,14 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const VARIANT_CLASSES: Record<Variant, string> = {
   primary: 'bg-emerald-700 text-white hover:bg-emerald-800',
   secondary: 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50',
-  danger: 'bg-red-600 text-white hover:bg-red-700',
+  danger: 'bg-rose-600 text-white hover:bg-rose-700',
 }
 
 export function Button({ variant = 'primary', className, children, ...props }: ButtonProps) {
   return (
     <button
       data-variant={variant}
-      className={`group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-md px-4 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${VARIANT_CLASSES[variant]} ${className ?? ''}`}
+      className={`group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl px-4 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${VARIANT_CLASSES[variant]} ${className ?? ''}`}
       {...props}
     >
       <span className="pointer-events-none absolute left-0 top-0 h-[0.2rem] w-full origin-left scale-x-0 bg-white transition-transform duration-200 group-hover:scale-x-100" />

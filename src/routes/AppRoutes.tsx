@@ -1,25 +1,44 @@
 // Mapa central de todas as URLs do app — bate com a seção 5 (Mapa de Paginas) do spec.
 // Fica num arquivo só pra dar pra ver todas as rotas existentes numa olhada.
+
 import { Navigate, Route, Routes } from 'react-router-dom'
+
 import { HomePage } from '../features/home/HomePage'
 import { MatriculaPage } from '../features/home/MatriculaPage'
 import { LoginPage } from '../features/auth/LoginPage'
+import { AtivarContaPage } from '../features/auth/AtivarContaPage'
 import { AdminDashboardPage } from '../features/admin/AdminDashboardPage'
+<<<<<<< HEAD
 import RHDashboardPage from '../features/hr/RHDashboardPage'
+=======
+
+>>>>>>> main
 import { AttendantDashboardPage } from '../features/attendant/AttendantDashboardPage'
-import { AttendantCadastroPage } from '../features/attendant/AttendantCadastroPage'
 import { AttendantCheckinPage } from '../features/attendant/AttendantCheckinPage'
-import { AttendantPagamentoPage } from '../features/attendant/AttendantPagamentoPage'
+import { AttendantPlanosPage } from '../features/attendant/AttendantPlanosPage'
+import { AttendantTotemPage } from '../features/attendant/AttendantTotemPage'
 import { ProfessionalDashboardPage } from '../features/professional/ProfessionalDashboardPage'
+import { ProfessionalAlunosPage } from '../features/professional/ProfessionalAlunosPage'
+import { ProfessionalAgendaPage } from '../features/professional/ProfessionalAgendaPage'
+
 import { SubscriberDashboardPage } from '../features/subscriber/SubscriberDashboardPage'
 import { SubscriberTreinoPage } from '../features/subscriber/SubscriberTreinoPage'
+import { SubscriberFinanceiroPage } from '../features/subscriber/SubscriberFinanceiroPage'
+import { SubscriberPlanoPage } from '../features/subscriber/SubscriberPlanoPage'
+import { SubscriberObjetivosPage } from '../features/subscriber/SubscriberObjetivosPage'
+import { SubscriberPersonalPage } from '../features/subscriber/SubscriberPersonalPage'
+import { SubscriberPerfilPage } from '../features/subscriber/SubscriberPerfilPage'
 import { ProtectedRoute } from './ProtectedRoute'
+import { AdminFuncionariosPage } from '../features/admin/AdminFuncionariosPage'
 
 export function AppRoutes() {
   return (
     <Routes>
+      {/* Autenticação e matrícula */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/matricula" element={<MatriculaPage />} />
+      {/* Pública de propósito: quem chega aqui ainda não tem senha (RF-ALU-01). */}
+      <Route path="/ativar/:token" element={<AtivarContaPage />} />
       <Route
         path="/admin"
         element={
@@ -28,6 +47,7 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
+<<<<<<< HEAD
             <Route
         path="/rh"
         element={
@@ -36,6 +56,10 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
+=======
+
+      {/* Atendente */}
+>>>>>>> main
       <Route
         path="/atendente"
         element={
@@ -44,14 +68,7 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      <Route
-        path="/atendente/cadastro"
-        element={
-          <ProtectedRoute allowedRole="atendente">
-            <AttendantCadastroPage />
-          </ProtectedRoute>
-        }
-      />
+
       <Route
         path="/atendente/checkin"
         element={
@@ -60,14 +77,26 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+      {/* Modo totem: tela cheia, sem menu — aberto pelo botão da tela de Check-in */}
       <Route
-        path="/atendente/pagamento/:alunoId"
+        path="/atendente/totem"
         element={
           <ProtectedRoute allowedRole="atendente">
-            <AttendantPagamentoPage />
+            <AttendantTotemPage />
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/atendente/planos"
+        element={
+          <ProtectedRoute allowedRole="atendente">
+            <AttendantPlanosPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Profissional */}
       <Route
         path="/profissional"
         element={
@@ -76,6 +105,28 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+      <Route
+        path="/profissional/alunos"
+        element={
+          <ProtectedRoute allowedRole="professional">
+            <ProfessionalAlunosPage />
+          </ProtectedRoute>
+        }
+      />
+
+
+
+      <Route
+        path="/profissional/agenda"
+        element={
+          <ProtectedRoute allowedRole="professional">
+            <ProfessionalAgendaPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Aluno */}
       <Route
         path="/aluno"
         element={
@@ -84,6 +135,7 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/aluno/treino"
         element={
@@ -92,8 +144,52 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/aluno/financeiro"
+        element={
+          <ProtectedRoute allowedRole="subscriber">
+            <SubscriberFinanceiroPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/aluno/plano"
+        element={
+          <ProtectedRoute allowedRole="subscriber">
+            <SubscriberPlanoPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/aluno/objetivos"
+        element={
+          <ProtectedRoute allowedRole="subscriber">
+            <SubscriberObjetivosPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/aluno/personal"
+        element={
+          <ProtectedRoute allowedRole="subscriber">
+            <SubscriberPersonalPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/aluno/perfil"
+        element={
+          <ProtectedRoute allowedRole="subscriber">
+            <SubscriberPerfilPage />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/" element={<HomePage />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route
+  path="/admin/funcionarios"
+  element={<AdminFuncionariosPage />}
+/>
     </Routes>
   )
 }

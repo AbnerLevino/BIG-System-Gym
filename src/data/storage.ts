@@ -19,3 +19,18 @@ export function ensureSeeded<T>(key: string, seedData: T[]): void {
     writeCollection(key, seedData)
   }
 }
+// Sobe esse número sempre que o formato de alguma entidade ou o seed mudar de um
+// jeito incompatível com o que já está salvo no navegador (ex: Treino trocou
+// `name` por `exercicioId`/`diaSemana`). Na próxima abertura, os dados antigos
+// são descartados e o seed novo é carregado — a sessão de login é preservada.
+const VERSAO_DOS_DADOS = '6'
+const CHAVE_VERSAO = PREFIX + 'versao-dados'
+const CHAVE_SESSAO = PREFIX + 'session'
+
+export function garantirVersaoDosDados(): void {
+  if (localStorage.getItem(CHAVE_VERSAO) === VERSAO_DOS_DADOS) return
+  Object.keys(localStorage)
+    .filter((chave) => chave.startsWith(PREFIX) && chave !== CHAVE_SESSAO)
+    .forEach((chave) => localStorage.removeItem(chave))
+  localStorage.setItem(CHAVE_VERSAO, VERSAO_DOS_DADOS)
+}

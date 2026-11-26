@@ -5,13 +5,14 @@ import { gerarComprovantePDF } from '../../data/pagamentoService'
 import biggymIcon from '../../assets/biggym-icon-black.png'
 import type { Pagamento } from '../../types'
 import { CardBrandIcon } from './CardBrandIcon'
+import { formatarDataBr, formatarMoeda } from '../../utils/formatacao'
 
 const CHAVE_PIX_FAKE = 'academia@biggym.com'
 
 const LABEL_METODO: Record<string, string> = {
   pix: 'Pix',
-  creditCard: 'Cartao de credito',
-  debitCard: 'Cartao de debito',
+  creditCard: 'Cartão de crédito',
+  debitCard: 'Cartão de débito',
   cash: 'Dinheiro',
   partner: 'Parceiro',
 }
@@ -26,11 +27,6 @@ interface ComprovantePagamentoProps {
   onContinuar: () => void
 }
 
-function formatarData(data: string | null): string {
-  if (!data) return ''
-  const [ano, mes, dia] = data.split('-')
-  return `${dia}/${mes}/${ano}`
-}
 
 // So pra exibicao no comprovante - nao cria nenhum registro de Pagamento novo.
 // A cobranca recorrente de verdade e responsabilidade de uma feature futura.
@@ -38,7 +34,7 @@ function calcularProximoVencimento(dataPagamento: string | null): string {
   if (!dataPagamento) return ''
   const data = new Date(dataPagamento)
   data.setMonth(data.getMonth() + 1)
-  return formatarData(data.toISOString().slice(0, 10))
+  return formatarDataBr(data.toISOString().slice(0, 10))
 }
 
 function LinhaComprovante({ label, valor }: { label: string; valor: ReactNode }) {
@@ -73,8 +69,8 @@ export function ComprovantePagamento({
       <span className="mt-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
         <Check size={28} />
       </span>
-      <p className="mt-3 text-2xl font-bold text-slate-900">Pagamento aprovado</p>
-      <p className="text-lg text-slate-400">R$ {(pagamento.paidValue ?? 0).toFixed(2)}</p>
+      <p className="mt-3 font-heading text-2xl font-semibold text-slate-900">Pagamento aprovado</p>
+      <p className="text-lg text-slate-400">{formatarMoeda(pagamento.paidValue ?? 0)}</p>
 
       <div className="mt-6 w-full">
         <LinhaComprovante label="Aluno" valor={nomeAluno} />
@@ -93,8 +89,8 @@ export function ComprovantePagamento({
           />
         ) : null}
         {pagamento.paymentMethod === 'pix' ? <LinhaComprovante label="Chave Pix" valor={CHAVE_PIX_FAKE} /> : null}
-        <LinhaComprovante label="Data do pagamento" valor={formatarData(pagamento.paymentDate)} />
-        <LinhaComprovante label="Proximo vencimento" valor={calcularProximoVencimento(pagamento.paymentDate)} />
+        <LinhaComprovante label="Data do pagamento" valor={formatarDataBr(pagamento.paymentDate)} />
+        <LinhaComprovante label="Próximo vencimento" valor={calcularProximoVencimento(pagamento.paymentDate)} />
         <LinhaComprovante label="Comprovante no" valor={pagamento.receiptNumber ?? ''} />
       </div>
 

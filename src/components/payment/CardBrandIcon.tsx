@@ -19,7 +19,7 @@ export function CardBrandIcon({ bandeira, className }: CardBrandIconProps) {
   const chave = (bandeira && CHAVE_POR_BANDEIRA[bandeira]) || 'placeholder'
 
   return (
-    <svg viewBox="0 0 24 16" width="1.5em" height="1em" aria-label={bandeira ?? 'Cartao'} className={className}>
+    <svg viewBox="0 0 24 16" width="1.5em" height="1em" aria-label={bandeira ?? 'Cartão'} className={className}>
       {images[chave] ?? images.placeholder}
     </svg>
   )
