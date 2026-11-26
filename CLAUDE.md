@@ -52,7 +52,7 @@ qrcode, @vladmandic/face-api.
 | ATD-08 pesquisa por nome/CPF/e-mail (modal "Consultar aluno") | `BuscaAlunoModal.tsx` |
 | ATD-09/10/11 ficha do aluno **em modal** (`?aluno=id` na URL): dados, plano, pagamentos, Face ID, acesso ao app; editar (CPF imutável, troca de plano grava `HistoricoPlano`); cancelar matrícula (bloqueia check-in e login) | `AlunoDetalhe.tsx`, `data/historicoPlanoRepository.ts` |
 | Recebimento no balcão **em modal** (`?pagamento=alunoId`; ao concluir volta para a ficha) e "Registrar pagamento" (escolhe a cobrança) | `RecebimentoBalcao.tsx`, `SelecionarCobrancaModal.tsx` |
-| Check-in: câmera/resultado + "Entradas de hoje"; bloqueado por atraso oferece "Receber pagamento" | `AttendantCheckinPage.tsx` |
+| Check-in: câmera/resultado + "Entradas de hoje"; bloqueado por atraso oferece "Receber pagamento". Reconhecimento real (descritor de 128 números, distância ≤ 0,6); só compara alunos com rosto cadastrado. Câmera espelhada (selfie); a foto salva também, o descritor não | `AttendantCheckinPage.tsx`, `FaceIdPreview.tsx`, `utils/faceRecognition.ts` |
 | Catálogo de planos (só consulta) com "Matricular neste plano" → abre o modal de cadastro (`/atendente?cadastro=novo&plano=id`) | `AttendantPlanosPage.tsx` |
 
 Menu do atendente: Central, Check-in, Planos. A rota `/atendente/cadastro` foi removida.
@@ -170,7 +170,8 @@ Fundação (motor de cobrança RF-FUND-02), Admin (dashboard, `/admin/*`), Apres
 3. Atendente: "Atenção necessária" → Carlos (atrasado) → "Receber" → check-in liberado; ficha → editar/cancelar.
 4. **Aluno** (`aluno@biggym.com` / `aluno123`, tem personal): dashboard → pagar mensalidade → financeiro (PDF) →
    treino → objetivos (questionário + recomendados). Vitrine de personal: entrar como `marina@email.com` / `aluno123`.
-5. Fechar explicando o que é simulado: Face ID (só preview, sem biometria real), pagamento (sem gateway), envio do
+5. Fechar explicando o que é simulado: catraca (o Face ID reconhece o rosto de verdade, no navegador, com
+   @vladmandic/face-api, mas não há catraca física), pagamento (sem gateway), envio do
    convite (sem e-mail real), senha em texto puro no `localStorage`, agenda/preço do personal (mock).
 
 Usuários do seed: todos os alunos têm senha `aluno123` (`marina@`, `carlos@`, `fernanda@` (cancelada), `gabriel@`,

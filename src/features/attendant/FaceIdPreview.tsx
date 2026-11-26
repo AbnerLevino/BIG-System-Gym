@@ -27,7 +27,8 @@ export function FaceIdPreview({ onCapturar, rotulo }: FaceIdPreviewProps) {
     async function iniciar() {
       try {
         await carregarModelos()
-        stream = await navigator.mediaDevices.getUserMedia({ video: true })
+        // Pede a câmera frontal (em celular/tablet com duas câmeras); no computador é a webcam.
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
         if (cancelado) {
           stream.getTracks().forEach((track) => track.stop())
           return
@@ -63,10 +64,15 @@ export function FaceIdPreview({ onCapturar, rotulo }: FaceIdPreviewProps) {
       return
     }
 
+    // A foto sai espelhada, igual ao que a pessoa viu na tela. O descritor acima é
+    // extraído do vídeo original (sem espelhar), então o reconhecimento não muda.
     const canvas = document.createElement('canvas')
     canvas.width = video.videoWidth
     canvas.height = video.videoHeight
-    canvas.getContext('2d')?.drawImage(video, 0, 0)
+    const contexto = canvas.getContext('2d')
+    contexto?.translate(canvas.width, 0)
+    contexto?.scale(-1, 1)
+    contexto?.drawImage(video, 0, 0)
     const photoUrl = canvas.toDataURL('image/jpeg', 0.7)
 
     onCapturar({ descriptor, photoUrl })
@@ -79,7 +85,9 @@ export function FaceIdPreview({ onCapturar, rotulo }: FaceIdPreviewProps) {
         autoPlay
         muted
         playsInline
-        className="aspect-square w-full rounded-full border-4 border-emerald-700/30 object-cover"
+        // Espelhado como uma selfie: mexer a cabeça pra esquerda move a imagem pra esquerda,
+        // o que facilita a pessoa se posicionar. É só visual (CSS), não afeta a captura.
+        className="aspect-square w-full -scale-x-100 rounded-full border-4 border-emerald-700/30 object-cover"
       />
       {carregando ? <p className="text-sm text-slate-600">Carregando reconhecimento facial...</p> : null}
       {erro ? <Alerta tipo="erro">{erro}</Alerta> : null}
