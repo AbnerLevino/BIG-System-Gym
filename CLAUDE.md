@@ -76,8 +76,8 @@ Menu do aluno: Dashboard, Treino, Objetivos, Personal, Financeiro, Meu plano, Pe
 ### Profissional (módulo 4 — PR #1 do colega, integrado na `main` com ajustes)
 
 - Telas: dashboard, `/profissional/alunos`, `/profissional/alunos/:alunoId` (ficha **só leitura** + avaliação),
-  `/profissional/avaliacoes`, `/profissional/agenda`. Avaliações e agenda **não estão no menu** (o sidebar da `main`
-  foi mantido); chega-se a elas pelos botões do dashboard.
+  `/profissional/avaliacoes`, `/profissional/agenda`. Menu do profissional: Dashboard, Alunos, Avaliações físicas,
+  Agenda (itens adicionados ao sidebar da `main`; o sidebar do PR foi descartado).
 - Avaliação física (RF-PRO-03/D19): `AvaliacaoFisica.tipo: 'principal' | 'mensal'`. `registrarAvaliacaoFisica()`
   sempre cria registro novo (histórico) e decide o tipo: primeira = principal, demais = mensal.
 - Agenda (RF-FUND-03/D13/D14): a entidade `Agendamento` do PR foi removida; a tela grava em `AgendaProfissional`

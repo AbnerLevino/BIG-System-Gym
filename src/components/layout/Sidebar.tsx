@@ -11,6 +11,8 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
   Users,
+  ClipboardList,
+  CalendarDays,
   CreditCard,
   UserCog,
   Wallet,
@@ -49,9 +51,14 @@ const NAV_ITEMS: Record<PapelUsuario, NavItem[]> = {
     { to: '/atendente/checkin', label: 'Check-in', icon: ScanFace },
     { to: '/atendente/planos', label: 'Planos', icon: CreditCard },
   ],
-  professional: [{ to: '/profissional', label: 'Dashboard', icon: LayoutDashboard }],
-  // /aluno/evolucao (RF-ALU-10) fica fora do menu até o módulo Profissional
-  // entregar o campo `tipo` da AvaliacaoFisica — o path continua reservado.
+  professional: [
+    { to: '/profissional', label: 'Dashboard', icon: LayoutDashboard },
+    { to: '/profissional/alunos', label: 'Alunos', icon: Users },
+    { to: '/profissional/avaliacoes', label: 'Avaliações físicas', icon: ClipboardList },
+    { to: '/profissional/agenda', label: 'Agenda', icon: CalendarDays },
+  ],
+  // /aluno/evolucao (RF-ALU-10) fica fora do menu até a tela existir — o path
+  // continua reservado (o campo `tipo` da AvaliacaoFisica já foi entregue).
   subscriber: [
     { to: '/aluno', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/aluno/treino', label: 'Treino', icon: Dumbbell },
