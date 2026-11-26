@@ -11,6 +11,8 @@ por módulo) e os requisitos detalhados em `docs/requisitos/`. **Leia o `00-cont
 - `npm run dev` — servidor (use `npm run dev -- --host` para abrir pelo celular na mesma rede).
 - `npm run typecheck` — tem que passar com zero erro antes de qualquer commit.
 - `npm run build` — build de produção.
+- Se uma tela aparecer quebrada sem motivo depois de editar arquivos, reinicie o `npm run dev` (o watcher às vezes
+  não percebe a mudança e serve a versão antiga).
 - Não há testes automatizados: verificação = typecheck + olhar no navegador.
 
 ## Stack e regras de código (não mudar)
@@ -34,7 +36,7 @@ qrcode, @vladmandic/face-api.
   Títulos usam `font-heading` (Outfit); corpo é Instrument Sans.
 - **Dados de seed:** `src/data/seed.ts`. Ao mudar o formato de uma entidade ou o seed de forma incompatível, **suba
   `VERSAO_DOS_DADOS` em `src/data/storage.ts`** — na próxima abertura o navegador descarta os dados antigos e recarrega
-  o seed (a sessão de login é mantida). Versão atual: **5**.
+  o seed (a sessão de login é mantida). Versão atual: **6**.
 
 ## Estado atual por módulo
 
@@ -49,7 +51,8 @@ qrcode, @vladmandic/face-api.
 | ATD-04/05/06/07 conta só nasce quando o pagamento é aprovado; atendente informa só o e-mail; aluno confere o e-mail na tela; convite com QR code/link **simulado** (token aleatório, uso único, 48h); corrigir e-mail invalida o token e não duplica usuário | `ConviteAtivacaoPainel.tsx`, `data/ativacaoService.ts`, `data/conviteAtivacaoRepository.ts` |
 | ATD-08 pesquisa por nome/CPF/e-mail (modal "Consultar aluno") | `BuscaAlunoModal.tsx` |
 | ATD-09/10/11 ficha do aluno **em modal** (`?aluno=id` na URL): dados, plano, pagamentos, Face ID, acesso ao app; editar (CPF imutável, troca de plano grava `HistoricoPlano`); cancelar matrícula (bloqueia check-in e login) | `AlunoDetalhe.tsx`, `data/historicoPlanoRepository.ts` |
-| Recebimento no balcão (tela própria) e "Registrar pagamento" (escolhe a cobrança) | `AttendantPagamentoPage.tsx`, `SelecionarCobrancaModal.tsx` |
+| Recebimento no balcão **em modal** (`?pagamento=alunoId`; ao concluir volta para a ficha) e "Registrar pagamento" (escolhe a cobrança) | `RecebimentoBalcao.tsx`, `SelecionarCobrancaModal.tsx` |
+| Check-in: câmera/resultado + "Entradas de hoje"; bloqueado por atraso oferece "Receber pagamento" | `AttendantCheckinPage.tsx` |
 | Catálogo de planos (só consulta) com "Matricular neste plano" → abre o modal de cadastro (`/atendente?cadastro=novo&plano=id`) | `AttendantPlanosPage.tsx` |
 
 Menu do atendente: Central, Check-in, Planos. A rota `/atendente/cadastro` foi removida.
@@ -96,7 +99,14 @@ Menu do aluno: Dashboard, Treino, Objetivos, Personal, Financeiro, Meu plano, Pe
 - `components/painel`: `CabecalhoCentral`, `CabecalhoPagina`, `FaixaIndicadores`/`Indicador`, `AcessoRapido`/
   `AcaoRapida`, `ItemAluno`, `EstadoVazio`, `Abas`, `Linha`, `formatarDataBr`. Tela nova de qualquer papel usa estes.
 - `components/aluno`: `AvatarAluno` (sm/md/lg), `SeloSituacaoAluno`, `CabecalhoFicha`.
-- `Modal` fecha com Esc (só o de cima, quando há modal dentro de modal) e com clique no fundo.
+- `components/common`: além de Button/Input/Card/Modal, `Alerta` (erro/sucesso/aviso/info — nunca texto colorido
+  solto), `CampoBusca`, `Confirmacao` (no lugar de `window.confirm`).
+- `utils/formatacao.ts`: `formatarMoeda` ("R$ 99,90"), `formatarNumero` ("71,5"), `formatarDataBr`. Não usar
+  `toFixed(2)` para exibir dinheiro.
+- Cantos: caixas grandes (`Card`, `Modal`, blocos) `rounded-2xl`; itens, campos e botões `rounded-xl`.
+- `Modal` fecha com Esc (só o de cima, quando há modal dentro de modal) e com clique no fundo. Um modal que precisa
+  ficar por cima de outro deve ser renderizado depois dele no JSX.
+- Textos de tela sempre acentuados (inclusive no seed).
 
 ### Outros módulos (de outras pessoas — ainda placeholder)
 
@@ -149,8 +159,6 @@ Fundação (motor de cobrança RF-FUND-02), Admin (dashboard, `/admin/*`), Apres
 - **Nada commitado** (tudo na `main`, sem commit). Sugestão: branch `feature/atendente-aluno-requisitos`.
 - Marcar os checkboxes em `plano-de-desenvolvimento/02`, `05`, `06` depois de testar.
 - Próximo foco combinado: **melhorar o atendente** (depois do aluno). Ideias levantadas:
-  - "Receber pagamento" ainda é tela inteira (o resto virou modal).
-  - Confirmação ao fechar o cadastro usa `window.confirm`.
   - Caso raro: sair da tela com o comprovante aberto (antes de "continuar") deixa pagamento sem aluno.
 - Links do Admin/Profissional no menu levam a placeholders ou ao login.
 

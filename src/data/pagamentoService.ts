@@ -1,6 +1,15 @@
 import jsPDF from 'jspdf'
 import type { MetodoPagamento, Pagamento } from '../types'
 import { obterPagamentos, salvarPagamento } from './pagamentoRepository'
+import { formatarDataBr, formatarMoeda } from '../utils/formatacao'
+
+const NOME_METODO: Record<MetodoPagamento, string> = {
+  pix: 'Pix',
+  creditCard: 'Cartão de crédito',
+  debitCard: 'Cartão de débito',
+  cash: 'Dinheiro',
+  partner: 'Parceiro',
+}
 
 const DELAY_SIMULADO_MS = 1200
 const CHANCE_DE_RECUSA = 0.1
@@ -52,8 +61,8 @@ export function gerarComprovantePDF(pagamento: Pagamento, nomeAluno: string): vo
   doc.setFontSize(12)
   doc.text(`Comprovante: ${pagamento.receiptNumber ?? ''}`, 20, 40)
   doc.text(`Aluno: ${nomeAluno}`, 20, 50)
-  doc.text(`Valor pago: R$ ${(pagamento.paidValue ?? 0).toFixed(2)}`, 20, 60)
-  doc.text(`Data do pagamento: ${pagamento.paymentDate ?? ''}`, 20, 70)
-  doc.text(`Metodo: ${pagamento.paymentMethod ?? ''}`, 20, 80)
+  doc.text(`Valor pago: ${formatarMoeda(pagamento.paidValue ?? 0)}`, 20, 60)
+  doc.text(`Data do pagamento: ${formatarDataBr(pagamento.paymentDate)}`, 20, 70)
+  doc.text(`Método: ${pagamento.paymentMethod ? NOME_METODO[pagamento.paymentMethod] : ''}`, 20, 80)
   doc.save(`${pagamento.receiptNumber ?? 'comprovante'}.pdf`)
 }

@@ -27,15 +27,15 @@ export function CabecalhoCentral({ nome, subtitulo, contexto }: CabecalhoCentral
   return (
     <header className="flex flex-wrap items-end justify-between gap-4">
       <div className="flex items-center gap-3">
-        <img src={wavingHand} alt="" className="h-14 w-14" />
+        <img src={wavingHand} alt="" className="h-10 w-10 sm:h-14 sm:w-14" />
         <div>
-          <h1 className="font-heading text-3xl font-semibold text-slate-900">
+          <h1 className="font-heading text-2xl font-semibold text-slate-900 sm:text-3xl">
             {saudacaoDoHorario()}, {primeiroNome}!
           </h1>
-          <p className="text-base text-slate-500">{subtitulo}</p>
+          <p className="text-sm text-slate-500 sm:text-base">{subtitulo}</p>
         </div>
       </div>
-      <div className="text-right">
+      <div className="sm:text-right">
         <p className="text-sm font-semibold text-slate-700">{dataPorExtenso()}</p>
         {contexto ? <p className="text-xs text-slate-500">{contexto}</p> : null}
       </div>

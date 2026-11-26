@@ -5,7 +5,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Check, Pencil, ScanFace, UserX } from 'lucide-react'
-import { Button, Card, Input, Modal } from '../../components/common'
+import { Alerta, Button, Card, Input, Modal } from '../../components/common'
 import {
   buscarUsuarioPorRefId,
   cancelarMatricula,
@@ -24,6 +24,7 @@ import { Linha, formatarDataBr } from '../../components/painel'
 import { ConsentimentoBiometria } from './ConsentimentoBiometria'
 import { ConviteAtivacaoPainel } from './ConviteAtivacaoPainel'
 import { FaceIdPreview } from './FaceIdPreview'
+import { formatarMoeda } from '../../utils/formatacao'
 
 const LABEL_PAGAMENTO: Record<StatusPagamento, string> = {
   paid: 'Pago',
@@ -57,7 +58,7 @@ export function AlunoDetalhe({ alunoId, onAlterado }: AlunoDetalheProps) {
   const [mensagem, setMensagem] = useState('')
 
   if (!aluno) {
-    return <p className="text-sm text-slate-600">Aluno nao encontrado.</p>
+    return <p className="text-sm text-slate-600">Aluno não encontrado.</p>
   }
 
   const recarregar = () => {
@@ -96,7 +97,7 @@ export function AlunoDetalhe({ alunoId, onAlterado }: AlunoDetalheProps) {
     cancelarMatricula(aluno!.id)
     recarregar()
     setConfirmandoCancelamento(false)
-    setMensagem('Matricula cancelada. O acesso do aluno (check-in e login) foi bloqueado a partir de hoje.')
+    setMensagem('Matrícula cancelada. O acesso do aluno (check-in e login) foi bloqueado a partir de hoje.')
   }
 
   function handleCapturarRosto(captura: { descriptor: number[]; photoUrl: string } | null) {
@@ -134,24 +135,24 @@ export function AlunoDetalhe({ alunoId, onAlterado }: AlunoDetalheProps) {
         />
 
         {mensagem ? (
-          <p className="mt-4 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">{mensagem}</p>
+          <Alerta tipo="sucesso" className="mt-4">{mensagem}</Alerta>
         ) : null}
 
         {editando && rascunho ? (
-          <form onSubmit={handleSalvarEdicao} className="mt-5 grid gap-4 lg:grid-cols-2">
+          <form onSubmit={handleSalvarEdicao} className="mt-5 grid items-start gap-4 lg:grid-cols-2">
             <Card title="Dados pessoais">
               <div className="flex flex-col gap-4">
                 <Input id="fullName" label="Nome completo" value={rascunho.fullName} onChange={(e) => atualizarRascunho('fullName', e.target.value)} required />
                 {/* RF-ATD-10: CPF é identificador imutável — aparece, mas não edita. */}
-                <Input id="cpf" label="CPF (nao editavel)" value={rascunho.cpf} disabled className="bg-slate-100 text-slate-500" />
+                <Input id="cpf" label="CPF (não editável)" value={rascunho.cpf} disabled className="bg-slate-100 text-slate-500" />
                 <Input id="phone" label="Telefone" value={rascunho.phone} onChange={(e) => atualizarRascunho('phone', e.target.value)} required />
-                <Input id="address" label="Endereco" value={rascunho.address} onChange={(e) => atualizarRascunho('address', e.target.value)} />
+                <Input id="address" label="Endereço" value={rascunho.address} onChange={(e) => atualizarRascunho('address', e.target.value)} />
                 <Input id="birthDate" label="Data de nascimento" type="date" value={rascunho.birthDate} onChange={(e) => atualizarRascunho('birthDate', e.target.value)} />
                 <div className="grid grid-cols-2 gap-4">
                   <Input id="weight" label="Peso (kg)" type="number" min={0} step="0.1" value={rascunho.weight || ''} onChange={(e) => atualizarRascunho('weight', Number(e.target.value))} />
                   <Input id="height" label="Altura (cm)" type="number" min={0} value={rascunho.height || ''} onChange={(e) => atualizarRascunho('height', Number(e.target.value))} />
                 </div>
-                <Input id="notes" label="Observacoes" value={rascunho.notes} onChange={(e) => atualizarRascunho('notes', e.target.value)} />
+                <Input id="notes" label="Observações" value={rascunho.notes} onChange={(e) => atualizarRascunho('notes', e.target.value)} />
               </div>
             </Card>
 
@@ -164,7 +165,7 @@ export function AlunoDetalhe({ alunoId, onAlterado }: AlunoDetalheProps) {
                       key={item.id}
                       type="button"
                       onClick={() => atualizarRascunho('planoAtualId', item.id)}
-                      className={`relative flex flex-col items-start rounded-lg border-2 p-4 text-left transition-colors ${
+                      className={`relative flex flex-col items-start rounded-xl border-2 p-4 text-left transition-colors ${
                         selecionado ? 'border-emerald-700 bg-emerald-50' : 'border-slate-200 hover:border-slate-300'
                       }`}
                     >
@@ -174,18 +175,18 @@ export function AlunoDetalhe({ alunoId, onAlterado }: AlunoDetalheProps) {
                         </span>
                       ) : null}
                       <p className="font-semibold text-slate-900">{item.name}</p>
-                      <p className="mt-1 text-xl font-bold text-emerald-700">R$ {item.price.toFixed(2)}</p>
+                      <p className="mt-1 font-heading text-xl font-semibold text-emerald-700">{formatarMoeda(item.price)}</p>
                     </button>
                   )
                 })}
               </div>
               <p className="mt-3 text-xs text-slate-500">
-                Trocar o plano fica registrado no historico. Pagamentos ja gerados nao mudam de valor.
+                Trocar o plano fica registrado no histórico. Pagamentos já gerados não mudam de valor.
               </p>
             </Card>
 
             <div className="flex gap-2 lg:col-span-2">
-              <Button type="submit">Salvar alteracoes</Button>
+              <Button type="submit">Salvar alterações</Button>
               <Button type="button" variant="secondary" onClick={() => setEditando(false)}>
                 Descartar
               </Button>
@@ -197,36 +198,36 @@ export function AlunoDetalhe({ alunoId, onAlterado }: AlunoDetalheProps) {
               <Linha label="CPF" valor={aluno.cpf} />
               <Linha label="E-mail de acesso" valor={email ?? 'Sem login (visita teste)'} />
               <Linha label="Telefone" valor={aluno.phone} />
-              <Linha label="Endereco" valor={aluno.address || '—'} />
+              <Linha label="Endereço" valor={aluno.address || '—'} />
               <Linha label="Nascimento" valor={formatarDataBr(aluno.birthDate || null)} />
               <Linha label="Peso / altura" valor={`${aluno.weight ? `${aluno.weight} kg` : '—'} / ${aluno.height ? `${aluno.height} cm` : '—'}`} />
-              {aluno.notes ? <Linha label="Observacoes" valor={aluno.notes} /> : null}
+              {aluno.notes ? <Linha label="Observações" valor={aluno.notes} /> : null}
             </Card>
 
-            <Card title="Plano e matricula">
-              <Linha label="Plano atual" valor={plano ? `${plano.name} — R$ ${plano.price.toFixed(2)}` : 'Sem plano'} />
-              <Linha label="Inicio da matricula" valor={formatarDataBr(aluno.startDate)} />
-              <Linha label="Situacao da matricula" valor={LABEL_SITUACAO_ALUNO[aluno.status]} />
+            <Card title="Plano e matrícula">
+              <Linha label="Plano atual" valor={plano ? `${plano.name} — ${formatarMoeda(plano.price)}` : 'Sem plano'} />
+              <Linha label="Início da matrícula" valor={formatarDataBr(aluno.startDate)} />
+              <Linha label="Situação da matrícula" valor={LABEL_SITUACAO_ALUNO[aluno.status]} />
               <Linha
-                label="Situacao do pagamento"
+                label="Situação do pagamento"
                 valor={
                   pagamentoAtual ? (
                     <span className={COR_PAGAMENTO[pagamentoAtual.status]}>
                       {LABEL_PAGAMENTO[pagamentoAtual.status]} · venc. {formatarDataBr(pagamentoAtual.dueDate)}
                     </span>
                   ) : (
-                    'Sem cobranca'
+                    'Sem cobrança'
                   )
                 }
               />
               {pagamentoAtual && pagamentoAtual.status !== 'paid' && !cancelado ? (
-                <Button className="mt-3" onClick={() => navigate(`/atendente/pagamento/${aluno.id}`)}>
-                  Receber pagamento no balcao
+                <Button className="mt-3" onClick={() => navigate(`/atendente?pagamento=${aluno.id}`)}>
+                  Receber pagamento no balcão
                 </Button>
               ) : null}
               {historicoPlanos.length > 0 ? (
                 <div className="mt-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Historico de planos</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Histórico de planos</p>
                   <ul className="mt-1 text-sm text-slate-600">
                     {historicoPlanos.map((historico) => (
                       <li key={historico.id}>
@@ -241,13 +242,13 @@ export function AlunoDetalhe({ alunoId, onAlterado }: AlunoDetalheProps) {
 
             <Card title="Pagamentos">
               {pagamentos.length === 0 ? (
-                <p className="text-sm text-slate-500">Nenhuma cobranca registrada.</p>
+                <p className="text-sm text-slate-500">Nenhuma cobrança registrada.</p>
               ) : (
                 <div className="divide-y divide-slate-100 text-sm">
                   {pagamentos.map((pagamento) => (
                     <div key={pagamento.id} className="flex items-center justify-between py-2">
                       <span className="text-slate-600">Venc. {formatarDataBr(pagamento.dueDate)}</span>
-                      <span className="font-medium">R$ {pagamento.originalValue.toFixed(2)}</span>
+                      <span className="font-medium">{formatarMoeda(pagamento.originalValue)}</span>
                       <span className={`w-24 text-right font-medium ${COR_PAGAMENTO[pagamento.status]}`}>
                         {LABEL_PAGAMENTO[pagamento.status]}
                       </span>
@@ -264,7 +265,7 @@ export function AlunoDetalhe({ alunoId, onAlterado }: AlunoDetalheProps) {
                 </p>
               ) : (
                 <>
-                  <p className="text-sm text-slate-600">Rosto ainda nao cadastrado — o aluno nao consegue fazer check-in por Face ID.</p>
+                  <p className="text-sm text-slate-600">Rosto ainda não cadastrado — o aluno não consegue fazer check-in por Face ID.</p>
                   {!cancelado ? (
                     <Button className="mt-3" variant="secondary" onClick={() => setCapturandoRosto(true)}>
                       <ScanFace size={14} /> Cadastrar rosto agora
@@ -285,7 +286,7 @@ export function AlunoDetalhe({ alunoId, onAlterado }: AlunoDetalheProps) {
         )}
       </div>
 
-      <Modal open={confirmandoCancelamento} title="Cancelar matricula" onClose={() => setConfirmandoCancelamento(false)}>
+      <Modal open={confirmandoCancelamento} title="Cancelar matrícula" onClose={() => setConfirmandoCancelamento(false)}>
         <p className="text-sm text-slate-600">
           Cancelar a matricula de <strong>{aluno.fullName}</strong>? A partir de hoje o aluno fica sem acesso: o check-in
           e o login no sistema passam a ser bloqueados.
@@ -314,7 +315,7 @@ export function AlunoDetalhe({ alunoId, onAlterado }: AlunoDetalheProps) {
         {consentiuBiometria ? (
           <div className="mt-4 flex flex-col items-center gap-3">
             <FaceIdPreview onCapturar={handleCapturarRosto} rotulo="Cadastrar rosto" />
-            {erroRosto ? <p className="text-sm text-red-600">{erroRosto}</p> : null}
+            {erroRosto ? <Alerta tipo="erro">{erroRosto}</Alerta> : null}
           </div>
         ) : null}
       </Modal>

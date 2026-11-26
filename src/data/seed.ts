@@ -35,8 +35,8 @@ export const seedAcademias: Academia[] = [
 ]
 
 export const seedPlanos: Plano[] = [
-  { id: 'plan-1', name: 'Mensal Basico', price: 99.9, modalities: ['Musculacao'], conditions: 'Sem fidelidade', origin: 'direct' },
-  { id: 'plan-2', name: 'Trimestral Plus', price: 259.9, modalities: ['Musculacao', 'Funcional'], conditions: '3 meses, 10% de desconto', origin: 'direct' },
+  { id: 'plan-1', name: 'Mensal Básico', price: 99.9, modalities: ['Musculação'], conditions: 'Sem fidelidade', origin: 'direct' },
+  { id: 'plan-2', name: 'Trimestral Plus', price: 259.9, modalities: ['Musculação', 'Funcional'], conditions: '3 meses, 10% de desconto', origin: 'direct' },
 ]
 
 export const seedProfissionais: Profissional[] = [
@@ -47,7 +47,7 @@ export const seedProfissionais: Profissional[] = [
     phone: '(11) 90000-0001',
     birthDate: '1990-04-12',
     baseType: 'instructor',
-    specialization: 'Musculacao',
+    specialization: 'Musculação',
     notes: '',
   },
   {
@@ -58,7 +58,7 @@ export const seedProfissionais: Profissional[] = [
     birthDate: '1988-09-03',
     baseType: 'personalTrainer',
     specialization: 'Treinamento funcional',
-    notes: 'Treinos dinamicos com foco em mobilidade e condicionamento.',
+    notes: 'Treinos dinâmicos com foco em mobilidade e condicionamento.',
   },
   // MOCK (vitrine de personal, RF-ALU-09): mais dois personal trainers de exemplo
   // até o módulo Admin cadastrar profissionais de verdade.
@@ -69,8 +69,8 @@ export const seedProfissionais: Profissional[] = [
     phone: '(11) 90000-0004',
     birthDate: '1992-05-18',
     baseType: 'personalTrainer',
-    specialization: 'Hipertrofia e forca',
-    notes: 'Periodizacao de treino para ganho de massa muscular.',
+    specialization: 'Hipertrofia e força',
+    notes: 'Periodização de treino para ganho de massa muscular.',
   },
   {
     id: 'prof-4',
@@ -80,18 +80,18 @@ export const seedProfissionais: Profissional[] = [
     birthDate: '1995-12-02',
     baseType: 'personalTrainer',
     specialization: 'Emagrecimento',
-    notes: 'Acompanhamento de perto para quem esta comecando.',
+    notes: 'Acompanhamento de perto para quem está começando.',
   },
 ]
 
 export const seedAtendentes: Atendente[] = [
-  { id: 'attendant-1', name: 'Paula Rocha', cpf: '555.555.555-55', phone: '(11) 90000-0003', cargo: 'Recepcao' },
+  { id: 'attendant-1', name: 'Paula Rocha', cpf: '555.555.555-55', phone: '(11) 90000-0003', cargo: 'Recepção' },
 ]
 
 export const seedAlunos: Aluno[] = [
   {
     id: 'sub-1',
-    fullName: 'Joao Pereira',
+    fullName: 'João Pereira',
     weight: 82,
     height: 178,
     phone: '(11) 98888-0001',
@@ -140,7 +140,7 @@ export const seedAlunos: Aluno[] = [
     cpf: '168.995.350-09',
     address: 'Rua D, 40',
     birthDate: '1999-11-21',
-    notes: 'Cancelou por mudanca de cidade.',
+    notes: 'Cancelou por mudança de cidade.',
     planoAtualId: 'plan-1',
     startDate: '2026-04-01',
     status: 'cancelled',
@@ -1387,7 +1387,7 @@ export const seedAvaliacoesFisicas: AvaliacaoFisica[] = [
     tipo: 'principal',
     alunoId: 'sub-1',
     objective: 'Emagrecimento',
-    description: 'Avaliacao inicial',
+    description: 'Avaliação inicial',
     notes: '',
     assessmentDate: '2026-10-01',
     weight: 82,
@@ -1398,7 +1398,7 @@ export const seedAvaliacoesFisicas: AvaliacaoFisica[] = [
     tipo: 'principal',
     alunoId: 'sub-2',
     objective: 'Condicionamento',
-    description: 'Avaliacao inicial',
+    description: 'Avaliação inicial',
     notes: '',
     assessmentDate: '2026-10-05',
     weight: 65,
@@ -1410,7 +1410,7 @@ export const seedAvaliacoesFisicas: AvaliacaoFisica[] = [
     tipo: 'principal',
     alunoId: 'sub-6',
     objective: 'Emagrecimento',
-    description: 'Avaliacao inicial com bioimpedancia',
+    description: 'Avaliação inicial com bioimpedância',
     notes: '',
     assessmentDate: dataRelativa(-80),
     weight: 74,
@@ -1422,7 +1422,7 @@ export const seedAvaliacoesFisicas: AvaliacaoFisica[] = [
     alunoId: 'sub-6',
     objective: 'Emagrecimento',
     description: 'Acompanhamento mensal',
-    notes: 'Boa adesao ao treino',
+    notes: 'Boa adesão ao treino',
     assessmentDate: dataRelativa(-45),
     weight: 71.5,
     measurements: { peito: 94, braco: 29.5, cintura: 78, quadril: 101, coxa: 58.5 },
@@ -1433,7 +1433,7 @@ export const seedAvaliacoesFisicas: AvaliacaoFisica[] = [
     tipo: 'principal',
     alunoId: 'sub-7',
     objective: 'Hipertrofia',
-    description: 'Avaliacao inicial',
+    description: 'Avaliação inicial',
     notes: '',
     assessmentDate: dataRelativa(-10),
     weight: 61,
@@ -1445,7 +1445,7 @@ export const seedUsuarios: Usuario[] = [
   { id: 'user-admin', nome: 'Camila Duarte', email: 'admin@biggym.com', password: 'admin123', role: 'admin', refId: 'gym-1' },
   { id: 'user-atendente', nome: 'Paula Rocha', email: 'atendente@biggym.com', password: 'atendente123', role: 'atendente', refId: 'attendant-1' },
   { id: 'user-prof', nome: 'Carla Mendes', email: 'profissional@biggym.com', password: 'prof123', role: 'professional', refId: 'prof-1' },
-  { id: 'user-sub', nome: 'Joao Pereira', email: 'aluno@biggym.com', password: 'aluno123', role: 'subscriber', refId: 'sub-1' },
+  { id: 'user-sub', nome: 'João Pereira', email: 'aluno@biggym.com', password: 'aluno123', role: 'subscriber', refId: 'sub-1' },
   { id: 'user-sub-2', nome: 'Marina Souza', email: 'marina@email.com', password: 'aluno123', role: 'subscriber', refId: 'sub-2' },
   { id: 'user-sub-3', nome: 'Carlos Eduardo Lima', email: 'carlos@email.com', password: 'aluno123', role: 'subscriber', refId: 'sub-3' },
   { id: 'user-sub-4', nome: 'Fernanda Oliveira', email: 'fernanda@email.com', password: 'aluno123', role: 'subscriber', refId: 'sub-4' },

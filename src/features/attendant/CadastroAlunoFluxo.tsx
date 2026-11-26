@@ -8,7 +8,7 @@
 // cria a senha pelo link/QR code (RF-ATD-05/06/07 + RF-ALU-01).
 import { useEffect, useState } from 'react'
 import { ArrowLeft, Check, MailCheck, UserRound, UsersRound } from 'lucide-react'
-import { Button, Card, Input, SeletorDdi } from '../../components/common'
+import { Alerta, Button, Card, Input, SeletorDdi } from '../../components/common'
 import { PagamentoCheckout } from '../../components/payment'
 import { CartaoPlano } from '../../components/plano'
 import { buscarAlunoPorCpf, buscarUsuarioPorEmail, matricularAluno, obterPlanos, salvarAluno } from '../../data'
@@ -18,6 +18,7 @@ import { gerarCpfDeTeste, motivoCpfInvalido } from '../../utils/validacoes'
 import { ConsentimentoBiometria } from './ConsentimentoBiometria'
 import { ConviteAtivacaoPainel } from './ConviteAtivacaoPainel'
 import { FaceIdPreview } from './FaceIdPreview'
+import { formatarMoeda } from '../../utils/formatacao'
 
 type Etapa = 'dados' | 'plano' | 'acesso' | 'pagamento' | 'rosto' | 'concluido'
 
@@ -190,7 +191,7 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
   }
 
   function validarCampoCpf(valor: string): string | null {
-    const motivo = motivoCpfInvalido(valor) ?? (buscarAlunoPorCpf(valor) ? 'Ja existe um aluno cadastrado com este CPF.' : null)
+    const motivo = motivoCpfInvalido(valor) ?? (buscarAlunoPorCpf(valor) ? 'Já existe um aluno cadastrado com este CPF.' : null)
     setErroCpf(motivo ?? '')
     return motivo
   }
@@ -210,11 +211,11 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
     if (!plano) return
     // RF-ATD-04: e-mail repetido bloqueia ANTES de cobrar.
     if (buscarUsuarioPorEmail(email)) {
-      setErro('Este e-mail ja esta cadastrado no sistema. Use outro e-mail.')
+      setErro('Este e-mail já está cadastrado no sistema. Use outro e-mail.')
       return
     }
     if (!emailConferido) {
-      setErro('Peca para o aluno conferir o e-mail e marque a confirmacao.')
+      setErro('Peça para o aluno conferir o e-mail e marque a confirmação.')
       return
     }
     setPagamentoPendente({
@@ -270,8 +271,8 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
       <div>
         <div className="flex flex-wrap items-center justify-between gap-4">
           <p className="text-sm font-semibold text-slate-700">
-            {visitaTeste ? 'Visita teste' : 'Nova matricula'}
-            <span className="font-normal text-slate-500"> · cadastro presencial no balcao</span>
+            {visitaTeste ? 'Visita teste' : 'Nova matrícula'}
+            <span className="font-normal text-slate-500"> · cadastro presencial no balcão</span>
           </p>
           <IndicadorDePassos passos={passos} atual={etapa} />
         </div>
@@ -283,7 +284,7 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
               <form onSubmit={handleDados} className="flex flex-col gap-6">
                 <div className="flex w-fit rounded-full bg-zinc-100 p-1 text-sm font-semibold">
                   {[
-                    { valor: false, label: 'Matricula', icon: UserRound },
+                    { valor: false, label: 'Matrícula', icon: UserRound },
                     { valor: true, label: 'Visita teste', icon: UsersRound },
                   ].map((opcao) => {
                     const Icone = opcao.icon
@@ -305,7 +306,7 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
                 </div>
                 {visitaTeste ? (
                   <p className="-mt-3 text-sm text-slate-500">
-                    Visita teste: so cadastro basico, sem plano e sem acesso ao app. Vira matricula quando a pessoa voltar e
+                    Visita teste: só cadastro básico, sem plano e sem acesso ao app. Vira matrícula quando a pessoa voltar e
                     escolher um plano.
                   </p>
                 ) : null}
@@ -333,11 +334,11 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
                         inputMode="numeric"
                         aria-invalid={erroCpf !== ''}
                         aria-describedby="cpf-erro"
-                        className={erroCpf ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20' : ''}
+                        className={erroCpf ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-500/20' : ''}
                         required
                       />
                       {erroCpf ? (
-                        <p id="cpf-erro" className="mt-1 text-xs text-red-600">
+                        <p id="cpf-erro" className="mt-1 text-xs text-rose-600">
                           {erroCpf}
                         </p>
                       ) : null}
@@ -373,12 +374,12 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
                           onChange={(e) => setPhone(formatarTelefone(e.target.value))}
                           placeholder="(00) 00000-0000"
                           required
-                          className="block h-10 w-full rounded-md border border-slate-300 px-3 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
+                          className="block h-10 w-full rounded-xl border border-slate-300 px-3 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
                         />
                       </div>
                     </div>
                     <div className="sm:col-span-2">
-                      <Input id="address" label="Endereco" value={address} onChange={(e) => setAddress(e.target.value)} required />
+                      <Input id="address" label="Endereço" value={address} onChange={(e) => setAddress(e.target.value)} required />
                     </div>
                     <Input
                       id="weight"
@@ -400,7 +401,7 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
                   </div>
                 </Card>
 
-                {erro ? <p className="text-sm text-red-600">{erro}</p> : null}
+                {erro ? <Alerta tipo="erro">{erro}</Alerta> : null}
                 <Button type="submit" className="self-end">
                   {visitaTeste ? 'Continuar para o rosto' : 'Continuar para o plano'}
                 </Button>
@@ -412,7 +413,7 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
               <div className="flex flex-col gap-5">
                 <div>
                   <h2 className="font-heading text-lg font-semibold text-slate-900">Qual plano {fullName.split(' ')[0]} vai fazer?</h2>
-                  <p className="text-sm text-slate-500">A primeira mensalidade e cobrada agora, no balcao.</p>
+                  <p className="text-sm text-slate-500">A primeira mensalidade é cobrada agora, no balcão.</p>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   {planos.map((item) => (
@@ -427,7 +428,7 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
                     />
                   ))}
                 </div>
-                {erro ? <p className="text-sm text-red-600">{erro}</p> : null}
+                {erro ? <Alerta tipo="erro">{erro}</Alerta> : null}
                 <div className="flex items-center justify-between">
                   <BotaoVoltar onClick={() => irPara('dados')} />
                   <Button onClick={handlePlano}>Continuar para o acesso</Button>
@@ -440,8 +441,8 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
               <form onSubmit={handleAcesso} className="flex flex-col gap-5">
                 <Card title="Acesso ao app">
                   <p className="text-sm text-slate-600">
-                    Informe so o e-mail. A senha <strong>nao</strong> e definida aqui: depois do pagamento, o sistema gera um
-                    convite e o proprio aluno cria a senha pelo celular.
+                    Informe só o e-mail. A senha <strong>não</strong> é definida aqui: depois do pagamento, o sistema gera um
+                    convite e o próprio aluno cria a senha pelo celular.
                   </p>
                   <div className="mt-4">
                     <Input
@@ -471,12 +472,12 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
                           onChange={(e) => setEmailConferido(e.target.checked)}
                           className="h-4 w-4 accent-emerald-700"
                         />
-                        O aluno conferiu e o e-mail esta correto
+                        O aluno conferiu e o e-mail está correto
                       </label>
                     </div>
                   ) : null}
                 </Card>
-                {erro ? <p className="text-sm text-red-600">{erro}</p> : null}
+                {erro ? <Alerta tipo="erro">{erro}</Alerta> : null}
                 <div className="flex items-center justify-between">
                   <BotaoVoltar onClick={() => irPara('plano')} />
                   <Button type="submit" disabled={!emailConferido}>
@@ -504,12 +505,10 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
             {etapa === 'rosto' ? (
               <div className="mx-auto flex max-w-xl flex-col gap-4">
                 {!visitaTeste ? (
-                  <p className="flex items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
-                    <Check size={16} /> Pagamento confirmado — matricula de {fullName} ativa.
-                  </p>
+                  <Alerta tipo="sucesso">Pagamento confirmado — matrícula de {fullName} ativa.</Alerta>
                 ) : null}
                 <p className="text-sm text-slate-600">
-                  Cadastro do rosto para o check-in. Esta etapa e opcional — pode ser feita depois pela ficha do aluno.
+                  Cadastro do rosto para o check-in. Esta etapa é opcional — pode ser feita depois pela ficha do aluno.
                 </p>
                 <ConsentimentoBiometria nomeAluno={fullName} consentiu={consentiuBiometria} onAlterar={setConsentiuBiometria} />
                 {consentiuBiometria ? (
@@ -517,7 +516,7 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
                     <FaceIdPreview onCapturar={handleCapturar} rotulo="Cadastrar rosto" />
                   </div>
                 ) : null}
-                {erro ? <p className="text-sm text-red-600">{erro}</p> : null}
+                {erro ? <Alerta tipo="erro">{erro}</Alerta> : null}
                 <Button variant="secondary" className="self-start" onClick={() => concluirRosto(null)}>
                   Pular — cadastrar rosto depois
                 </Button>
@@ -533,18 +532,18 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
                   </span>
                   <div>
                     <p className="font-heading text-xl font-semibold text-slate-900">
-                      {visitaTeste ? 'Visita teste registrada' : `${fullName.split(' ')[0]} esta matriculado!`}
+                      {visitaTeste ? 'Visita teste registrada' : `${fullName.split(' ')[0]} está matriculado!`}
                     </p>
                     <p className="text-sm text-slate-500">
                       {rostoCadastrado
                         ? 'Rosto cadastrado para o check-in.'
-                        : 'Rosto nao cadastrado — complete depois pela ficha do aluno.'}
+                        : 'Rosto não cadastrado — complete depois pela ficha do aluno.'}
                     </p>
                   </div>
                 </div>
 
                 {!visitaTeste && usuarioId ? (
-                  <Card title="Convite de ativacao do app">
+                  <Card title="Convite de ativação do app">
                     <ConviteAtivacaoPainel usuarioId={usuarioId} />
                   </Card>
                 ) : null}
@@ -552,7 +551,7 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
                 <div className="flex flex-wrap gap-2">
                   <Button onClick={() => onVerFicha(alunoId)}>Ver ficha do aluno</Button>
                   <Button variant="secondary" onClick={onFechar}>
-                    Voltar a recepcao
+                    Voltar à recepção
                   </Button>
                 </div>
               </div>
@@ -562,7 +561,7 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
           {/* Resumo lateral: o que já foi decidido nesta matrícula */}
           {mostrarResumo ? (
             <aside className="h-fit rounded-2xl border border-slate-200 bg-zinc-50/60 p-5 lg:sticky lg:top-0">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Resumo da matricula</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Resumo da matrícula</p>
               <div className="mt-3 divide-y divide-slate-200/70">
                 <LinhaResumo label="Aluno" valor={fullName} />
                 <LinhaResumo label="CPF" valor={cpf} />
@@ -573,7 +572,7 @@ export function CadastroAlunoFluxo({ planoInicialId, onEmAndamento, onAlterado, 
                 <div className="mt-4 flex items-baseline justify-between border-t border-slate-200 pt-4">
                   <span className="text-sm text-slate-500">Cobrado hoje</span>
                   <span className="font-heading text-2xl font-semibold text-emerald-700">
-                    R$ {plano.price.toFixed(2).replace('.', ',')}
+                    {formatarMoeda(plano.price)}
                   </span>
                 </div>
               ) : null}

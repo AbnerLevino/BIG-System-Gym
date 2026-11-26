@@ -28,6 +28,7 @@ import type {
 } from '../../types'
 import { ChipDificuldade, ChipEquipamento, ExercicioDetalheModal } from './SubscriberTreinoPage'
 import { GRUPOS_ORDEM, ICONE_GRUPO_MUSCULAR, LABEL_DIA_SEMANA, LABEL_GRUPO_MUSCULAR } from './rotulosExercicio'
+import { formatarDataBr } from '../../utils/formatacao'
 
 const OBJETIVOS: { id: TipoObjetivo; label: string; descricao: string; icon: LucideIcon }[] = [
   { id: 'perderPeso', label: 'Perder peso', descricao: 'Reduzir gordura e peso corporal', icon: Flame },
@@ -66,10 +67,6 @@ const TITULO_PASSO: Record<Passo, string> = {
   meta: 'Defina uma meta',
 }
 
-function formatarDataBr(data: string): string {
-  const [ano, mes, dia] = data.split('-')
-  return `${dia}/${mes}/${ano}`
-}
 
 function OpcaoCartao({
   ativo,

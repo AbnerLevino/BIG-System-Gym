@@ -10,6 +10,7 @@ import { Button, Modal } from '../../components/common'
 import { contratarPersonal, obterPersonaisDisponiveis, obterPersonalDoAluno, type PersonalNaVitrine } from '../../data'
 import { useAuthStore } from '../../store/authStore'
 import type { AgendaProfissional, DiaSemana } from '../../types'
+import { formatarMoeda } from '../../utils/formatacao'
 
 const DIA_CURTO: Record<DiaSemana, string> = {
   segunda: 'Seg',
@@ -21,9 +22,6 @@ const DIA_CURTO: Record<DiaSemana, string> = {
   domingo: 'Dom',
 }
 
-function formatarMoeda(valor: number): string {
-  return `R$ ${valor.toFixed(2).replace('.', ',')}`
-}
 
 function iniciais(nome: string): string {
   const partes = nome.trim().split(/\s+/)

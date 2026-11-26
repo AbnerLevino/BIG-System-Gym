@@ -3,8 +3,8 @@
 // por registrarAvaliacaoFisica(); aqui só mostramos de antemão qual será. Numa
 // mensal, cada campo mostra o valor da avaliação anterior como referência.
 import { useMemo, useState, type FormEvent } from 'react'
-import { CheckCircle2, Search } from 'lucide-react'
-import { Button, Input } from '../../components/common'
+import { CheckCircle2, ChevronRight } from 'lucide-react'
+import { Alerta, Button, CampoBusca, Input } from '../../components/common'
 import { AvatarAluno } from '../../components/aluno'
 import { EstadoVazio, formatarDataBr } from '../../components/painel'
 import {
@@ -116,20 +116,11 @@ export function NovaAvaliacaoFluxo({
     return (
       <div>
         <p className="text-sm text-slate-500">Escolha o aluno que vai ser avaliado.</p>
-        <label className="mt-3 flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2.5 focus-within:border-emerald-700">
-          <Search size={16} className="text-slate-400" />
-          <input
-            autoFocus
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            placeholder="Buscar por nome ou CPF"
-            className="w-full text-sm outline-none"
-          />
-        </label>
+        <CampoBusca autoFocus valor={busca} onMudar={setBusca} placeholder="Buscar por nome ou CPF" className="mt-3" />
         {filtrados.length === 0 ? (
           <EstadoVazio titulo="Nenhum aluno encontrado." descricao="Só aparecem alunos com vínculo personal com você." />
         ) : (
-          <ul className="mt-3 flex flex-col gap-2">
+          <ul className="mt-3 flex flex-col gap-1">
             {filtrados.map((item) => {
               const estilo = ESTILO_SITUACAO[item.situacao]
               return (
@@ -137,13 +128,14 @@ export function NovaAvaliacaoFluxo({
                   <button
                     type="button"
                     onClick={() => escolher(item.aluno.id)}
-                    className="flex w-full items-center gap-3 rounded-xl border border-slate-200 p-3 text-left transition-colors hover:border-emerald-600/40"
+                    className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-emerald-50/60"
                   >
                     <AvatarAluno aluno={item.aluno} tamanho="sm" />
                     <span className="min-w-0 flex-1 truncate text-sm font-semibold text-slate-900">{item.aluno.fullName}</span>
                     <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${estilo.classes}`}>
                       {estilo.label}
                     </span>
+                    <ChevronRight size={16} className="shrink-0 text-slate-300 group-hover:text-emerald-700" />
                   </button>
                 </li>
               )
@@ -273,7 +265,7 @@ export function NovaAvaliacaoFluxo({
           value={rascunho.description}
           onChange={(e) => setRascunho({ ...rascunho, description: e.target.value })}
           placeholder="Condições e observações da avaliação"
-          className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
+          className="mt-1 block w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
         />
       </label>
       <Input
@@ -283,7 +275,7 @@ export function NovaAvaliacaoFluxo({
         onChange={(e) => setRascunho({ ...rascunho, notes: e.target.value })}
       />
 
-      {erro ? <p className="rounded-md border border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-700">{erro}</p> : null}
+      {erro ? <Alerta tipo="erro">{erro}</Alerta> : null}
 
       <div className="flex justify-end gap-2">
         <Button type="button" variant="secondary" onClick={onFechar}>

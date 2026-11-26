@@ -7,6 +7,7 @@ import { obterAlunoPorId, obterHistoricoDePagamentosDoAluno, obterPlanoPorId } f
 import { gerarComprovantePDF } from '../../data/pagamentoService'
 import { useAuthStore } from '../../store/authStore'
 import type { MetodoPagamento, StatusPagamento } from '../../types'
+import { formatarDataBr, formatarMoeda } from '../../utils/formatacao'
 
 const COLUNAS = ['Vencimento', 'Plano', 'Valor', 'Situação', 'Pago em', 'Forma', 'Comprovante']
 
@@ -30,11 +31,6 @@ const LABEL_METODO: Record<MetodoPagamento, string> = {
   partner: 'Parceiro',
 }
 
-function formatarDataBr(data: string | null): string {
-  if (!data) return '—'
-  const [ano, mes, dia] = data.split('-')
-  return `${dia}/${mes}/${ano}`
-}
 
 export function SubscriberFinanceiroPage() {
   const alunoId = useAuthStore((state) => state.usuarioAtual!.refId)
@@ -72,7 +68,7 @@ export function SubscriberFinanceiroPage() {
               <div key={pagamento.id} className="grid h-12 grid-cols-7 items-center">
                 <span className="px-4">{formatarDataBr(pagamento.dueDate)}</span>
                 <span className="truncate px-4">{obterPlanoPorId(pagamento.planoId)?.name ?? '—'}</span>
-                <span className="px-4">R$ {(pagamento.paidValue ?? pagamento.originalValue).toFixed(2)}</span>
+                <span className="px-4">{formatarMoeda(pagamento.paidValue ?? pagamento.originalValue)}</span>
                 <span className={`px-4 font-medium ${COR_STATUS[pagamento.status]}`}>{LABEL_STATUS[pagamento.status]}</span>
                 <span className="px-4">{formatarDataBr(pagamento.paymentDate)}</span>
                 <span className="px-4">{pagamento.paymentMethod ? LABEL_METODO[pagamento.paymentMethod] : '—'}</span>

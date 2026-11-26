@@ -5,7 +5,7 @@
 import { useState } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
 import { AppLayout } from '../../components/layout'
-import { Button, Input, Modal } from '../../components/common'
+import { Alerta, Button, Input, Modal } from '../../components/common'
 import { CabecalhoPagina } from '../../components/painel'
 import {
   DIAS_SEMANA,
@@ -19,7 +19,7 @@ import { useAuthStore } from '../../store/authStore'
 import { NOME_DIA } from './rotulos'
 
 const campoClasse =
-  'mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30'
+  'mt-1 block w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30'
 
 export function ProfessionalAgendaPage() {
   const profissionalId = useAuthStore((state) => state.usuarioAtual?.refId ?? '')
@@ -161,7 +161,7 @@ export function ProfessionalAgendaPage() {
             <Input id="fim" label="Fim" type="time" value={horaFim} onChange={(e) => setHoraFim(e.target.value)} />
           </div>
           <p className="text-xs text-slate-500">O horário se repete toda semana.</p>
-          {erro ? <p className="rounded-md border border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-700">{erro}</p> : null}
+          {erro ? <Alerta tipo="erro">{erro}</Alerta> : null}
           <div className="flex justify-end gap-2">
             <Button variant="secondary" onClick={() => setAdicionandoEm(null)}>
               Cancelar

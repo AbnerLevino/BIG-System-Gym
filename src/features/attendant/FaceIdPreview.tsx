@@ -3,6 +3,7 @@
 // necessária) — evita o bug de tentar plugar o video num elemento que ainda não existe.
 import { useEffect, useRef, useState } from 'react'
 import { carregarModelos, extrairDescritor } from '../../utils/faceRecognition'
+import { Alerta } from '../../components/common'
 
 interface CapturaResultado {
   descriptor: number[]
@@ -35,7 +36,7 @@ export function FaceIdPreview({ onCapturar, rotulo }: FaceIdPreviewProps) {
           videoRef.current.srcObject = stream
         }
       } catch {
-        if (!cancelado) setErro('Nao foi possivel acessar a camera ou carregar o reconhecimento facial.')
+        if (!cancelado) setErro('Não foi possível acessar a câmera ou carregar o reconhecimento facial.')
       } finally {
         if (!cancelado) setCarregando(false)
       }
@@ -81,12 +82,12 @@ export function FaceIdPreview({ onCapturar, rotulo }: FaceIdPreviewProps) {
         className="aspect-square w-full rounded-full border-4 border-emerald-700/30 object-cover"
       />
       {carregando ? <p className="text-sm text-slate-600">Carregando reconhecimento facial...</p> : null}
-      {erro ? <p className="text-sm text-red-600">{erro}</p> : null}
+      {erro ? <Alerta tipo="erro">{erro}</Alerta> : null}
       <button
         type="button"
         disabled={carregando}
         onClick={handleCapturar}
-        className="inline-flex items-center justify-center rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex items-center justify-center rounded-xl bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {rotulo ?? 'Capturar rosto'}
       </button>

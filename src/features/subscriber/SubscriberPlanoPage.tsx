@@ -13,15 +13,9 @@ import {
   obterProximoPagamentoEmAberto,
 } from '../../data'
 import { useAuthStore } from '../../store/authStore'
+import { formatarDataBr, formatarMoeda } from '../../utils/formatacao'
 
-function formatarDataBr(data: string): string {
-  const [ano, mes, dia] = data.split('-')
-  return `${dia}/${mes}/${ano}`
-}
 
-function formatarMoeda(valor: number): string {
-  return `R$ ${valor.toFixed(2).replace('.', ',')}`
-}
 
 export function SubscriberPlanoPage() {
   const alunoId = useAuthStore((state) => state.usuarioAtual!.refId)

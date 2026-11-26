@@ -7,6 +7,7 @@ import { obterCheckins } from './checkinRepository'
 import { obterHistoricoPlanos } from './historicoPlanoRepository'
 import { obterPagamentos } from './pagamentoRepository'
 import { obterPlanoPorId } from './planoRepository'
+import { formatarMoeda } from '../utils/formatacao'
 
 // Janela de "renovação": cobrança em aberto que vence de hoje até daqui a 7 dias.
 const DIAS_JANELA_RENOVACAO = 7
@@ -76,9 +77,6 @@ function diasAte(dataISO: string): number {
   return Math.round((new Date(ano, mes - 1, dia).getTime() - hoje.getTime()) / 86_400_000)
 }
 
-function formatarMoeda(valor: number): string {
-  return `R$ ${valor.toFixed(2).replace('.', ',')}`
-}
 
 function pendenciaDeCobranca(aluno: Aluno, pagamento: Pagamento): Pendencia | null {
   const dias = diasAte(pagamento.dueDate)

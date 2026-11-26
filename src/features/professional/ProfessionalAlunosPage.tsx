@@ -2,9 +2,9 @@
 // situação da avaliação física de cada um (junta o que antes eram as telas
 // "Alunos" e "Avaliações físicas"). Ficha e nova avaliação abrem em modal.
 import { useCallback, useState } from 'react'
-import { ClipboardPlus, Search } from 'lucide-react'
+import { ClipboardPlus } from 'lucide-react'
 import { AppLayout } from '../../components/layout'
-import { Button } from '../../components/common'
+import { Button, CampoBusca } from '../../components/common'
 import { Abas, CabecalhoPagina, EstadoVazio, ItemAluno } from '../../components/painel'
 import { obterAlunosDoProfissional, type SituacaoAvaliacao } from '../../data'
 import { useAuthStore } from '../../store/authStore'
@@ -50,15 +50,7 @@ export function ProfessionalAlunosPage() {
 
       <div className="mt-7 flex flex-wrap items-center justify-between gap-3">
         <Abas abas={abas} ativa={filtro} onTrocar={setFiltro} />
-        <label className="flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 focus-within:border-emerald-700 sm:w-72">
-          <Search size={16} className="text-slate-400" />
-          <input
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            placeholder="Buscar por nome ou CPF"
-            className="w-full text-sm outline-none"
-          />
-        </label>
+        <CampoBusca valor={busca} onMudar={setBusca} placeholder="Buscar por nome ou CPF" className="w-full sm:w-72" />
       </div>
 
       {visiveis.length === 0 ? (

@@ -4,6 +4,7 @@
 import type { ReactNode } from 'react'
 import { Check, Handshake } from 'lucide-react'
 import type { NomeParceiro, Plano } from '../../types'
+import { formatarMoeda } from '../../utils/formatacao'
 
 const LABEL_PARCEIRO: Record<NomeParceiro, string> = {
   totalpass: 'TotalPass',
@@ -50,7 +51,7 @@ export function CartaoPlano({ plano, selecionado = false, onSelecionar, destaque
       ) : null}
 
       <p className="mt-3 font-heading text-3xl font-semibold text-emerald-700">
-        R$ {plano.price.toFixed(2).replace('.', ',')}
+        {formatarMoeda(plano.price)}
       </p>
       {plano.conditions ? <p className="mt-1 text-sm text-slate-500">{plano.conditions}</p> : null}
 

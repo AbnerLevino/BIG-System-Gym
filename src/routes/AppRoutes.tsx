@@ -11,7 +11,6 @@ import { AdminDashboardPage } from '../features/admin/AdminDashboardPage'
 
 import { AttendantDashboardPage } from '../features/attendant/AttendantDashboardPage'
 import { AttendantCheckinPage } from '../features/attendant/AttendantCheckinPage'
-import { AttendantPagamentoPage } from '../features/attendant/AttendantPagamentoPage'
 import { AttendantPlanosPage } from '../features/attendant/AttendantPlanosPage'
 import { ProfessionalDashboardPage } from '../features/professional/ProfessionalDashboardPage'
 import { ProfessionalAlunosPage } from '../features/professional/ProfessionalAlunosPage'
@@ -67,14 +66,6 @@ export function AppRoutes() {
         element={
           <ProtectedRoute allowedRole="atendente">
             <AttendantPlanosPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/atendente/pagamento/:alunoId"
-        element={
-          <ProtectedRoute allowedRole="atendente">
-            <AttendantPagamentoPage />
           </ProtectedRoute>
         }
       />

@@ -147,7 +147,7 @@ export function Sidebar() {
               to={item.to}
               end
               className={({ isActive }) =>
-                `flex items-center gap-3 overflow-hidden rounded-md px-3 py-2 text-sm font-medium transition-all duration-200 ease-out hover:scale-105 ${
+                `flex items-center gap-3 overflow-hidden rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200 ease-out hover:scale-105 ${
                   isActive
                     ? 'bg-[#E7F6EF] text-emerald-700'
                     : 'text-zinc-500 hover:bg-zinc-50 hover:text-emerald-700'

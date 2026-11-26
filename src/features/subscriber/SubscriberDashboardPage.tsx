@@ -18,6 +18,7 @@ import {
 } from '../../data'
 import { useAuthStore } from '../../store/authStore'
 import type { DiaSemana, StatusPagamento, TipoMeta } from '../../types'
+import { formatarDataBr, formatarMoeda } from '../../utils/formatacao'
 
 const LABEL_STATUS_PAGAMENTO: Record<StatusPagamento, string> = {
   paid: 'Pago',
@@ -47,10 +48,6 @@ const LABEL_TIPO_META: Record<TipoMeta, string> = {
   frequency: 'Frequência',
 }
 
-function formatarDataBr(data: string): string {
-  const [ano, mes, dia] = data.split('-')
-  return `${dia}/${mes}/${ano}`
-}
 
 function LinkCard({ to, children }: { to: string; children: React.ReactNode }) {
   return (
@@ -91,7 +88,7 @@ export function SubscriberDashboardPage() {
             </div>
             {proximoPagamento ? (
               <>
-                <p className="mt-3 text-3xl font-bold text-slate-900">R$ {proximoPagamento.originalValue.toFixed(2)}</p>
+                <p className="mt-3 text-3xl font-bold text-slate-900">{formatarMoeda(proximoPagamento.originalValue)}</p>
                 <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-600">
                   <CalendarClock size={14} /> Vence em {formatarDataBr(proximoPagamento.dueDate)}
                 </p>

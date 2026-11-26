@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import QRCode from 'qrcode'
 import { Check } from 'lucide-react'
-import { Button, Card } from '../common'
+import { Alerta, Button, Card } from '../common'
 import { processarPagamento } from '../../data/pagamentoService'
 import { formatarNumeroCartao, formatarValidadeCartao, detectarBandeiraCartao } from '../../utils/mascaras'
 import type { MetodoPagamento, Pagamento } from '../../types'
 import { ComprovantePagamento } from './ComprovantePagamento'
 import { CardBrandIcon } from './CardBrandIcon'
+import { formatarMoeda } from '../../utils/formatacao'
 
 const CHAVE_PIX_FAKE = 'academia@biggym.com'
 
@@ -26,8 +27,8 @@ interface PagamentoCheckoutProps {
 
 const METODOS: { id: MetodoPagamento; label: string }[] = [
   { id: 'pix', label: 'Pix' },
-  { id: 'creditCard', label: 'Cartao de credito' },
-  { id: 'debitCard', label: 'Cartao de debito' },
+  { id: 'creditCard', label: 'Cartão de crédito' },
+  { id: 'debitCard', label: 'Cartão de débito' },
   { id: 'cash', label: 'Dinheiro' },
 ]
 
@@ -75,7 +76,7 @@ export function PagamentoCheckout({
     const { aprovado, pagamentoAtualizado } = await processarPagamento(pagamento, metodo)
 
     if (!aprovado) {
-      setErro('Pagamento recusado. Tente novamente ou escolha outro metodo.')
+      setErro('Pagamento recusado. Tente novamente ou escolha outro método.')
       setEstado('selecionando')
       return
     }
@@ -139,7 +140,7 @@ export function PagamentoCheckout({
   return (
     <Card title="Pagamento">
       <p className="text-sm text-slate-600">
-        {descricao ?? `Primeira cobranca de ${nomeAluno}`} — R$ {pagamento.originalValue.toFixed(2)}
+        {descricao ?? `Primeira cobrança de ${nomeAluno}`} — {formatarMoeda(pagamento.originalValue)}
       </p>
 
       <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -151,7 +152,7 @@ export function PagamentoCheckout({
               setMetodo(item.id)
               setErro('')
             }}
-            className={`rounded-md border-2 p-3 text-sm font-medium transition-colors ${
+            className={`rounded-xl border-2 p-3 text-sm font-medium transition-colors ${
               metodo === item.id ? 'border-emerald-700 bg-emerald-50 text-emerald-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'
             }`}
           >
@@ -161,25 +162,25 @@ export function PagamentoCheckout({
       </div>
 
       {metodo === 'pix' ? (
-        <div className="mt-4 flex flex-col items-center gap-3 rounded-md border border-slate-200 p-4">
+        <div className="mt-4 flex flex-col items-center gap-3 rounded-xl border border-slate-200 p-4">
           {qrCodeUrl ? <img src={qrCodeUrl} alt="QR Code Pix" className="h-40 w-40" /> : null}
           <p className="text-xs text-slate-500">Chave Pix: {CHAVE_PIX_FAKE}</p>
           <Button type="button" variant="secondary" onClick={handleCopiarCodigoPix}>
-            {copiado ? 'Codigo copiado!' : 'Copiar codigo Pix'}
+            {copiado ? 'Código copiado!' : 'Copiar código Pix'}
           </Button>
         </div>
       ) : null}
 
       {metodo === 'creditCard' || metodo === 'debitCard' ? (
-        <div className="mt-4 flex flex-col gap-3 rounded-md border border-slate-200 p-4">
+        <div className="mt-4 flex flex-col gap-3 rounded-xl border border-slate-200 p-4">
           <label className="block text-sm font-medium text-slate-700">
-            Numero do cartao
+            Número do cartão
             <div className="relative mt-1">
               <input
                 value={numeroCartao}
                 onChange={(e) => setNumeroCartao(formatarNumeroCartao(e.target.value))}
                 placeholder="0000 0000 0000 0000"
-                className="block w-full rounded-md border border-slate-300 px-3 py-2 pr-11 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
+                className="block w-full rounded-xl border border-slate-300 px-3 py-2 pr-11 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
               />
               <CardBrandIcon
                 bandeira={bandeiraDigitada}
@@ -188,11 +189,11 @@ export function PagamentoCheckout({
             </div>
           </label>
           <label className="block text-sm font-medium text-slate-700">
-            Nome impresso no cartao
+            Nome impresso no cartão
             <input
               value={nomeCartao}
               onChange={(e) => setNomeCartao(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
+              className="mt-1 block w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
             />
           </label>
           <div className="flex gap-3">
@@ -202,7 +203,7 @@ export function PagamentoCheckout({
                 value={validadeCartao}
                 onChange={(e) => setValidadeCartao(formatarValidadeCartao(e.target.value))}
                 placeholder="MM/AA"
-                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
+                className="mt-1 block w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
               />
             </label>
             <label className="block flex-1 text-sm font-medium text-slate-700">
@@ -211,7 +212,7 @@ export function PagamentoCheckout({
                 value={cvv}
                 onChange={(e) => setCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
                 placeholder="000"
-                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
+                className="mt-1 block w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
               />
             </label>
           </div>
@@ -219,12 +220,12 @@ export function PagamentoCheckout({
       ) : null}
 
       {metodo === 'cash' ? (
-        <div className="mt-4 rounded-md border border-slate-200 p-4">
-          <p className="text-sm text-slate-600">Confirme que recebeu o valor em dinheiro no balcao.</p>
+        <div className="mt-4 rounded-xl border border-slate-200 p-4">
+          <p className="text-sm text-slate-600">Confirme que recebeu o valor em dinheiro no balcão.</p>
         </div>
       ) : null}
 
-      {erro ? <p className="mt-3 text-sm text-red-600">{erro}</p> : null}
+      {erro ? <Alerta tipo="erro" className="mt-3">{erro}</Alerta> : null}
 
       {metodo ? (
         <Button

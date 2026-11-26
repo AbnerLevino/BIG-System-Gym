@@ -6,12 +6,8 @@ import { AppLayout } from '../../components/layout'
 import { Button, Card, Input } from '../../components/common'
 import { TAMANHO_MINIMO_SENHA, alterarSenha, obterAlunoPorId, obterPlanoPorId } from '../../data'
 import { useAuthStore } from '../../store/authStore'
+import { formatarDataBr } from '../../utils/formatacao'
 
-function formatarDataBr(data: string): string {
-  if (!data) return '—'
-  const [ano, mes, dia] = data.split('-')
-  return `${dia}/${mes}/${ano}`
-}
 
 function Linha({ label, valor }: { label: string; valor: string }) {
   return (

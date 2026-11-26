@@ -99,8 +99,5 @@ export function Linha({ label, valor }: { label: string; valor: ReactNode }) {
   )
 }
 
-export function formatarDataBr(data: string | null | undefined): string {
-  if (!data) return '—'
-  const [ano, mes, dia] = data.split('-')
-  return `${dia}/${mes}/${ano}`
-}
+
+export { formatarDataBr } from '../../utils/formatacao'

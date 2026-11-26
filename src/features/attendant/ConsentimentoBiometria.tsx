@@ -8,7 +8,7 @@ interface ConsentimentoBiometriaProps {
 
 export function ConsentimentoBiometria({ nomeAluno, consentiu, onAlterar }: ConsentimentoBiometriaProps) {
   return (
-    <label className="flex items-start gap-3 rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-slate-700">
+    <label className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-slate-700">
       <input
         type="checkbox"
         checked={consentiu}
@@ -16,9 +16,9 @@ export function ConsentimentoBiometria({ nomeAluno, consentiu, onAlterar }: Cons
         className="mt-0.5 h-4 w-4 shrink-0 accent-emerald-700"
       />
       <span>
-        <strong>{nomeAluno || 'O aluno'}</strong> autoriza, de forma especifica, a coleta e o uso da sua biometria facial
-        apenas para identificacao no check-in da academia. A biometria e dado sensivel (LGPD, art. 5º, II) e o
-        consentimento pode ser revogado na recepcao.
+        <strong>{nomeAluno || 'O aluno'}</strong> autoriza, de forma específica, a coleta e o uso da sua biometria facial
+        apenas para identificação no check-in da academia. A biometria é dado sensível (LGPD, art. 5º, II) e o
+        consentimento pode ser revogado na recepção.
       </span>
     </label>
   )

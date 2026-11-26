@@ -18,7 +18,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { AppLayout } from '../../components/layout'
-import { Modal } from '../../components/common'
+import { Confirmacao, Modal } from '../../components/common'
 import {
   Abas,
   AcaoRapida,
@@ -42,6 +42,7 @@ import { useAuthStore } from '../../store/authStore'
 import { AlunoDetalhe } from './AlunoDetalhe'
 import { BuscaAlunoModal } from './BuscaAlunoModal'
 import { CadastroAlunoFluxo } from './CadastroAlunoFluxo'
+import { RecebimentoBalcao } from './RecebimentoBalcao'
 import { SelecionarCobrancaModal } from './SelecionarCobrancaModal'
 
 // ---------- Atenção necessária ----------
@@ -131,6 +132,10 @@ export function AttendantDashboardPage() {
   const abrirAluno = (id: string) => setSearchParams({ aluno: id })
   const fecharAluno = () => setSearchParams({})
 
+  // Recebimento no balcão também é modal (?pagamento=alunoId); ao concluir, volta pra ficha.
+  const alunoPagandoId = searchParams.get('pagamento')
+  const abrirPagamento = (id: string) => setSearchParams({ pagamento: id })
+
   // Cadastro também fica na URL (?cadastro=novo[&plano=id]) — é assim que o
   // "Matricular neste plano" do catálogo de planos abre o modal já no plano.
   const cadastroAberto = searchParams.get('cadastro') === 'novo'
@@ -145,9 +150,18 @@ export function AttendantDashboardPage() {
     setSearchParams({ cadastro: 'novo' })
   }
 
+  // Fechar com dados já preenchidos pede confirmação (modal, não o window.confirm).
+  const [confirmandoDescarte, setConfirmandoDescarte] = useState(false)
   function fecharCadastro() {
-    if (cadastroEmAndamento.current && !window.confirm('Descartar o cadastro em andamento?')) return
+    if (cadastroEmAndamento.current) {
+      setConfirmandoDescarte(true)
+      return
+    }
+    setSearchParams({})
+  }
+  function descartarCadastro() {
     cadastroEmAndamento.current = false
+    setConfirmandoDescarte(false)
     setSearchParams({})
   }
 
@@ -253,7 +267,7 @@ export function AttendantDashboardPage() {
                   key={pendencia.id}
                   pendencia={pendencia}
                   onAbrirAluno={() => abrirAluno(pendencia.alunoId)}
-                  onReceber={() => navigate(`/atendente/pagamento/${pendencia.alunoId}`)}
+                  onReceber={() => abrirPagamento(pendencia.alunoId)}
                 />
               ))}
             </ul>
@@ -309,7 +323,29 @@ export function AttendantDashboardPage() {
         }}
       />
 
-      <SelecionarCobrancaModal open={escolhendoCobranca} onClose={() => setEscolhendoCobranca(false)} />
+      <SelecionarCobrancaModal
+        open={escolhendoCobranca}
+        onClose={() => setEscolhendoCobranca(false)}
+        onSelecionar={(id) => {
+          setEscolhendoCobranca(false)
+          abrirPagamento(id)
+        }}
+      />
+
+      <Modal open={alunoPagandoId !== null} title="Receber pagamento no balcão" size="lg" onClose={fecharAluno}>
+        {alunoPagandoId ? (
+          <RecebimentoBalcao
+            key={alunoPagandoId}
+            alunoId={alunoPagandoId}
+            onVoltarFicha={() => abrirAluno(alunoPagandoId)}
+            onConcluido={() => {
+              recarregarResumo()
+              abrirAluno(alunoPagandoId)
+            }}
+          />
+        ) : null}
+      </Modal>
+
 
       <Modal open={cadastroAberto} title="Cadastrar aluno" size="xl" onClose={fecharCadastro}>
         {cadastroAberto ? (
@@ -335,6 +371,19 @@ export function AttendantDashboardPage() {
           <AlunoDetalhe key={alunoAbertoId} alunoId={alunoAbertoId} onAlterado={recarregarResumo} />
         ) : null}
       </Modal>
+
+      {/* Por último: precisa ficar por cima do modal de cadastro. */}
+      <Confirmacao
+        open={confirmandoDescarte}
+        titulo="Descartar cadastro?"
+        textoConfirmar="Descartar cadastro"
+        textoCancelar="Continuar cadastrando"
+        perigo
+        onConfirmar={descartarCadastro}
+        onCancelar={() => setConfirmandoDescarte(false)}
+      >
+        Os dados preenchidos até agora serão perdidos.
+      </Confirmacao>
     </AppLayout>
   )
 }

@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import QRCode from 'qrcode'
 import { CheckCircle2, Copy, Mail, RefreshCw } from 'lucide-react'
-import { Button, Input } from '../../components/common'
+import { Alerta, Button, Input } from '../../components/common'
 import {
   corrigirEmailEReenviarConvite,
   gerarConviteAtivacao,
@@ -105,7 +105,7 @@ export function ConviteAtivacaoPainel({ usuarioId, onAlterado }: ConviteAtivacao
               link chegaria por e-mail.
             </p>
             <p className="mt-2 text-xs text-slate-500">Uso único · válido até {formatarDataHora(convite.expiraEm)}</p>
-            <div className="mt-3 flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+            <div className="mt-3 flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
               <code className="min-w-0 flex-1 truncate text-xs text-slate-600">{link}</code>
               <button
                 type="button"
@@ -135,7 +135,7 @@ export function ConviteAtivacaoPainel({ usuarioId, onAlterado }: ConviteAtivacao
             autoFocus
           />
           <p className="text-xs text-slate-500">O link anterior deixa de funcionar e um novo é gerado — o cadastro não é duplicado.</p>
-          {erro ? <p className="text-sm text-red-600">{erro}</p> : null}
+          {erro ? <Alerta tipo="erro">{erro}</Alerta> : null}
           <div className="flex gap-2">
             <Button type="submit">Corrigir e gerar novo link</Button>
             <Button

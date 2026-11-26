@@ -2,7 +2,9 @@
 import type { DiaSemana, StatusMeta } from '../../types'
 import type { AlunoDoProfissional, SituacaoAvaliacao } from '../../data'
 import type { SeloItem } from '../../components/painel'
-import { formatarDataBr } from '../../components/painel'
+import { formatarDataBr, formatarNumero } from '../../utils/formatacao'
+
+export { formatarNumero }
 
 export const NOME_DIA: Record<DiaSemana, string> = {
   segunda: 'Segunda',
@@ -20,10 +22,6 @@ export const ESTILO_SITUACAO: Record<SituacaoAvaliacao, SeloItem & { barra: stri
   emDia: { label: 'Em dia', classes: 'bg-emerald-50 text-emerald-700', barra: 'bg-emerald-500' },
 }
 
-// Número no formato brasileiro: 71.5 -> "71,5".
-export function formatarNumero(valor: number): string {
-  return valor.toLocaleString('pt-BR', { maximumFractionDigits: 1 })
-}
 
 const ROTULO_MEDIDA: Record<string, string> = {
   peito: 'Peito',

@@ -23,7 +23,7 @@ interface IndicadorProps {
 
 export function Indicador({ icon: Icone, iconClasses, valor, titulo, contexto }: IndicadorProps) {
   return (
-    <div className="flex items-center gap-4 px-6 py-5">
+    <div className="flex items-center gap-4 px-5 py-4 sm:px-6 sm:py-5">
       <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${iconClasses}`}>
         <Icone size={22} />
       </span>
@@ -32,7 +32,7 @@ export function Indicador({ icon: Icone, iconClasses, valor, titulo, contexto }:
           <span className="font-heading text-3xl font-semibold leading-none text-slate-900">{valor}</span>
           <span className="text-sm font-semibold text-slate-700">{titulo}</span>
         </div>
-        <p className="mt-1 truncate text-xs text-slate-500">{contexto}</p>
+        <p className="mt-1 text-xs text-slate-500 md:truncate">{contexto}</p>
       </div>
     </div>
   )
