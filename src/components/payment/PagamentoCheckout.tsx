@@ -18,6 +18,10 @@ interface PagamentoCheckoutProps {
   cpf: string
   planoNome: string
   onAprovado: (pagamentoAtualizado: Pagamento) => void
+  // Texto acima dos métodos; padrão é o da primeira cobrança no cadastro.
+  descricao?: string
+  // Métodos oferecidos; no app do aluno não faz sentido "Dinheiro".
+  metodosPermitidos?: MetodoPagamento[]
 }
 
 const METODOS: { id: MetodoPagamento; label: string }[] = [
@@ -30,7 +34,16 @@ const METODOS: { id: MetodoPagamento; label: string }[] = [
 // Dado de cartao (numero/validade/cvv) fica só neste estado local e nunca é
 // persistido em nenhum repository — some quando o componente desmonta. Só a
 // bandeira e os ultimos 4 digitos (derivados) chegam no comprovante.
-export function PagamentoCheckout({ pagamento, nomeAluno, cpf, planoNome, onAprovado }: PagamentoCheckoutProps) {
+export function PagamentoCheckout({
+  pagamento,
+  nomeAluno,
+  cpf,
+  planoNome,
+  onAprovado,
+  descricao,
+  metodosPermitidos,
+}: PagamentoCheckoutProps) {
+  const metodos = metodosPermitidos ? METODOS.filter((item) => metodosPermitidos.includes(item.id)) : METODOS
   const [estado, setEstado] = useState<EstadoPagamento>('selecionando')
   const [metodo, setMetodo] = useState<MetodoPagamento | null>(null)
   const [numeroCartao, setNumeroCartao] = useState('')
@@ -126,11 +139,11 @@ export function PagamentoCheckout({ pagamento, nomeAluno, cpf, planoNome, onApro
   return (
     <Card title="Pagamento">
       <p className="text-sm text-slate-600">
-        Primeira cobranca de {nomeAluno} — R$ {pagamento.originalValue.toFixed(2)}
+        {descricao ?? `Primeira cobranca de ${nomeAluno}`} — R$ {pagamento.originalValue.toFixed(2)}
       </p>
 
       <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        {METODOS.map((item) => (
+        {metodos.map((item) => (
           <button
             key={item.id}
             type="button"

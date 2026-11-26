@@ -27,3 +27,23 @@ export function salvarPagamento(pagamento: Pagamento): void {
     writeCollection(KEY, updated)
   }
 }
+
+// Próxima cobrança em aberto (pending/late) do aluno: a de vencimento mais antigo.
+export function obterProximoPagamentoEmAberto(alunoId: string): Pagamento | undefined {
+  return obterPagamentosPorAluno(alunoId)
+    .filter((pagamento) => pagamento.status !== 'paid')
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate))[0]
+}
+
+// Pagamento que representa a situação atual do aluno: o próximo em aberto, ou,
+// se está tudo pago, o último pago (vencimento mais recente).
+export function obterPagamentoReferenciaDoAluno(alunoId: string): Pagamento | undefined {
+  const emAberto = obterProximoPagamentoEmAberto(alunoId)
+  if (emAberto) return emAberto
+  return obterPagamentosPorAluno(alunoId).sort((a, b) => b.dueDate.localeCompare(a.dueDate))[0]
+}
+
+// Histórico do aluno, do vencimento mais recente pro mais antigo.
+export function obterHistoricoDePagamentosDoAluno(alunoId: string): Pagamento[] {
+  return obterPagamentosPorAluno(alunoId).sort((a, b) => b.dueDate.localeCompare(a.dueDate))
+}

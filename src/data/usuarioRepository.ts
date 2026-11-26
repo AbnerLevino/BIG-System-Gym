@@ -14,12 +14,30 @@ export function obterUsuarios(): Usuario[] {
   return readCollection<Usuario>(KEY, seedUsuarios)
 }
 
+// Conta pendente de ativação (password vazio) nunca casa com credencial nenhuma.
 export function buscarUsuarioPorCredenciais(email: string, password: string): Usuario | undefined {
+  if (password === '') return undefined
   return obterUsuarios().find((usuario) => usuario.email === email && usuario.password === password)
 }
 
+// Usuario criado pelo atendente que ainda não definiu a senha pelo convite.
+export function usuarioPendenteDeSenha(usuario: Usuario): boolean {
+  return usuario.password === ''
+}
+
+export function obterUsuarioPorId(id: string): Usuario | undefined {
+  return obterUsuarios().find((usuario) => usuario.id === id)
+}
+
+// E-mail é comparado sem diferenciar maiúsculas e sem espaços nas pontas.
 export function buscarUsuarioPorEmail(email: string): Usuario | undefined {
-  return obterUsuarios().find((usuario) => usuario.email === email)
+  const normalizado = email.trim().toLowerCase()
+  return obterUsuarios().find((usuario) => usuario.email.trim().toLowerCase() === normalizado)
+}
+
+// Usuario de login ligado a um registro de negócio (ex: o Aluno) pelo refId.
+export function buscarUsuarioPorRefId(refId: string): Usuario | undefined {
+  return obterUsuarios().find((usuario) => usuario.refId === refId)
 }
 
 export function salvarUsuario(usuario: Usuario): void {

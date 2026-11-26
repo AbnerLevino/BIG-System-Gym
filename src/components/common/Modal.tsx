@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-type ModalSize = 'md' | 'lg'
+type ModalSize = 'md' | 'lg' | 'xl'
 
 interface ModalProps {
   open: boolean
@@ -13,6 +13,7 @@ interface ModalProps {
 const SIZE_CLASSES: Record<ModalSize, string> = {
   md: 'max-w-md',
   lg: 'max-w-2xl',
+  xl: 'max-w-5xl',
 }
 
 export function Modal({ open, title, onClose, children, size = 'md' }: ModalProps) {

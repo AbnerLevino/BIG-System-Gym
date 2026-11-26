@@ -23,9 +23,17 @@ export function LoginPage() {
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
-    const success = login(email, password)
-    if (!success) {
+    const resultado = login(email, password)
+    if (resultado === 'invalido') {
       setError('E-mail ou senha invalidos.')
+      return
+    }
+    if (resultado === 'pendente') {
+      setError('Sua conta ainda nao foi ativada. Use o link de ativacao que voce recebeu na recepcao.')
+      return
+    }
+    if (resultado === 'bloqueado') {
+      setError('Matricula cancelada. Procure a recepcao da academia.')
       return
     }
     setError('')
@@ -35,7 +43,11 @@ export function LoginPage() {
 
   function handleDemoLogin(role: PapelUsuario) {
     const success = loginAsDemo(role)
-    if (success) navigate(ROLE_HOME[role])
+    if (!success) {
+      setError('Acesso bloqueado para este usuario de demonstracao (matricula cancelada).')
+      return
+    }
+    navigate(ROLE_HOME[role])
   }
 
   return (
