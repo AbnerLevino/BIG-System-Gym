@@ -1,568 +1,172 @@
-
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import {
-  CalendarDays,
-  ChevronLeft,
-  ChevronRight,
-  Clock3,
-  Plus,
-  X,
-} from 'lucide-react'
+// Agenda semanal RECORRENTE do profissional (RF-FUND-03, D13/D14): cada item é dia da
+// semana + horário de início/fim e vale pra todas as semanas. Só o próprio profissional
+// logado edita a sua grade (o profissionalId vem do usuário logado, nunca de escolha na tela).
+// É a mesma agenda que a vitrine de personal do aluno lê.
+import { useState } from 'react'
+import { CalendarDays, Clock3, Plus, Trash2 } from 'lucide-react'
 
 import { AppLayout } from '../../components/layout'
-import { Card } from '../../components/common'
+import { Button, Card } from '../../components/common'
 import {
-  obterAlunos,
-  obterAtendimentosPorProfissional,
-  obterAgendamentosPorProfissional,
-  salvarAgendamento,
+  DIAS_SEMANA,
+  diaSemanaDeHoje,
+  obterAgendaPorProfissional,
+  removerItemAgenda,
+  salvarItemAgenda,
 } from '../../data'
-import type { Agendamento } from '../../types/agendamento'
+import type { AgendaProfissional, DiaSemana } from '../../types'
 import { useAuthStore } from '../../store/authStore'
 
-type ModoCalendario = 'semana' | 'mes'
-
-const MESES = [
-  'Janeiro',
-  'Fevereiro',
-  'Março',
-  'Abril',
-  'Maio',
-  'Junho',
-  'Julho',
-  'Agosto',
-  'Setembro',
-  'Outubro',
-  'Novembro',
-  'Dezembro',
-]
-
-const DIAS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
-
-const ATIVIDADES = [
-  'Treino personalizado',
-  'Avaliação física',
-  'Acompanhamento',
-  'Orientação de treino',
-  'Outro compromisso',
-]
-
-const dataISO = (data: Date) =>
-  `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}-${String(data.getDate()).padStart(2, '0')}`
-
-const inicioSemana = (data: Date) => {
-  const inicio = new Date(
-    data.getFullYear(),
-    data.getMonth(),
-    data.getDate(),
-  )
-
-  inicio.setDate(inicio.getDate() - inicio.getDay())
-
-  return inicio
+const NOME_DIA: Record<DiaSemana, string> = {
+  segunda: 'Segunda',
+  terca: 'Terça',
+  quarta: 'Quarta',
+  quinta: 'Quinta',
+  sexta: 'Sexta',
+  sabado: 'Sábado',
+  domingo: 'Domingo',
 }
 
+const campoClasse =
+  'w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100'
+
 export function ProfessionalAgendaPage() {
-  const usuarioAtual = useAuthStore(
-    (state) => state.usuarioAtual,
-  )
+  const usuarioAtual = useAuthStore((state) => state.usuarioAtual)
+  const profissionalId = usuarioAtual?.refId ?? ''
 
-  const [modo, setModo] = useState<ModoCalendario>('semana')
-
-  const [dataReferencia, setDataReferencia] = useState(
-    () => new Date(),
-  )
-
-  const [diaSelecionado, setDiaSelecionado] = useState(
-    () => dataISO(new Date()),
-  )
-
-  const [agendamentos, setAgendamentos] = useState<Agendamento[]>(
-    () =>
-      usuarioAtual
-        ? obterAgendamentosPorProfissional(usuarioAtual.refId)
-        : [],
-  )
-
-  const [mostrarFormulario, setMostrarFormulario] = useState(false)
-  const [alunoId, setAlunoId] = useState('')
-  const [horario, setHorario] = useState('')
-  const [atividade, setAtividade] = useState(ATIVIDADES[0])
-  const [outraAtividade, setOutraAtividade] = useState('')
+  const [grade, setGrade] = useState<AgendaProfissional[]>(() => obterAgendaPorProfissional(profissionalId))
+  const [diaSemana, setDiaSemana] = useState<DiaSemana>('segunda')
+  const [horaInicio, setHoraInicio] = useState('08:00')
+  const [horaFim, setHoraFim] = useState('12:00')
   const [erro, setErro] = useState('')
 
-  const alunos = useMemo(() => {
-    if (!usuarioAtual) return []
+  const hoje = diaSemanaDeHoje()
 
-    const idsAlunos = new Set(
-      obterAtendimentosPorProfissional(usuarioAtual.refId)
-        .filter((atendimento) => atendimento.type === 'personal')
-        .map((atendimento) => atendimento.alunoId),
-    )
-
-    return obterAlunos().filter((aluno) =>
-      idsAlunos.has(aluno.id),
-    )
-  }, [usuarioAtual])
-
-  const alunosPorId = useMemo(
-    () => new Map(alunos.map((aluno) => [aluno.id, aluno])),
-    [alunos],
-  )
-
-  const agendamentosDoDia = agendamentos
-    .filter((item) => item.data === diaSelecionado)
-    .sort((a, b) => a.horario.localeCompare(b.horario))
-
-  const diasCalendario = useMemo(() => {
-    if (modo === 'semana') {
-      const inicio = inicioSemana(dataReferencia)
-
-      return Array.from({ length: 7 }, (_, indice) => {
-        const dia = new Date(inicio)
-        dia.setDate(inicio.getDate() + indice)
-        return dia
-      })
-    }
-
-    const primeiroDia = new Date(
-      dataReferencia.getFullYear(),
-      dataReferencia.getMonth(),
-      1,
-    )
-
-    const inicio = inicioSemana(primeiroDia)
-
-    return Array.from({ length: 42 }, (_, indice) => {
-      const dia = new Date(inicio)
-      dia.setDate(inicio.getDate() + indice)
-      return dia
-    })
-  }, [dataReferencia, modo])
-
-  function navegarCalendario(direcao: number) {
-    const novaData = new Date(dataReferencia)
-
-    if (modo === 'semana') {
-      novaData.setDate(novaData.getDate() + direcao * 7)
-    } else {
-      novaData.setMonth(novaData.getMonth() + direcao)
-    }
-
-    setDataReferencia(novaData)
+  function recarregar() {
+    setGrade(obterAgendaPorProfissional(profissionalId))
   }
 
-  function nomePeriodo() {
-    if (modo === 'mes') {
-      return `${MESES[dataReferencia.getMonth()]} ${dataReferencia.getFullYear()}`
-    }
-
-    const inicio = inicioSemana(dataReferencia)
-    const fim = new Date(inicio)
-    fim.setDate(inicio.getDate() + 6)
-
-    return `${inicio.getDate()} ${MESES[inicio.getMonth()].slice(0, 3)} – ${fim.getDate()} ${MESES[fim.getMonth()].slice(0, 3)} ${fim.getFullYear()}`
-  }
-
-  function selecionarDia(chave: string) {
-    setDiaSelecionado(chave)
-    setMostrarFormulario(true)
+  function adicionarHorario() {
     setErro('')
-    setAlunoId('')
-    setHorario('')
-    setAtividade(ATIVIDADES[0])
-    setOutraAtividade('')
-  }
-
-  function voltarParaHoje() {
-    const hoje = new Date()
-
-    setDataReferencia(hoje)
-    setDiaSelecionado(dataISO(hoje))
-    setMostrarFormulario(false)
-  }
-
-  function salvarNovoAgendamento() {
-    if (!usuarioAtual) {
-      setErro('Não foi possível identificar o profissional conectado.')
+    if (!horaInicio || !horaFim || horaFim <= horaInicio) {
+      setErro('O horário de fim precisa ser depois do horário de início.')
       return
     }
-
-    if (!alunoId || !horario) {
-      setErro('Selecione um aluno e informe o horário.')
-      return
-    }
-
-    if (atividade === 'Outro compromisso' && !outraAtividade.trim()) {
-      setErro('Informe a descrição do compromisso.')
-      return
-    }
-
-    const alunoVinculado = alunos.some(
-      (aluno) => aluno.id === alunoId,
+    const conflita = grade.some(
+      (item) => item.diaSemana === diaSemana && horaInicio < item.horaFim && item.horaInicio < horaFim,
     )
-
-    if (!alunoVinculado) {
-      setErro('O aluno selecionado não está vinculado a você.')
+    if (conflita) {
+      setErro(`Já existe um horário em ${NOME_DIA[diaSemana]} que se sobrepõe a esse.`)
       return
     }
-
-    const novoAgendamento: Agendamento = {
-      id: `agendamento-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      alunoId,
-      profissionalId: usuarioAtual.refId,
-      data: diaSelecionado,
-      horario,
-      atividade:
-        atividade === 'Outro compromisso'
-          ? outraAtividade.trim()
-          : atividade,
-    }
-
-    try {
-      salvarAgendamento(novoAgendamento)
-
-      setAgendamentos(
-        obterAgendamentosPorProfissional(usuarioAtual.refId),
-      )
-
-      setMostrarFormulario(false)
-      setAlunoId('')
-      setHorario('')
-      setAtividade(ATIVIDADES[0])
-      setOutraAtividade('')
-      setErro('')
-    } catch {
-      setErro('Não foi possível salvar o compromisso. Tente novamente.')
-    }
+    salvarItemAgenda({ id: crypto.randomUUID(), profissionalId, diaSemana, horaInicio, horaFim })
+    recarregar()
   }
 
-  const dataFormatada = new Date(
-    `${diaSelecionado}T12:00:00`,
-  ).toLocaleDateString('pt-BR', {
-    weekday: 'long',
-    day: '2-digit',
-    month: 'long',
-  })
+  function remover(id: string) {
+    removerItemAgenda(id)
+    recarregar()
+  }
 
   return (
     <AppLayout>
       <div className="space-y-6">
         <header>
-          <p className="text-sm font-medium text-emerald-700">
-            Área profissional
-          </p>
-
-          <h1 className="mt-1 text-2xl font-bold text-slate-900">
-            Agenda profissional
-          </h1>
-
+          <p className="text-sm font-medium text-emerald-700">Área profissional</p>
+          <h1 className="mt-1 font-heading text-2xl font-bold text-slate-900">Agenda semanal</h1>
           <p className="mt-1 text-sm text-slate-500">
-            Organize seus compromissos e atendimentos com os alunos.
+            Seus horários de atendimento. A grade se repete toda semana e é a que os alunos veem na vitrine de personal.
           </p>
         </header>
 
         <Card>
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2">
-                <CalendarDays
-                  className="text-emerald-700"
-                  size={19}
-                />
-
-                <h2 className="font-semibold text-slate-800">
-                  Calendário de atendimentos
-                </h2>
-              </div>
-
-              <p className="mt-1 text-xs text-slate-400">
-                Clique em um dia para marcar um compromisso.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-1 rounded-lg border border-slate-200 p-1">
-              <button
-                type="button"
-                onClick={() => setModo('semana')}
-                className={`rounded-md px-3 py-1.5 text-xs font-medium ${
-                  modo === 'semana'
-                    ? 'bg-emerald-700 text-white'
-                    : 'text-slate-500 hover:bg-slate-50'
-                }`}
-              >
-                Semana
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setModo('mes')}
-                className={`rounded-md px-3 py-1.5 text-xs font-medium ${
-                  modo === 'mes'
-                    ? 'bg-emerald-700 text-white'
-                    : 'text-slate-500 hover:bg-slate-50'
-                }`}
-              >
-                Mês
-              </button>
-            </div>
+          <div className="mb-4 flex items-center gap-2">
+            <Plus className="text-emerald-700" size={18} />
+            <h2 className="font-semibold text-slate-900">Adicionar horário</h2>
           </div>
-
-          <div className="rounded-xl border border-slate-200 p-3 sm:p-4">
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => navegarCalendario(-1)}
-                  aria-label="Período anterior"
-                  className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100"
-                >
-                  <ChevronLeft size={18} />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={voltarParaHoje}
-                  className="text-xs text-slate-500 hover:text-emerald-700"
-                >
-                  Hoje
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => navegarCalendario(1)}
-                  aria-label="Próximo período"
-                  className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100"
-                >
-                  <ChevronRight size={18} />
-                </button>
-
-                <span className="ml-1 text-sm font-semibold text-slate-700">
-                  {nomePeriodo()}
-                </span>
-              </div>
-
-              <span className="hidden text-xs text-slate-400 sm:inline">
-                Selecione um dia para agendar
-              </span>
-            </div>
-
-            <div className="grid grid-cols-7 gap-1">
-              {DIAS.map((dia) => (
-                <div
-                  key={dia}
-                  className="py-1 text-center text-[11px] font-semibold uppercase text-slate-400"
-                >
-                  {dia}
-                </div>
-              ))}
-
-              {diasCalendario.map((dia) => {
-                const chave = dataISO(dia)
-
-                const temAgenda = agendamentos.some(
-                  (item) => item.data === chave,
-                )
-
-                const foraDoMes =
-                  dia.getMonth() !== dataReferencia.getMonth()
-
-                const selecionado = chave === diaSelecionado
-
-                return (
-                  <button
-                    type="button"
-                    key={chave}
-                    onClick={() => selecionarDia(chave)}
-                    aria-label={`Agendar compromisso em ${dia.toLocaleDateString('pt-BR')}`}
-                    className={`relative flex min-h-10 flex-col items-center justify-center rounded-lg text-sm transition ${
-                      selecionado
-                        ? 'bg-emerald-700 font-semibold text-white'
-                        : foraDoMes && modo === 'mes'
-                          ? 'text-slate-300 hover:bg-slate-50'
-                          : 'text-slate-600 hover:bg-emerald-50'
-                    }`}
-                  >
-                    <span>{dia.getDate()}</span>
-
-                    {temAgenda && (
-                      <span
-                        className={`mt-0.5 h-1.5 w-1.5 rounded-full ${
-                          selecionado
-                            ? 'bg-white'
-                            : 'bg-emerald-500'
-                        }`}
-                      />
-                    )}
-                  </button>
-                )
-              })}
-            </div>
-
-            <div className="mt-4 border-t border-slate-100 pt-3">
-              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <p className="text-sm font-semibold capitalize text-slate-700">
-                  {dataFormatada}
-                </p>
-
-                <span className="text-xs text-slate-400">
-                  {agendamentosDoDia.length} compromisso(s)
-                </span>
-              </div>
-
-              {mostrarFormulario && (
-                <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50/50 p-4">
-                  <div className="mb-4 flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <Plus size={18} className="text-emerald-700" />
-                      <h3 className="font-semibold text-slate-800">
-                        Novo compromisso
-                      </h3>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => setMostrarFormulario(false)}
-                      aria-label="Fechar formulário"
-                      className="rounded-md p-1 text-slate-500 hover:bg-white"
-                    >
-                      <X size={18} />
-                    </button>
-                  </div>
-
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <label className="text-sm font-medium text-slate-700">
-                      Aluno
-                      <select
-                        value={alunoId}
-                        onChange={(event) => setAlunoId(event.target.value)}
-                        className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-normal outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
-                        required
-                      >
-                        <option value="">Selecione um aluno</option>
-                        {alunos.map((aluno) => (
-                          <option key={aluno.id} value={aluno.id}>
-                            {aluno.fullName}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-
-                    <label className="text-sm font-medium text-slate-700">
-                      Horário
-                      <input
-                        type="time"
-                        value={horario}
-                        onChange={(event) => setHorario(event.target.value)}
-                        className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-normal outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
-                        required
-                      />
-                    </label>
-
-                    <label className="text-sm font-medium text-slate-700 sm:col-span-2">
-                      Tipo de compromisso
-                      <select
-                        value={atividade}
-                        onChange={(event) => setAtividade(event.target.value)}
-                        className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-normal outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
-                      >
-                        {ATIVIDADES.map((opcao) => (
-                          <option key={opcao} value={opcao}>
-                            {opcao}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-
-                    {atividade === 'Outro compromisso' && (
-                      <label className="text-sm font-medium text-slate-700 sm:col-span-2">
-                        Descrição
-                        <input
-                          type="text"
-                          value={outraAtividade}
-                          onChange={(event) =>
-                            setOutraAtividade(event.target.value)
-                          }
-                          placeholder="Descreva o compromisso"
-                          maxLength={100}
-                          className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-normal outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
-                        />
-                      </label>
-                    )}
-                  </div>
-
-                  {erro && (
-                    <p className="mt-3 text-sm text-red-600">
-                      {erro}
-                    </p>
-                  )}
-
-                  <div className="mt-4 flex justify-end gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setMostrarFormulario(false)}
-                      className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
-                    >
-                      Cancelar
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={salvarNovoAgendamento}
-                      disabled={alunos.length === 0}
-                      className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      Salvar compromisso
-                    </button>
-                  </div>
-
-                  {alunos.length === 0 && (
-                    <p className="mt-2 text-xs text-slate-500">
-                      Você ainda não possui alunos com vínculo personal.
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {agendamentosDoDia.length > 0 ? (
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {agendamentosDoDia.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center gap-3 rounded-lg bg-slate-50 px-3 py-2.5"
-                    >
-                      <div className="rounded-md bg-white p-2 text-emerald-700">
-                        <Clock3 size={16} />
-                      </div>
-
-                      <div className="min-w-0 flex-1">
-                        <Link
-                          to={`/profissional/alunos/${item.alunoId}`}
-                          className="truncate text-sm font-medium text-slate-700 hover:text-emerald-700"
-                        >
-                          {alunosPorId.get(item.alunoId)?.fullName ?? 'Aluno não encontrado'}
-                        </Link>
-
-                        <p className="text-xs text-slate-500">
-                          {item.atividade}
-                        </p>
-                      </div>
-
-                      <span className="text-sm font-semibold tabular-nums text-slate-600">
-                        {item.horario}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="rounded-lg bg-slate-50 px-3 py-3 text-center text-xs text-slate-400">
-                  Nenhum compromisso marcado para este dia.
-                </p>
-              )}
-            </div>
+          <div className="grid gap-3 sm:grid-cols-[1fr_1fr_1fr_auto] sm:items-end">
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-slate-700">Dia da semana</span>
+              <select
+                value={diaSemana}
+                onChange={(e) => setDiaSemana(e.target.value as DiaSemana)}
+                className={campoClasse}
+              >
+                {DIAS_SEMANA.map((dia) => (
+                  <option key={dia} value={dia}>
+                    {NOME_DIA[dia]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-slate-700">Início</span>
+              <input type="time" value={horaInicio} onChange={(e) => setHoraInicio(e.target.value)} className={campoClasse} />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-slate-700">Fim</span>
+              <input type="time" value={horaFim} onChange={(e) => setHoraFim(e.target.value)} className={campoClasse} />
+            </label>
+            <Button type="button" onClick={adicionarHorario}>
+              <Plus size={16} />
+              Adicionar
+            </Button>
           </div>
+          {erro && <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{erro}</p>}
         </Card>
+
+        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
+          {DIAS_SEMANA.map((dia) => {
+            const itens = grade.filter((item) => item.diaSemana === dia)
+            return (
+              <Card key={dia} className={`!p-4 ${dia === hoje ? 'ring-2 ring-emerald-600' : ''}`}>
+                <div className="mb-3 flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-slate-800">{NOME_DIA[dia]}</h3>
+                  {dia === hoje && (
+                    <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+                      Hoje
+                    </span>
+                  )}
+                </div>
+                {itens.length === 0 ? (
+                  <p className="text-xs text-slate-400">Sem atendimento</p>
+                ) : (
+                  <ul className="space-y-2">
+                    {itens.map((item) => (
+                      <li
+                        key={item.id}
+                        className="flex items-center justify-between gap-2 rounded-lg bg-emerald-50 px-2.5 py-2 text-sm text-emerald-900"
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <Clock3 size={14} />
+                          {item.horaInicio}–{item.horaFim}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => remover(item.id)}
+                          aria-label={`Remover ${NOME_DIA[dia]} ${item.horaInicio}–${item.horaFim}`}
+                          className="rounded p-1 text-slate-400 transition-colors hover:bg-white hover:text-rose-600"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Card>
+            )
+          })}
+        </section>
+
+        {grade.length === 0 && (
+          <Card>
+            <div className="py-6 text-center">
+              <CalendarDays className="mx-auto mb-3 text-slate-300" size={32} />
+              <p className="font-medium text-slate-700">Nenhum horário cadastrado</p>
+              <p className="mt-1 text-sm text-slate-500">Adicione seus horários de atendimento acima.</p>
+            </div>
+          </Card>
+        )}
       </div>
     </AppLayout>
   )

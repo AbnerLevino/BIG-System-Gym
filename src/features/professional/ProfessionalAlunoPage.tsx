@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   ArrowLeft,
   ClipboardList,
-  Edit3,
+  Plus,
   Save,
   UserRound,
 } from 'lucide-react'
@@ -13,18 +13,19 @@ import { AppLayout } from '../../components/layout'
 import { Button, Card } from '../../components/common'
 import {
   obterAlunoPorId,
-  salvarAluno,
   obterAtendimentosPorAluno,
+  obterAvaliacoesPorAluno,
   obterUltimaAvaliacaoPorAluno,
-  salvarAvaliacaoFisica,
+  registrarAvaliacaoFisica,
 } from '../../data'
 import { useAuthStore } from '../../store/authStore'
-import type { Aluno, AvaliacaoFisica } from '../../types'
+import type { AvaliacaoFisica } from '../../types'
 
 const hoje = () => new Date().toISOString().slice(0, 10)
 
 const avaliacaoVazia = (alunoId: string): AvaliacaoFisica => ({
-  id: crypto.randomUUID(),
+  id: '',
+  tipo: 'principal',
   alunoId,
   objective: '',
   description: '',
@@ -53,9 +54,8 @@ export function ProfessionalAlunoPage() {
     (state) => state.usuarioAtual,
   )
 
-  const [dadosAluno, setDadosAluno] = useState<Aluno | null>(
-    () => obterAlunoPorId(alunoId) ?? null,
-  )
+  // Cadastro é só leitura aqui: quem edita dados do aluno é o atendente.
+  const dadosAluno = obterAlunoPorId(alunoId) ?? null
 
   const [avaliacao, setAvaliacao] = useState<AvaliacaoFisica>(
     () => obterUltimaAvaliacaoPorAluno(alunoId) ?? avaliacaoVazia(alunoId),
@@ -69,7 +69,9 @@ export function ProfessionalAlunoPage() {
     () => Boolean(obterUltimaAvaliacaoPorAluno(alunoId)),
   )
 
-  const [editandoPerfil, setEditandoPerfil] = useState(false)
+  const [historico, setHistorico] = useState<AvaliacaoFisica[]>(
+    () => obterAvaliacoesPorAluno(alunoId),
+  )
   const [mensagem, setMensagem] = useState('')
   const [erro, setErro] = useState('')
 
@@ -85,10 +87,9 @@ export function ProfessionalAlunoPage() {
   )
 
   useEffect(() => {
-    const alunoAtual = obterAlunoPorId(alunoId)
     const avaliacaoAtual = obterUltimaAvaliacaoPorAluno(alunoId)
 
-    setDadosAluno(alunoAtual ?? null)
+    setHistorico(obterAvaliacoesPorAluno(alunoId))
     setAvaliacao(avaliacaoAtual ?? avaliacaoVazia(alunoId))
     setEditando(!avaliacaoAtual)
     setTemAvaliacao(Boolean(avaliacaoAtual))
@@ -139,25 +140,6 @@ export function ProfessionalAlunoPage() {
     }))
   }
 
-  function salvarCadastro(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-
-    if (!dadosAluno) return
-
-    try {
-      salvarAluno(dadosAluno)
-      setEditandoPerfil(false)
-      setMensagem('Dados cadastrais atualizados com sucesso.')
-      setErro('')
-    } catch (error) {
-      setErro(
-        error instanceof Error
-          ? error.message
-          : 'Não foi possível atualizar o cadastro.',
-      )
-    }
-  }
-
   function salvar(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
@@ -176,14 +158,15 @@ export function ProfessionalAlunoPage() {
     }
 
     try {
-      salvarAvaliacaoFisica({
-        ...avaliacao,
-        alunoId,
-      })
+      // Sempre cria um registro novo; o tipo (principal/mensal) é decidido no repositório.
+      const { id: _id, tipo: _tipo, ...dados } = avaliacao
+      const registrada = registrarAvaliacaoFisica({ ...dados, alunoId })
 
+      setAvaliacao(registrada)
+      setHistorico(obterAvaliacoesPorAluno(alunoId))
       setTemAvaliacao(true)
       setEditando(false)
-      setMensagem('Avaliação física salva com sucesso.')
+      setMensagem(`Avaliação ${registrada.tipo === 'principal' ? 'principal' : 'mensal'} registrada com sucesso.`)
     } catch (error) {
       setErro(
         error instanceof Error
@@ -270,112 +253,9 @@ export function ProfessionalAlunoPage() {
               <h2 className="font-semibold text-slate-900">
                 Informações do aluno
               </h2>
-
-              {!editandoPerfil && (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => {
-                    setMensagem('')
-                    setEditandoPerfil(true)
-                  }}
-                >
-                  <Edit3 size={15} />
-                  Editar cadastro
-                </Button>
-              )}
             </div>
 
-            {editandoPerfil ? (
-              <form
-                className="space-y-4"
-                onSubmit={salvarCadastro}
-              >
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Campo
-                    label="Nome completo"
-                    value={dadosAluno.fullName}
-                    onChange={(value) =>
-                      setDadosAluno((atual) =>
-                        atual ? { ...atual, fullName: value } : atual,
-                      )
-                    }
-                  />
-
-                  <Campo
-                    label="Telefone"
-                    value={dadosAluno.phone}
-                    onChange={(value) =>
-                      setDadosAluno((atual) =>
-                        atual ? { ...atual, phone: value } : atual,
-                      )
-                    }
-                  />
-
-                  <Campo
-                    label="Altura (cm)"
-                    type="number"
-                    value={String(dadosAluno.height)}
-                    onChange={(value) =>
-                      setDadosAluno((atual) =>
-                        atual ? { ...atual, height: Number(value) } : atual,
-                      )
-                    }
-                  />
-
-                  <Campo
-                    label="Peso cadastrado (kg)"
-                    type="number"
-                    value={String(dadosAluno.weight)}
-                    onChange={(value) =>
-                      setDadosAluno((atual) =>
-                        atual ? { ...atual, weight: Number(value) } : atual,
-                      )
-                    }
-                  />
-
-                  <Campo
-                    label="Endereço"
-                    value={dadosAluno.address}
-                    onChange={(value) =>
-                      setDadosAluno((atual) =>
-                        atual ? { ...atual, address: value } : atual,
-                      )
-                    }
-                  />
-                </div>
-
-                <Campo
-                  label="Observações do cadastro"
-                  value={dadosAluno.notes}
-                  onChange={(value) =>
-                    setDadosAluno((atual) =>
-                      atual ? { ...atual, notes: value } : atual,
-                    )
-                  }
-                  multiline
-                />
-
-                <div className="flex justify-end gap-2">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => {
-                      setDadosAluno(aluno)
-                      setEditandoPerfil(false)
-                    }}
-                  >
-                    Cancelar
-                  </Button>
-
-                  <Button type="submit">
-                    <Save size={16} />
-                    Salvar cadastro
-                  </Button>
-                </div>
-              </form>
-            ) : (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <Info
                   label="Nome completo"
                   value={dadosAluno.fullName}
@@ -428,10 +308,9 @@ export function ProfessionalAlunoPage() {
                       : dadosAluno.status
                   }
                 />
-              </div>
-            )}
+            </div>
 
-            {!editandoPerfil && dadosAluno.notes && (
+            {dadosAluno.notes && (
               <div className="mt-4 rounded-lg bg-slate-50 p-3">
                 <p className="text-xs font-semibold text-slate-500">
                   Observações do cadastro
@@ -460,7 +339,11 @@ export function ProfessionalAlunoPage() {
                 </h2>
 
                 <p className="text-xs text-slate-500">
-                  Um registro por aluno nesta versão.
+                  {temAvaliacao && !editando
+                    ? `Exibindo a avaliação ${avaliacao.tipo} de ${new Date(`${avaliacao.assessmentDate}T12:00:00`).toLocaleDateString('pt-BR')}`
+                    : temAvaliacao
+                      ? 'Nova avaliação mensal (acompanhamento)'
+                      : 'Primeira avaliação: será a principal (referência)'}
                 </p>
               </div>
             </div>
@@ -472,11 +355,19 @@ export function ProfessionalAlunoPage() {
                 onClick={() => {
                   setMensagem('')
                   setErro('')
+                  // Nova avaliação parte das mesmas medidas, zeradas.
+                  setAvaliacao({
+                    ...avaliacaoVazia(alunoId),
+                    objective: avaliacao.objective,
+                    measurements: Object.fromEntries(
+                      Object.keys(avaliacao.measurements).map((nome) => [nome, 0]),
+                    ),
+                  })
                   setEditando(true)
                 }}
               >
-                <Edit3 size={15} />
-                Editar avaliação
+                <Plus size={15} />
+                Nova avaliação
               </Button>
             )}
           </div>
@@ -667,6 +558,38 @@ export function ProfessionalAlunoPage() {
                   </p>
                 </div>
               )}
+            </div>
+          )}
+
+          {historico.length > 0 && (
+            <div className="mt-6 border-t border-slate-100 pt-4">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Histórico de avaliações
+              </p>
+              <ul className="space-y-2">
+                {historico.map((item) => (
+                  <li key={item.id}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAvaliacao(item)
+                        setEditando(false)
+                      }}
+                      className={`flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-slate-50 ${item.id === avaliacao.id ? 'bg-slate-50' : ''}`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${item.tipo === 'principal' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}
+                        >
+                          {item.tipo === 'principal' ? 'Principal' : 'Mensal'}
+                        </span>
+                        {new Date(`${item.assessmentDate}T12:00:00`).toLocaleDateString('pt-BR')}
+                      </span>
+                      <span className="font-semibold text-slate-700">{item.weight} kg</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </Card>

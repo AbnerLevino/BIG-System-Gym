@@ -34,7 +34,7 @@ qrcode, @vladmandic/face-api.
   Títulos usam `font-heading` (Outfit); corpo é Instrument Sans.
 - **Dados de seed:** `src/data/seed.ts`. Ao mudar o formato de uma entidade ou o seed de forma incompatível, **suba
   `VERSAO_DOS_DADOS` em `src/data/storage.ts`** — na próxima abertura o navegador descarta os dados antigos e recarrega
-  o seed (a sessão de login é mantida). Versão atual: **3**.
+  o seed (a sessão de login é mantida). Versão atual: **4**.
 
 ## Estado atual por módulo
 
@@ -62,7 +62,7 @@ Menu do atendente: Atendimento (Central), Check-in, Planos. A rota `/atendente/c
 | ALU-02/03/04/05 treino por dia da semana, catálogo por grupo, detalhe, adicionar a um dia | ✅ `SubscriberTreinoPage.tsx`. Vídeo-aula: como o catálogo não tem `videoUrl`, o link abre uma busca no YouTube. Treino é **editável por qualquer aluno** (decisão atual) |
 | ALU-06/07/08 questionário de objetivos + recomendação | ✅ `SubscriberObjetivosPage.tsx`, `data/recomendacaoService.ts`, `data/metaService.ts`, entidade `ObjetivoAluno` |
 | ALU-09 vitrine de personal + contratação | ✅ com **mock** — `SubscriberPersonalPage.tsx`, `data/vitrinePersonalService.ts`, `data/agendaProfissionalRepository.ts` |
-| ALU-10 evolução física | ⏳ **aguardando o módulo Profissional** (campo `tipo` em `AvaliacaoFisica`). Item escondido do menu; path `/aluno/evolucao` reservado |
+| ALU-10 evolução física | ⏳ **desbloqueado** — `AvaliacaoFisica.tipo` já existe; falta criar a tela. Item escondido do menu; path `/aluno/evolucao` reservado |
 | ALU-11/12/13 dashboard (próximo pagamento + pagar no app, treino de hoje, meta ativa) e `/aluno/financeiro` (extrato + PDF) | ✅ `SubscriberDashboardPage.tsx`, `SubscriberFinanceiroPage.tsx` |
 | Extras pedidos pelo grupo: "Meu plano" (`/aluno/plano`) e "Perfil" (`/aluno/perfil`: dados só leitura + trocar senha) | ✅ `SubscriberPlanoPage.tsx`, `SubscriberPerfilPage.tsx` |
 
@@ -73,10 +73,20 @@ Menu do aluno: Dashboard, Treino, Objetivos, Personal, Financeiro, Meu plano, Pe
 - `/matricula` virou **vitrine de planos** (não cria mais conta): planos + "como se matricular" em 3 passos.
 - `/login`: e-mail/senha + atalhos "Entrar como…" (demo).
 
+### Profissional (módulo 4 — PR #1 do colega, integrado na `main` com ajustes)
+
+- Telas: dashboard, `/profissional/alunos`, `/profissional/alunos/:alunoId` (ficha **só leitura** + avaliação),
+  `/profissional/avaliacoes`, `/profissional/agenda`. Avaliações e agenda **não estão no menu** (o sidebar da `main`
+  foi mantido); chega-se a elas pelos botões do dashboard.
+- Avaliação física (RF-PRO-03/D19): `AvaliacaoFisica.tipo: 'principal' | 'mensal'`. `registrarAvaliacaoFisica()`
+  sempre cria registro novo (histórico) e decide o tipo: primeira = principal, demais = mensal.
+- Agenda (RF-FUND-03/D13/D14): a entidade `Agendamento` do PR foi removida; a tela grava em `AgendaProfissional`
+  (grade semanal recorrente), a mesma que a vitrine do aluno lê.
+- Seed: Carla (`profissional@`, `prof-1`) tem o **Gabriel** (`sub-5`) como aluno personal e agenda seg–qui.
+
 ### Outros módulos (de outras pessoas — ainda placeholder)
 
-Fundação (motor de cobrança RF-FUND-02, agenda RF-FUND-03 com tela de edição), Admin (dashboard, `/admin/*`),
-Profissional (dashboard, avaliação física), Apresentação (módulo 7).
+Fundação (motor de cobrança RF-FUND-02), Admin (dashboard, `/admin/*`), Apresentação (módulo 7).
 
 ## Decisões tomadas (não reabrir sem o grupo)
 
@@ -98,14 +108,14 @@ Profissional (dashboard, avaliação física), Apresentação (módulo 7).
 ## Pontos de acoplamento para outros módulos
 
 - **Agenda (Fundação/Profissional):** tipo `AgendaProfissional { id, profissionalId, diaSemana, horaInicio, horaFim }`
-  e `agendaProfissionalRepository` já existem com seed **mock**. A tela de edição do profissional deve gravar com
-  `salvarItemAgenda` / `removerItemAgenda`; a vitrine já lê dali.
+  e `agendaProfissionalRepository`. A tela `/profissional/agenda` grava com `salvarItemAgenda` / `removerItemAgenda`;
+  a vitrine lê dali. Não existe mais `Agendamento`.
 - **Preço do personal:** `Profissional` não tem campo de preço → tabela `VALOR_MENSAL_PERSONAL_MOCK` em
   `vitrinePersonalService.ts`. Quando definirem onde mora o preço, só `valorMensalDoPersonal()` muda.
 - **Inadimplência (D4):** check-in hoje bloqueia qualquer pagamento `late` (`avaliarAcesso` em
   `checkinRepository.ts`). Quando a Fundação entregar `alunoEstaInadimplente()`, trocar ali.
-- **Evolução (ALU-10):** quando `AvaliacaoFisica.tipo` (`'principal' | 'mensal'`, D19) existir, criar
-  `/aluno/evolucao` e devolver o item ao menu do aluno.
+- **Evolução (ALU-10):** `AvaliacaoFisica.tipo` já existe (D19) — falta criar `/aluno/evolucao` e devolver o
+  item ao menu do aluno.
 - **Pagamento do personal:** o valor do personal entra no próximo pagamento gerado pelo motor de cobrança (D7) —
   depende do RF-FUND-02.
 

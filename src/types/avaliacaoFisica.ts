@@ -9,4 +9,6 @@ export interface AvaliacaoFisica {
   assessmentDate: string
   weight: number
   measurements: Record<string, number>
+  // D19: a primeira do aluno é a 'principal' (referência); as seguintes são 'mensal'.
+  tipo: 'principal' | 'mensal'
 }

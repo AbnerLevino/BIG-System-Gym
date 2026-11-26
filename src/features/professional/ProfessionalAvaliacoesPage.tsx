@@ -205,6 +205,12 @@ export function ProfessionalAvaliacoesPage() {
                         <span>
                           Peso: {avaliacao.weight} kg
                         </span>
+
+                        <span
+                          className={`rounded-full px-2 py-0.5 font-semibold ${avaliacao.tipo === 'principal' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}
+                        >
+                          {avaliacao.tipo === 'principal' ? 'Principal' : 'Mensal'}
+                        </span>
                       </div>
 
                       <p className="mt-2 text-sm text-slate-600">

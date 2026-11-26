@@ -307,12 +307,13 @@ export const seedPagamentos: Pagamento[] = [
 ]
 
 export const seedAtendimentos: Atendimento[] = [
-  { id: 'assign-1', alunoId: 'sub-1', profissionalId: 'prof-1', type: 'personal', value: 150 },
-  { id: 'assign-2', alunoId: 'sub-2', profissionalId: 'prof-1', type: 'personal', value: 150 },
+  { id: 'assign-1', alunoId: 'sub-1', profissionalId: 'prof-1', type: 'standard' },
+  { id: 'assign-2', alunoId: 'sub-2', profissionalId: 'prof-1', type: 'standard' },
   { id: 'assign-3', alunoId: 'sub-1', profissionalId: 'prof-2', type: 'personal', value: 150 },
   { id: 'assign-4', alunoId: 'sub-3', profissionalId: 'prof-1', type: 'standard' },
   { id: 'assign-5', alunoId: 'sub-4', profissionalId: 'prof-1', type: 'standard' },
-  { id: 'assign-6', alunoId: 'sub-5', profissionalId: 'prof-1', type: 'standard' },
+  // Gabriel é aluno personal da Carla (prof-1) — é o login de demonstração do profissional.
+  { id: 'assign-6', alunoId: 'sub-5', profissionalId: 'prof-1', type: 'personal', value: 150 },
   { id: 'assign-7', alunoId: 'sub-6', profissionalId: 'prof-1', type: 'standard' },
   { id: 'assign-8', alunoId: 'sub-7', profissionalId: 'prof-1', type: 'standard' },
 ]
@@ -1381,6 +1382,7 @@ export const seedMetas: Meta[] = [
 export const seedAvaliacoesFisicas: AvaliacaoFisica[] = [
   {
     id: 'assessment-1',
+    tipo: 'principal',
     alunoId: 'sub-1',
     objective: 'Emagrecimento',
     description: 'Avaliacao inicial',
@@ -1391,6 +1393,7 @@ export const seedAvaliacoesFisicas: AvaliacaoFisica[] = [
   },
   {
     id: 'assessment-2',
+    tipo: 'principal',
     alunoId: 'sub-2',
     objective: 'Condicionamento',
     description: 'Avaliacao inicial',
@@ -1423,6 +1426,10 @@ export const seedObjetivosAlunos: ObjetivoAluno[] = []
 // MOCK (RF-FUND-03 ainda não implementado): agenda semanal recorrente de exemplo
 // dos personal trainers. A tela de edição do profissional substitui isso.
 export const seedAgendasProfissionais: AgendaProfissional[] = [
+  { id: 'agenda-10', profissionalId: 'prof-1', diaSemana: 'segunda', horaInicio: '08:00', horaFim: '12:00' },
+  { id: 'agenda-11', profissionalId: 'prof-1', diaSemana: 'terca', horaInicio: '14:00', horaFim: '18:00' },
+  { id: 'agenda-12', profissionalId: 'prof-1', diaSemana: 'quarta', horaInicio: '08:00', horaFim: '12:00' },
+  { id: 'agenda-13', profissionalId: 'prof-1', diaSemana: 'quinta', horaInicio: '14:00', horaFim: '18:00' },
   { id: 'agenda-1', profissionalId: 'prof-2', diaSemana: 'segunda', horaInicio: '06:00', horaFim: '10:00' },
   { id: 'agenda-2', profissionalId: 'prof-2', diaSemana: 'quarta', horaInicio: '06:00', horaFim: '10:00' },
   { id: 'agenda-3', profissionalId: 'prof-2', diaSemana: 'sexta', horaInicio: '17:00', horaFim: '21:00' },

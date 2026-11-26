@@ -23,7 +23,7 @@ export function ensureSeeded<T>(key: string, seedData: T[]): void {
 // jeito incompatível com o que já está salvo no navegador (ex: Treino trocou
 // `name` por `exercicioId`/`diaSemana`). Na próxima abertura, os dados antigos
 // são descartados e o seed novo é carregado — a sessão de login é preservada.
-const VERSAO_DOS_DADOS = '3'
+const VERSAO_DOS_DADOS = '4'
 const CHAVE_VERSAO = PREFIX + 'versao-dados'
 const CHAVE_SESSAO = PREFIX + 'session'
 

@@ -14,70 +14,21 @@ import {
   obterAlunos,
   obterAtendimentosPorProfissional,
   obterAvaliacoesFisicas,
+  obterAgendaPorProfissional,
+  diaSemanaDeHoje,
 } from '../../data'
+import type { DiaSemana } from '../../types'
 import { useAuthStore } from '../../store/authStore'
 
-interface AgendamentoDemo {
-  id: string
-  alunoId: string
-  data: string
-  horario: string
-  atividade: string
+const NOME_DIA: Record<DiaSemana, string> = {
+  segunda: 'Segunda',
+  terca: 'Terça',
+  quarta: 'Quarta',
+  quinta: 'Quinta',
+  sexta: 'Sexta',
+  sabado: 'Sábado',
+  domingo: 'Domingo',
 }
-
-const dataISO = (data: Date) =>
-  `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}-${String(data.getDate()).padStart(2, '0')}`
-
-const dataRelativa = (dias: number) => {
-  const data = new Date()
-  data.setDate(data.getDate() + dias)
-  return dataISO(data)
-}
-
-const AGENDAMENTOS_DEMO: AgendamentoDemo[] = [
-  {
-    id: 'agenda-1',
-    alunoId: 'sub-1',
-    data: dataRelativa(0),
-    horario: '08:00',
-    atividade: 'Avaliação física',
-  },
-  {
-    id: 'agenda-2',
-    alunoId: 'sub-2',
-    data: dataRelativa(0),
-    horario: '10:30',
-    atividade: 'Acompanhamento',
-  },
-  {
-    id: 'agenda-3',
-    alunoId: 'sub-1',
-    data: dataRelativa(2),
-    horario: '09:00',
-    atividade: 'Treino personalizado',
-  },
-  {
-    id: 'agenda-4',
-    alunoId: 'sub-2',
-    data: dataRelativa(4),
-    horario: '14:00',
-    atividade: 'Avaliação física',
-  },
-  {
-    id: 'agenda-5',
-    alunoId: 'sub-1',
-    data: dataRelativa(6),
-    horario: '08:30',
-    atividade: 'Treino personalizado',
-  },
-  {
-    id: 'agenda-6',
-    alunoId: 'sub-2',
-    data: dataRelativa(9),
-    horario: '11:00',
-    atividade: 'Acompanhamento',
-  },
-]
 
 export function ProfessionalDashboardPage() {
   const usuarioAtual = useAuthStore(
@@ -106,39 +57,10 @@ export function ProfessionalDashboardPage() {
     ),
   ).length
 
-  const alunosPorId = new Map(
-    alunos.map((aluno) => [aluno.id, aluno]),
-  )
-
-  const proximosAtendimentos = useMemo(() => {
-    const agora = new Date()
-
-    return AGENDAMENTOS_DEMO
-      .filter((item) => alunosPorId.has(item.alunoId))
-      .filter((item) => {
-        const dataHorario = new Date(
-          `${item.data}T${item.horario}:00`,
-        )
-
-        return dataHorario >= agora
-      })
-      .sort((a, b) => {
-        const dataA = `${a.data}T${a.horario}`
-        const dataB = `${b.data}T${b.horario}`
-
-        return dataA.localeCompare(dataB)
-      })
-  }, [alunosPorId])
-
-  function formatarData(data: string) {
-    return new Date(`${data}T12:00:00`).toLocaleDateString(
-      'pt-BR',
-      {
-        day: '2-digit',
-        month: 'short',
-      },
-    )
-  }
+  // Agenda semanal recorrente (AgendaProfissional) — a mesma que a vitrine do aluno lê.
+  const grade = usuarioAtual ? obterAgendaPorProfissional(usuarioAtual.refId) : []
+  const hoje = diaSemanaDeHoje()
+  const horariosHoje = grade.filter((item) => item.diaSemana === hoje)
 
   return (
     <AppLayout>
@@ -212,7 +134,7 @@ export function ProfessionalDashboardPage() {
           <Card className="!p-5">
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-500">
-                Agendamentos demonstrativos
+                Horários na semana
               </span>
 
               <CalendarCheck2
@@ -222,92 +144,69 @@ export function ProfessionalDashboardPage() {
             </div>
 
             <p className="mt-2 text-3xl font-bold text-slate-900">
-              {AGENDAMENTOS_DEMO.filter((item) =>
-                alunosPorId.has(item.alunoId),
-              ).length}
+              {grade.length}
             </p>
 
             <p className="mt-1 text-xs text-slate-400">
-              Agenda de exemplo
+              {horariosHoje.length > 0 ? `Hoje: ${horariosHoje.map((h) => `${h.horaInicio}–${h.horaFim}`).join(', ')}` : 'Sem atendimento hoje'}
             </p>
           </Card>
         </section>
 
         <section>
-          <div className="mb-4">
-            <h2 className="text-lg font-semibold text-slate-900">
-              Próximos atendimentos
-            </h2>
-
-            <p className="text-sm text-slate-500">
-              Seus próximos compromissos com alunos vinculados.
-            </p>
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900">Agenda semanal</h2>
+              <p className="text-sm text-slate-500">Seus horários de atendimento, repetidos toda semana.</p>
+            </div>
+            <div className="flex gap-2">
+              <Link
+                to="/profissional/avaliacoes"
+                className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:border-emerald-600 hover:text-emerald-700"
+              >
+                Avaliações físicas
+              </Link>
+              <Link
+                to="/profissional/agenda"
+                className="rounded-lg bg-emerald-700 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-800"
+              >
+                Editar agenda
+              </Link>
+            </div>
           </div>
 
-          {proximosAtendimentos.length > 0 ? (
-            <Card>
+          <Card>
+            {grade.length > 0 ? (
               <div className="divide-y divide-slate-100">
-                {proximosAtendimentos.map((item) => {
-                  const aluno = alunosPorId.get(item.alunoId)
-
-                  if (!aluno) return null
-
-                  return (
-                    <div
-                      key={item.id}
-                      className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
-                    >
-                      <div className="flex min-w-0 items-center gap-3">
-                        <div className="rounded-lg bg-emerald-50 p-3 text-emerald-700">
-                          <Clock3 size={19} />
-                        </div>
-
-                        <div className="min-w-0">
-                          <Link
-                            to={`/profissional/alunos/${aluno.id}`}
-                            className="truncate text-sm font-semibold text-slate-800 hover:text-emerald-700"
-                          >
-                            {aluno.fullName}
-                          </Link>
-
-                          <p className="mt-0.5 text-xs text-slate-500">
-                            {item.atividade}
-                          </p>
-                        </div>
+                {grade.map((item) => (
+                  <div key={item.id} className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+                    <div className="flex items-center gap-3">
+                      <div className="rounded-lg bg-emerald-50 p-3 text-emerald-700">
+                        <Clock3 size={19} />
                       </div>
-
-                      <div className="text-right">
-                        <p className="text-sm font-semibold text-slate-700">
-                          {formatarData(item.data)}
-                        </p>
-
-                        <p className="text-xs text-slate-500">
-                          {item.horario}
-                        </p>
-                      </div>
+                      <p className="text-sm font-semibold text-slate-800">
+                        {NOME_DIA[item.diaSemana]}
+                        {item.diaSemana === hoje && (
+                          <span className="ml-2 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+                            Hoje
+                          </span>
+                        )}
+                      </p>
                     </div>
-                  )
-                })}
+                    <p className="text-sm font-semibold text-slate-700">
+                      {item.horaInicio}–{item.horaFim}
+                    </p>
+                  </div>
+                ))}
               </div>
-            </Card>
-          ) : (
-            <Card>
+            ) : (
               <div className="py-8 text-center">
-                <CalendarCheck2
-                  className="mx-auto mb-3 text-slate-300"
-                  size={32}
-                />
-
-                <p className="font-medium text-slate-700">
-                  Nenhum próximo atendimento
-                </p>
-
-                <p className="mt-1 text-sm text-slate-500">
-                  Não há atendimentos demonstrativos futuros para seus alunos vinculados.
-                </p>
+                <CalendarCheck2 className="mx-auto mb-3 text-slate-300" size={32} />
+                <p className="font-medium text-slate-700">Nenhum horário cadastrado</p>
+                <p className="mt-1 text-sm text-slate-500">Cadastre seus horários em "Editar agenda".</p>
               </div>
-            </Card>
-          )}
+            )}
+          </Card>
         </section>
       </div>
     </AppLayout>

@@ -157,7 +157,7 @@ export function SubscriberPersonalPage() {
         )}
 
         <p className="mt-8 flex items-center gap-1.5 text-xs text-slate-400">
-          <Info size={12} /> Agenda e valores de demonstração — serão integrados ao módulo do profissional.
+          <Info size={12} /> Valores de demonstração — a agenda é a cadastrada por cada profissional.
         </p>
       </div>
 
