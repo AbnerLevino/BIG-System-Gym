@@ -12,6 +12,7 @@ import { AdminDashboardPage } from '../features/admin/AdminDashboardPage'
 import { AttendantDashboardPage } from '../features/attendant/AttendantDashboardPage'
 import { AttendantCheckinPage } from '../features/attendant/AttendantCheckinPage'
 import { AttendantPlanosPage } from '../features/attendant/AttendantPlanosPage'
+import { AttendantTotemPage } from '../features/attendant/AttendantTotemPage'
 import { ProfessionalDashboardPage } from '../features/professional/ProfessionalDashboardPage'
 import { ProfessionalAlunosPage } from '../features/professional/ProfessionalAlunosPage'
 import { ProfessionalAgendaPage } from '../features/professional/ProfessionalAgendaPage'
@@ -61,6 +62,15 @@ export function AppRoutes() {
         }
       />
 
+      {/* Modo totem: tela cheia, sem menu — aberto pelo botão da tela de Check-in */}
+      <Route
+        path="/atendente/totem"
+        element={
+          <ProtectedRoute allowedRole="atendente">
+            <AttendantTotemPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/atendente/planos"
         element={

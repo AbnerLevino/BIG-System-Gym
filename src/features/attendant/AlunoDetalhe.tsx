@@ -102,7 +102,7 @@ export function AlunoDetalhe({ alunoId, onAlterado }: AlunoDetalheProps) {
 
   function handleCapturarRosto(captura: { descriptor: number[]; photoUrl: string } | null) {
     if (!captura) {
-      setErroRosto('Nenhum rosto detectado. Tente novamente com boa iluminacao.')
+      setErroRosto('Nenhum rosto detectado. Tente novamente com boa iluminação.')
       return
     }
     salvarAluno({ ...aluno!, faceDescriptor: captura.descriptor, photoUrl: captura.photoUrl })

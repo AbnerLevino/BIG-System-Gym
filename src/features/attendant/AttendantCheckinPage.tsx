@@ -2,33 +2,17 @@
 // resultado da verificação; à direita as entradas de hoje. Mesmo padrão visual da Central.
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ScanFace } from 'lucide-react'
+import { MonitorSmartphone, ScanFace } from 'lucide-react'
 import { AppLayout } from '../../components/layout'
 import { Alerta, Button, Card } from '../../components/common'
 import { AvatarAluno } from '../../components/aluno'
 import { CabecalhoPagina, EstadoVazio } from '../../components/painel'
-import {
-  avaliarAcesso,
-  dataLocalISO,
-  obterAlunoPorId,
-  obterAlunos,
-  obterCheckins,
-  registrarCheckin,
-  type MotivoAcesso,
-} from '../../data'
-import { encontrarPorRosto } from '../../utils/faceRecognition'
-import type { Aluno } from '../../types'
+import { dataLocalISO, obterAlunoPorId, obterCheckins } from '../../data'
+import { falar, processarCheckinFacial, type ResultadoCheckin } from './checkinFacial'
 import { FaceIdPreview } from './FaceIdPreview'
+import type { CapturaFacial } from './useCameraFacial'
 
 type Etapa = 'pronto' | 'resultado'
-
-interface Resultado {
-  aluno: Aluno | null
-  liberado: boolean
-  motivo?: MotivoAcesso
-  mensagem: string
-  foto: string
-}
 
 function entradasDeHoje() {
   const hoje = dataLocalISO()
@@ -37,62 +21,18 @@ function entradasDeHoje() {
     .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
 }
 
-const MENSAGEM_POR_MOTIVO: Record<MotivoAcesso, string> = {
-  granted: 'Acesso liberado.',
-  cancelled: 'Matrícula cancelada.',
-  latePayment: 'Acesso bloqueado: pagamento atrasado.',
-}
-
-function falar(texto: string): void {
-  const utterance = new SpeechSynthesisUtterance(texto)
-  utterance.lang = 'pt-BR'
-  window.speechSynthesis.speak(utterance)
-}
-
 export function AttendantCheckinPage() {
   const [etapa, setEtapa] = useState<Etapa>('pronto')
-  const [resultado, setResultado] = useState<Resultado | null>(null)
+  const [resultado, setResultado] = useState<ResultadoCheckin | null>(null)
   const [entradas, setEntradas] = useState(entradasDeHoje)
   const navigate = useNavigate()
 
-  function handleCapturar(captura: { descriptor: number[]; photoUrl: string } | null) {
-    if (!captura) {
-      setResultado({ aluno: null, liberado: false, mensagem: 'Nenhum rosto detectado. Tente novamente.', foto: '' })
-      setEtapa('resultado')
-      falar('Nenhum rosto detectado.')
-      return
-    }
-
-    const alunoEncontrado = encontrarPorRosto(obterAlunos(), captura.descriptor)
-
-    if (!alunoEncontrado) {
-      setResultado({ aluno: null, liberado: false, mensagem: 'Rosto não identificado.', foto: captura.photoUrl })
-      setEtapa('resultado')
-      falar('Rosto não identificado.')
-      return
-    }
-
-    const avaliacao = avaliarAcesso(alunoEncontrado)
-    const mensagem = MENSAGEM_POR_MOTIVO[avaliacao.motivo]
-
-    registrarCheckin({
-      id: crypto.randomUUID(),
-      alunoId: alunoEncontrado.id,
-      timestamp: new Date().toISOString(),
-      method: 'faceId',
-      accessGranted: avaliacao.liberado,
-    })
-
-    setEntradas(entradasDeHoje())
-    setResultado({
-      aluno: alunoEncontrado,
-      liberado: avaliacao.liberado,
-      motivo: avaliacao.motivo,
-      mensagem,
-      foto: alunoEncontrado.photoUrl ?? captura.photoUrl,
-    })
+  function handleCapturar(captura: CapturaFacial | null) {
+    const novo = processarCheckinFacial(captura)
+    setResultado(novo)
     setEtapa('resultado')
-    falar(`${alunoEncontrado.fullName}. ${mensagem}`)
+    setEntradas(entradasDeHoje())
+    falar(novo.aluno ? `${novo.aluno.fullName}. ${novo.mensagem}` : novo.mensagem)
   }
 
   function handleNovaTentativa() {
@@ -108,9 +48,14 @@ export function AttendantCheckinPage() {
         titulo="Check-in"
         descricao="Posicione o rosto do aluno na câmera e clique em verificar."
         lateral={
-          <p className="text-xs text-slate-500">
-            {liberadasHoje} {liberadasHoje === 1 ? 'entrada liberada' : 'entradas liberadas'} hoje
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="text-xs text-slate-500">
+              {liberadasHoje} {liberadasHoje === 1 ? 'entrada liberada' : 'entradas liberadas'} hoje
+            </p>
+            <Button variant="secondary" onClick={() => navigate('/atendente/totem')}>
+              <MonitorSmartphone size={14} /> Modo totem
+            </Button>
+          </div>
         }
       />
 

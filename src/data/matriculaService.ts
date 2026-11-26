@@ -1,7 +1,7 @@
 // Regras de matrícula que mexem em mais de uma entidade ao mesmo tempo (Aluno +
 // HistoricoPlano), pra tela não precisar saber dessa coordenação.
 import type { Aluno, ConviteAtivacao, Usuario } from '../types'
-import { obterAlunoPorId, salvarAluno } from './alunoRepository'
+import { obterAlunoPorId, obterAlunos, salvarAluno } from './alunoRepository'
 import { gerarConviteAtivacao } from './ativacaoService'
 import { encerrarPlanoAtualNoHistorico, registrarTrocaDePlano } from './historicoPlanoRepository'
 import { salvarUsuario } from './usuarioRepository'
@@ -62,4 +62,19 @@ export function cancelarMatricula(alunoId: string): void {
 // Aluno com matrícula cancelada não entra mais no sistema.
 export function alunoPodeAcessarSistema(alunoId: string): boolean {
   return obterAlunoPorId(alunoId)?.status !== 'cancelled'
+}
+
+// RA (número de matrícula) exibido no totem. NÃO é gravado no Aluno (decisão do grupo:
+// não mudar o tipo) — é calculado na hora: "BG" + ano de início + posição do aluno entre
+// os matriculados naquele ano, por data de início (desempate pelo id). Matrícula nova
+// entra com a data de hoje, então vai pro fim da fila e não muda o RA de ninguém.
+export function obterRaDoAluno(alunoId: string): string {
+  const aluno = obterAlunoPorId(alunoId)
+  if (!aluno) return ''
+  const ano = aluno.startDate.slice(0, 4)
+  const doMesmoAno = obterAlunos()
+    .filter((item) => item.startDate.slice(0, 4) === ano)
+    .sort((a, b) => a.startDate.localeCompare(b.startDate) || a.id.localeCompare(b.id))
+  const posicao = doMesmoAno.findIndex((item) => item.id === alunoId) + 1
+  return `BG${ano}-${String(posicao).padStart(4, '0')}`
 }
