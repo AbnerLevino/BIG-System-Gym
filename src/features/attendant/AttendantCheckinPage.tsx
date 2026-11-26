@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { AppLayout } from '../../components/layout'
 import { Button, Card } from '../../components/common'
+import { CabecalhoPagina } from '../../components/painel'
 import { obterAlunos, avaliarAcesso, registrarCheckin, type MotivoAcesso } from '../../data'
 import { encontrarPorRosto } from '../../utils/faceRecognition'
 import type { Aluno } from '../../types'
@@ -76,8 +77,7 @@ export function AttendantCheckinPage() {
 
   return (
     <AppLayout>
-      <h1 className="text-2xl font-bold">Check-in</h1>
-      <p className="mt-1 text-sm text-slate-600">Posicione o rosto na camera e clique em verificar.</p>
+      <CabecalhoPagina titulo="Check-in" descricao="Posicione o rosto na câmera e clique em verificar." />
 
       <div className="mt-6 flex flex-col items-center gap-6">
         {etapa === 'pronto' ? <FaceIdPreview onCapturar={handleCapturar} rotulo="Verificar" /> : null}

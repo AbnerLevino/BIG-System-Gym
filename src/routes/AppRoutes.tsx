@@ -15,8 +15,6 @@ import { AttendantPagamentoPage } from '../features/attendant/AttendantPagamento
 import { AttendantPlanosPage } from '../features/attendant/AttendantPlanosPage'
 import { ProfessionalDashboardPage } from '../features/professional/ProfessionalDashboardPage'
 import { ProfessionalAlunosPage } from '../features/professional/ProfessionalAlunosPage'
-import { ProfessionalAlunoPage } from '../features/professional/ProfessionalAlunoPage'
-import { ProfessionalAvaliacoesPage } from '../features/professional/ProfessionalAvaliacoesPage'
 import { ProfessionalAgendaPage } from '../features/professional/ProfessionalAgendaPage'
 
 import { SubscriberDashboardPage } from '../features/subscriber/SubscriberDashboardPage'
@@ -100,23 +98,7 @@ export function AppRoutes() {
         }
       />
 
-      <Route
-        path="/profissional/alunos/:alunoId"
-        element={
-          <ProtectedRoute allowedRole="professional">
-            <ProfessionalAlunoPage />
-          </ProtectedRoute>
-        }
-      />
 
-      <Route
-        path="/profissional/avaliacoes"
-        element={
-          <ProtectedRoute allowedRole="professional">
-            <ProfessionalAvaliacoesPage />
-          </ProtectedRoute>
-        }
-      />
 
       <Route
         path="/profissional/agenda"

@@ -34,7 +34,7 @@ qrcode, @vladmandic/face-api.
   Títulos usam `font-heading` (Outfit); corpo é Instrument Sans.
 - **Dados de seed:** `src/data/seed.ts`. Ao mudar o formato de uma entidade ou o seed de forma incompatível, **suba
   `VERSAO_DOS_DADOS` em `src/data/storage.ts`** — na próxima abertura o navegador descarta os dados antigos e recarrega
-  o seed (a sessão de login é mantida). Versão atual: **4**.
+  o seed (a sessão de login é mantida). Versão atual: **5**.
 
 ## Estado atual por módulo
 
@@ -52,7 +52,7 @@ qrcode, @vladmandic/face-api.
 | Recebimento no balcão (tela própria) e "Registrar pagamento" (escolhe a cobrança) | `AttendantPagamentoPage.tsx`, `SelecionarCobrancaModal.tsx` |
 | Catálogo de planos (só consulta) com "Matricular neste plano" → abre o modal de cadastro (`/atendente?cadastro=novo&plano=id`) | `AttendantPlanosPage.tsx` |
 
-Menu do atendente: Atendimento (Central), Check-in, Planos. A rota `/atendente/cadastro` foi removida.
+Menu do atendente: Central, Check-in, Planos. A rota `/atendente/cadastro` foi removida.
 
 ### Aluno (módulos 5 e 6)
 
@@ -73,16 +73,30 @@ Menu do aluno: Dashboard, Treino, Objetivos, Personal, Financeiro, Meu plano, Pe
 - `/matricula` virou **vitrine de planos** (não cria mais conta): planos + "como se matricular" em 3 passos.
 - `/login`: e-mail/senha + atalhos "Entrar como…" (demo).
 
-### Profissional (módulo 4 — PR #1 do colega, integrado na `main` com ajustes)
+### Profissional (módulo 4 — PR #1 do colega, integrado e redesenhado no padrão do atendente)
 
-- Telas: dashboard, `/profissional/alunos`, `/profissional/alunos/:alunoId` (ficha **só leitura** + avaliação),
-  `/profissional/avaliacoes`, `/profissional/agenda`. Menu do profissional: Dashboard, Alunos, Avaliações físicas,
-  Agenda (itens adicionados ao sidebar da `main`; o sidebar do PR foi descartado).
+| Tela | Onde |
+|---|---|
+| Central do profissional (`/profissional`): saudação, 3 indicadores, acesso rápido, "Atenção necessária" (sem avaliação / mensal pendente), agenda da semana | `ProfessionalDashboardPage.tsx` + `data/profissionalService.ts` |
+| Meus alunos (`/profissional/alunos`): lista com filtro por situação da avaliação (juntou as antigas telas Alunos e Avaliações) | `ProfessionalAlunosPage.tsx` |
+| Ficha do aluno **em modal** (`?aluno=id`): dados (só leitura), meta e treino, avaliações com histórico e variação vs. a anterior | `FichaAlunoProfissional.tsx` |
+| Nova avaliação **em modal** (`?avaliacao=novo[&aluno=id]`): escolher aluno → dados (mensal mostra os valores anteriores) → concluído | `NovaAvaliacaoFluxo.tsx`, `useModaisDoProfissional.tsx` |
+| Minha agenda (`/profissional/agenda`): grade semanal, "+" em cada dia abre modal | `ProfessionalAgendaPage.tsx` |
+
+- Menu do profissional: Central, Meus alunos, Minha agenda.
 - Avaliação física (RF-PRO-03/D19): `AvaliacaoFisica.tipo: 'principal' | 'mensal'`. `registrarAvaliacaoFisica()`
-  sempre cria registro novo (histórico) e decide o tipo: primeira = principal, demais = mensal.
-- Agenda (RF-FUND-03/D13/D14): a entidade `Agendamento` do PR foi removida; a tela grava em `AgendaProfissional`
-  (grade semanal recorrente), a mesma que a vitrine do aluno lê.
-- Seed: Carla (`profissional@`, `prof-1`) tem o **Gabriel** (`sub-5`) como aluno personal e agenda seg–qui.
+  sempre cria registro novo e decide o tipo (primeira = principal, demais = mensal).
+- "Mensal pendente" = última avaliação há mais de `DIAS_PARA_NOVA_AVALIACAO` (30) dias — regra combinada nesta rodada.
+- Agenda (RF-FUND-03/D13/D14): só `AgendaProfissional` (a entidade `Agendamento` do PR foi removida).
+- Seed: Carla (`profissional@`, `prof-1`) tem Gabriel (sem avaliação), Juliana (mensal pendente) e Patricia (em dia)
+  como alunos personal, e agenda seg–qui. As datas das avaliações do seed são relativas a hoje.
+
+### Padrão visual compartilhado (atendente = profissional)
+
+- `components/painel`: `CabecalhoCentral`, `CabecalhoPagina`, `FaixaIndicadores`/`Indicador`, `AcessoRapido`/
+  `AcaoRapida`, `ItemAluno`, `EstadoVazio`, `Abas`, `Linha`, `formatarDataBr`. Tela nova de qualquer papel usa estes.
+- `components/aluno`: `AvatarAluno` (sm/md/lg), `SeloSituacaoAluno`, `CabecalhoFicha`.
+- `Modal` fecha com Esc (só o de cima, quando há modal dentro de modal) e com clique no fundo.
 
 ### Outros módulos (de outras pessoas — ainda placeholder)
 
@@ -136,8 +150,7 @@ Fundação (motor de cobrança RF-FUND-02), Admin (dashboard, `/admin/*`), Apres
 - Marcar os checkboxes em `plano-de-desenvolvimento/02`, `05`, `06` depois de testar.
 - Próximo foco combinado: **melhorar o atendente** (depois do aluno). Ideias levantadas:
   - "Receber pagamento" ainda é tela inteira (o resto virou modal).
-  - Confirmação ao fechar o cadastro usa `window.confirm`; modais não fecham com Esc/clique fora.
-  - Item do menu ainda se chama "Atendimento" (a tela é a "Central da Recepção").
+  - Confirmação ao fechar o cadastro usa `window.confirm`.
   - Caso raro: sair da tela com o comprovante aberto (antes de "continuar") deixa pagamento sem aluno.
 - Links do Admin/Profissional no menu levam a placeholders ou ao login.
 

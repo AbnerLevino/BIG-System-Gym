@@ -18,22 +18,12 @@ import {
   salvarAluno,
   salvarEdicaoDoAluno,
 } from '../../data'
-import type { Aluno, StatusAluno, StatusPagamento } from '../../types'
+import type { Aluno, StatusPagamento } from '../../types'
+import { CabecalhoFicha, LABEL_SITUACAO_ALUNO } from '../../components/aluno'
+import { Linha, formatarDataBr } from '../../components/painel'
 import { ConsentimentoBiometria } from './ConsentimentoBiometria'
 import { ConviteAtivacaoPainel } from './ConviteAtivacaoPainel'
 import { FaceIdPreview } from './FaceIdPreview'
-
-const LABEL_SITUACAO: Record<StatusAluno, string> = {
-  active: 'Ativa',
-  trial: 'Visita teste',
-  cancelled: 'Cancelada',
-}
-
-const COR_SITUACAO: Record<StatusAluno, string> = {
-  active: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-  trial: 'border-amber-200 bg-amber-50 text-amber-700',
-  cancelled: 'border-slate-200 bg-slate-100 text-slate-500',
-}
 
 const LABEL_PAGAMENTO: Record<StatusPagamento, string> = {
   paid: 'Pago',
@@ -45,21 +35,6 @@ const COR_PAGAMENTO: Record<StatusPagamento, string> = {
   paid: 'text-emerald-700',
   pending: 'text-amber-600',
   late: 'text-rose-600',
-}
-
-function formatarDataBr(data: string | null): string {
-  if (!data) return '—'
-  const [ano, mes, dia] = data.split('-')
-  return `${dia}/${mes}/${ano}`
-}
-
-function Linha({ label, valor }: { label: string; valor: React.ReactNode }) {
-  return (
-    <div className="flex items-start justify-between gap-4 border-b border-slate-100 py-2 text-sm last:border-0">
-      <span className="shrink-0 text-slate-500">{label}</span>
-      <span className="text-right font-medium text-slate-900">{valor}</span>
-    </div>
-  )
 }
 
 interface AlunoDetalheProps {
@@ -140,35 +115,23 @@ export function AlunoDetalhe({ alunoId, onAlterado }: AlunoDetalheProps) {
   return (
     <>
       <div>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            {aluno.photoUrl ? (
-              <img src={aluno.photoUrl} alt="" className="h-14 w-14 rounded-full object-cover" />
-            ) : (
-              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-lg font-semibold text-slate-500">
-                {aluno.fullName.charAt(0)}
-              </span>
-            )}
-            <div>
-              <p className="text-xl font-bold text-slate-900">{aluno.fullName}</p>
-              <span className={`mt-1 inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${COR_SITUACAO[aluno.status]}`}>
-                Matricula {LABEL_SITUACAO[aluno.status]}
-              </span>
-            </div>
-          </div>
-          {!editando ? (
-            <div className="flex gap-2">
-              <Button variant="secondary" onClick={iniciarEdicao}>
-                <Pencil size={14} /> Editar
-              </Button>
-              {!cancelado ? (
-                <Button variant="danger" onClick={() => setConfirmandoCancelamento(true)}>
-                  <UserX size={14} /> Cancelar matricula
+        <CabecalhoFicha
+          aluno={aluno}
+          acoes={
+            !editando ? (
+              <>
+                <Button variant="secondary" onClick={iniciarEdicao}>
+                  <Pencil size={14} /> Editar
                 </Button>
-              ) : null}
-            </div>
-          ) : null}
-        </div>
+                {!cancelado ? (
+                  <Button variant="danger" onClick={() => setConfirmandoCancelamento(true)}>
+                    <UserX size={14} /> Cancelar matrícula
+                  </Button>
+                ) : null}
+              </>
+            ) : null
+          }
+        />
 
         {mensagem ? (
           <p className="mt-4 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">{mensagem}</p>
@@ -243,7 +206,7 @@ export function AlunoDetalhe({ alunoId, onAlterado }: AlunoDetalheProps) {
             <Card title="Plano e matricula">
               <Linha label="Plano atual" valor={plano ? `${plano.name} — R$ ${plano.price.toFixed(2)}` : 'Sem plano'} />
               <Linha label="Inicio da matricula" valor={formatarDataBr(aluno.startDate)} />
-              <Linha label="Situacao da matricula" valor={LABEL_SITUACAO[aluno.status]} />
+              <Linha label="Situacao da matricula" valor={LABEL_SITUACAO_ALUNO[aluno.status]} />
               <Linha
                 label="Situacao do pagamento"
                 valor={

@@ -6,7 +6,7 @@ import { Modal } from '../../components/common'
 import { buscarUsuarioPorRefId, obterAlunos, obterPagamentoReferenciaDoAluno } from '../../data'
 import type { Aluno, Pagamento, StatusAluno, StatusPagamento } from '../../types'
 import { somenteDigitos } from '../../utils/validacoes'
-import { AvatarAluno } from './AvatarAluno'
+import { AvatarAluno } from '../../components/aluno'
 
 const LABEL_SITUACAO: Record<StatusAluno, string> = {
   active: 'Ativo',

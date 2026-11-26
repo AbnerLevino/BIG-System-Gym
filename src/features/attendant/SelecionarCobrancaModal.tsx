@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
 import { Modal } from '../../components/common'
 import { obterAlunos, obterProximoPagamentoEmAberto } from '../../data'
-import { AvatarAluno } from './AvatarAluno'
+import { AvatarAluno } from '../../components/aluno'
 
 function formatarDataBr(data: string): string {
   const [ano, mes, dia] = data.split('-')

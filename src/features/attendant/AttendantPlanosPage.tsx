@@ -6,6 +6,7 @@ import { UserPlus, Users } from 'lucide-react'
 import { AppLayout } from '../../components/layout'
 import { Button } from '../../components/common'
 import { CartaoPlano } from '../../components/plano'
+import { CabecalhoPagina } from '../../components/painel'
 import { obterAlunosAtivosPorPlano, obterPlanos } from '../../data'
 
 export function AttendantPlanosPage() {
@@ -14,13 +15,11 @@ export function AttendantPlanosPage() {
 
   return (
     <AppLayout>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-heading text-2xl font-semibold text-slate-900">Planos</h1>
-          <p className="text-sm text-slate-500">O que a BigGym oferece hoje — use para apresentar os planos no balcão.</p>
-        </div>
-        <p className="text-xs text-slate-500">Preços e condições são definidos pela administração.</p>
-      </div>
+      <CabecalhoPagina
+        titulo="Planos"
+        descricao="O que a BigGym oferece hoje — use para apresentar os planos no balcão."
+        lateral={<p className="text-xs text-slate-500">Preços e condições são definidos pela administração.</p>}
+      />
 
       {planos.length === 0 ? (
         <div className="mt-8 rounded-2xl border border-dashed border-slate-300 py-14 text-center">

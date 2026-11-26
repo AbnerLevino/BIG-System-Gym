@@ -36,6 +36,7 @@ export * from './ativacaoService'
 export * from './objetivoAlunoRepository'
 export * from './recomendacaoService'
 export * from './metaService'
+export * from './profissionalService'
 export * from './agendaProfissionalRepository'
 export * from './vitrinePersonalService'
 

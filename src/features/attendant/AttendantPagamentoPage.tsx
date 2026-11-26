@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { AppLayout } from '../../components/layout'
 import { Button, Card } from '../../components/common'
+import { CabecalhoPagina } from '../../components/painel'
 import { PagamentoCheckout } from '../../components/payment'
 import { obterAlunoPorId, obterPlanoPorId, obterProximoPagamentoEmAberto } from '../../data'
 
@@ -26,7 +27,12 @@ export function AttendantPagamentoPage() {
         >
           <ArrowLeft size={14} /> Voltar para a ficha do aluno
         </Link>
-        <h1 className="mt-3 text-2xl font-bold">Pagamento no balcao</h1>
+        <div className="mt-3">
+          <CabecalhoPagina
+            titulo="Pagamento no balcão"
+            descricao={aluno ? `Cobrança em aberto de ${aluno.fullName}` : 'Receber mensalidade em aberto'}
+          />
+        </div>
 
         <div className="mt-6">
           {!aluno || !pagamento ? (

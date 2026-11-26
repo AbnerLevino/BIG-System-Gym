@@ -6,9 +6,7 @@ import { useCallback, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   AlertTriangle,
-  ArrowRight,
   Ban,
-  ChevronRight,
   CreditCard,
   DoorOpen,
   RefreshCw,
@@ -22,6 +20,16 @@ import {
 import { AppLayout } from '../../components/layout'
 import { Modal } from '../../components/common'
 import {
+  Abas,
+  AcaoRapida,
+  AcessoRapido,
+  CabecalhoCentral,
+  EstadoVazio,
+  FaixaIndicadores,
+  Indicador,
+  ItemAluno,
+} from '../../components/painel'
+import {
   dataLocalISO,
   obterAlunoPorId,
   obterResumoRecepcao,
@@ -31,26 +39,10 @@ import {
   type TipoMovimentacao,
 } from '../../data'
 import { useAuthStore } from '../../store/authStore'
-import wavingHand from '../../assets/waving-hand-3d.png'
 import { AlunoDetalhe } from './AlunoDetalhe'
-import { AvatarAluno } from './AvatarAluno'
 import { BuscaAlunoModal } from './BuscaAlunoModal'
 import { CadastroAlunoFluxo } from './CadastroAlunoFluxo'
 import { SelecionarCobrancaModal } from './SelecionarCobrancaModal'
-
-// ---------- Saudação ----------
-
-function saudacaoDoHorario(): string {
-  const hora = new Date().getHours()
-  if (hora < 12) return 'Bom dia'
-  if (hora < 18) return 'Boa tarde'
-  return 'Boa noite'
-}
-
-function dataPorExtenso(): string {
-  const texto = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
-  return texto.charAt(0).toUpperCase() + texto.slice(1)
-}
 
 // ---------- Atenção necessária ----------
 
@@ -98,71 +90,6 @@ function quandoAconteceu(movimentacao: Movimentacao): string {
 
 // ---------- Peças da página ----------
 
-interface IndicadorProps {
-  icon: LucideIcon
-  iconClasses: string
-  valor: number
-  titulo: string
-  contexto: string
-}
-
-function Indicador({ icon: Icone, iconClasses, valor, titulo, contexto }: IndicadorProps) {
-  return (
-    <div className="flex items-center gap-4 px-6 py-5">
-      <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${iconClasses}`}>
-        <Icone size={22} />
-      </span>
-      <div className="min-w-0">
-        <div className="flex items-baseline gap-2">
-          <span className="font-heading text-3xl font-semibold leading-none text-slate-900">{valor}</span>
-          <span className="text-sm font-semibold text-slate-700">{titulo}</span>
-        </div>
-        <p className="mt-1 truncate text-xs text-slate-500">{contexto}</p>
-      </div>
-    </div>
-  )
-}
-
-interface AcaoRapidaProps {
-  icon: LucideIcon
-  titulo: string
-  descricao: string
-  onClick: () => void
-  destaque?: boolean
-}
-
-function AcaoRapida({ icon: Icone, titulo, descricao, onClick, destaque }: AcaoRapidaProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`group flex items-start gap-3 rounded-2xl border p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
-        destaque
-          ? 'border-emerald-700 bg-emerald-700 text-white hover:bg-emerald-800'
-          : 'border-slate-200 bg-white hover:border-emerald-600/40'
-      }`}
-    >
-      <span
-        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
-          destaque ? 'bg-white/15 text-white' : 'bg-emerald-50 text-emerald-700'
-        }`}
-      >
-        <Icone size={20} />
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className={`font-semibold ${destaque ? 'text-white' : 'text-slate-900'}`}>{titulo}</p>
-        <p className={`mt-0.5 text-xs leading-snug ${destaque ? 'text-emerald-50/90' : 'text-slate-500'}`}>{descricao}</p>
-      </div>
-      <ArrowRight
-        size={16}
-        className={`mt-1 shrink-0 transition-transform group-hover:translate-x-0.5 ${
-          destaque ? 'text-white/80' : 'text-slate-300 group-hover:text-emerald-700'
-        }`}
-      />
-    </button>
-  )
-}
-
 interface ItemAtencaoProps {
   pendencia: Pendencia
   onAbrirAluno: () => void
@@ -171,42 +98,18 @@ interface ItemAtencaoProps {
 
 function ItemAtencao({ pendencia, onAbrirAluno, onReceber }: ItemAtencaoProps) {
   const estilo = ESTILO_PRIORIDADE[pendencia.prioridade]
-  const aluno = obterAlunoPorId(pendencia.alunoId)
   const ehCobranca = pendencia.pagamento !== undefined
-
   return (
-    <li className="relative flex items-center gap-3 overflow-hidden rounded-xl border border-slate-200 bg-white py-3 pl-5 pr-3">
-      <span className={`absolute inset-y-0 left-0 w-1 ${estilo.barra}`} aria-hidden />
-      {aluno ? <AvatarAluno aluno={aluno} tamanho="sm" /> : null}
-      <button type="button" onClick={onAbrirAluno} className="min-w-0 flex-1 text-left">
-        <div className="flex items-center gap-2">
-          <p className="truncate text-sm font-semibold text-slate-900 hover:text-emerald-700">{pendencia.nomeAluno}</p>
-          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${estilo.chip}`}>{estilo.label}</span>
-        </div>
-        <p className={`mt-0.5 truncate text-xs ${pendencia.tipo === 'atrasado' ? 'text-rose-600' : 'text-slate-500'}`}>
-          {pendencia.descricao}
-        </p>
-      </button>
-      <button
-        type="button"
-        onClick={ehCobranca ? onReceber : onAbrirAluno}
-        className="hidden shrink-0 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:border-emerald-700 hover:text-emerald-700 sm:inline-flex"
-      >
-        {ehCobranca ? 'Receber' : 'Cadastrar rosto'}
-      </button>
-      <button type="button" onClick={onAbrirAluno} aria-label={`Abrir ficha de ${pendencia.nomeAluno}`}>
-        <ChevronRight size={16} className="text-slate-300 hover:text-emerald-700" />
-      </button>
-    </li>
-  )
-}
-
-function EstadoVazio({ titulo, descricao }: { titulo: string; descricao: string }) {
-  return (
-    <div className="mt-4 rounded-2xl border border-dashed border-slate-300 py-10 text-center">
-      <p className="text-sm font-medium text-slate-700">{titulo}</p>
-      <p className="mt-1 text-xs text-slate-500">{descricao}</p>
-    </div>
+    <ItemAluno
+      aluno={obterAlunoPorId(pendencia.alunoId)}
+      nome={pendencia.nomeAluno}
+      descricao={pendencia.descricao}
+      descricaoClasses={pendencia.tipo === 'atrasado' ? 'text-rose-600' : undefined}
+      selo={{ label: estilo.label, classes: estilo.chip }}
+      barra={estilo.barra}
+      acao={{ label: ehCobranca ? 'Receber' : 'Cadastrar rosto', onClick: ehCobranca ? onReceber : onAbrirAluno }}
+      onAbrir={onAbrirAluno}
+    />
   )
 }
 
@@ -248,7 +151,6 @@ export function AttendantDashboardPage() {
     setSearchParams({})
   }
 
-  const primeiroNome = usuarioAtual?.nome.split(' ')[0] ?? ''
   const itensAtencao =
     abaAtencao === 'pendencias' ? resumo.pendencias : abaAtencao === 'renovacoes' ? resumo.renovacoes : resumo.atencao
   const atrasados = resumo.pendencias.filter((item) => item.tipo === 'atrasado').length
@@ -258,32 +160,18 @@ export function AttendantDashboardPage() {
   return (
     <AppLayout>
       {/* A. Saudação e contexto */}
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <img src={wavingHand} alt="" className="h-14 w-14" />
-          <div>
-            <h1 className="font-heading text-3xl font-semibold text-slate-900">
-              {saudacaoDoHorario()}, {primeiroNome}!
-            </h1>
-            <p className="text-base text-slate-500">Vamos organizar o dia?</p>
-          </div>
-        </div>
-        <div className="text-right">
-          <p className="text-sm font-semibold text-slate-700">{dataPorExtenso()}</p>
-          <p className="text-xs text-slate-500">
-            {resumo.alunosAtivos} {resumo.alunosAtivos === 1 ? 'aluno ativo' : 'alunos ativos'}
-            {resumo.visitasTeste > 0
-              ? ` · ${resumo.visitasTeste} ${resumo.visitasTeste === 1 ? 'visita teste' : 'visitas teste'}`
-              : ''}
-          </p>
-        </div>
-      </header>
+      <CabecalhoCentral
+        nome={usuarioAtual?.nome ?? ''}
+        subtitulo="Vamos organizar o dia?"
+        contexto={`${resumo.alunosAtivos} ${resumo.alunosAtivos === 1 ? 'aluno ativo' : 'alunos ativos'}${
+          resumo.visitasTeste > 0
+            ? ` · ${resumo.visitasTeste} ${resumo.visitasTeste === 1 ? 'visita teste' : 'visitas teste'}`
+            : ''
+        }`}
+      />
 
       {/* B. Indicadores operacionais — uma faixa só, dividida em três */}
-      <section
-        aria-label="Indicadores do dia"
-        className="mt-7 grid divide-y divide-slate-200 rounded-2xl border border-slate-200 bg-zinc-50/60 md:grid-cols-3 md:divide-x md:divide-y-0"
-      >
+      <FaixaIndicadores>
         <Indicador
           icon={ScanFace}
           iconClasses="bg-emerald-50 text-emerald-700"
@@ -317,12 +205,10 @@ export function AttendantDashboardPage() {
                   .join(' · ')
           }
         />
-      </section>
+      </FaixaIndicadores>
 
       {/* C. Acesso rápido — só rotas e fluxos que já existem */}
-      <section aria-label="Acesso rápido" className="mt-7">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500">Acesso rápido</h2>
-        <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <AcessoRapido>
           <AcaoRapida
             destaque
             icon={UserPlus}
@@ -348,29 +234,14 @@ export function AttendantDashboardPage() {
             descricao="Buscar por nome, CPF ou e-mail"
             onClick={() => setBuscando(true)}
           />
-        </div>
-      </section>
+      </AcessoRapido>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-5">
         {/* D. Atenção necessária */}
         <section aria-label="Atenção necessária" className="lg:col-span-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-heading text-lg font-semibold text-slate-900">Atenção necessária</h2>
-            <div className="flex rounded-full bg-zinc-100 p-1 text-xs font-semibold">
-              {ABAS_ATENCAO.map((aba) => (
-                <button
-                  key={aba.id}
-                  type="button"
-                  onClick={() => setAbaAtencao(aba.id)}
-                  aria-pressed={abaAtencao === aba.id}
-                  className={`rounded-full px-3 py-1 transition-colors ${
-                    abaAtencao === aba.id ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-                  }`}
-                >
-                  {aba.label}
-                </button>
-              ))}
-            </div>
+            <Abas abas={ABAS_ATENCAO} ativa={abaAtencao} onTrocar={setAbaAtencao} />
           </div>
 
           {itensAtencao.length === 0 ? (

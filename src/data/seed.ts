@@ -314,8 +314,10 @@ export const seedAtendimentos: Atendimento[] = [
   { id: 'assign-5', alunoId: 'sub-4', profissionalId: 'prof-1', type: 'standard' },
   // Gabriel é aluno personal da Carla (prof-1) — é o login de demonstração do profissional.
   { id: 'assign-6', alunoId: 'sub-5', profissionalId: 'prof-1', type: 'personal', value: 150 },
-  { id: 'assign-7', alunoId: 'sub-6', profissionalId: 'prof-1', type: 'standard' },
-  { id: 'assign-8', alunoId: 'sub-7', profissionalId: 'prof-1', type: 'standard' },
+  // Juliana e Patricia também são alunas personal da Carla: com o Gabriel (sem avaliação),
+  // a Central do profissional mostra as três situações (sem avaliação / mensal pendente / em dia).
+  { id: 'assign-7', alunoId: 'sub-6', profissionalId: 'prof-1', type: 'personal', value: 150 },
+  { id: 'assign-8', alunoId: 'sub-7', profissionalId: 'prof-1', type: 'personal', value: 150 },
 ]
 
 export const seedHistoricoPlanos: HistoricoPlano[] = [
@@ -1401,6 +1403,41 @@ export const seedAvaliacoesFisicas: AvaliacaoFisica[] = [
     assessmentDate: '2026-10-05',
     weight: 65,
     measurements: { peito: 88, braco: 26, cintura: 68 },
+  },
+  // Juliana (sub-6): principal + mensal, a última há mais de 30 dias -> "mensal pendente".
+  {
+    id: 'assessment-3',
+    tipo: 'principal',
+    alunoId: 'sub-6',
+    objective: 'Emagrecimento',
+    description: 'Avaliacao inicial com bioimpedancia',
+    notes: '',
+    assessmentDate: dataRelativa(-80),
+    weight: 74,
+    measurements: { peito: 96, braco: 30, cintura: 82, quadril: 104, coxa: 60 },
+  },
+  {
+    id: 'assessment-4',
+    tipo: 'mensal',
+    alunoId: 'sub-6',
+    objective: 'Emagrecimento',
+    description: 'Acompanhamento mensal',
+    notes: 'Boa adesao ao treino',
+    assessmentDate: dataRelativa(-45),
+    weight: 71.5,
+    measurements: { peito: 94, braco: 29.5, cintura: 78, quadril: 101, coxa: 58.5 },
+  },
+  // Patricia (sub-7): principal recente -> "em dia".
+  {
+    id: 'assessment-5',
+    tipo: 'principal',
+    alunoId: 'sub-7',
+    objective: 'Hipertrofia',
+    description: 'Avaliacao inicial',
+    notes: '',
+    assessmentDate: dataRelativa(-10),
+    weight: 61,
+    measurements: { peito: 90, braco: 28, cintura: 70, quadril: 98, coxa: 55 },
   },
 ]
 

@@ -11,7 +11,6 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
   Users,
-  ClipboardList,
   CalendarDays,
   CreditCard,
   UserCog,
@@ -47,15 +46,14 @@ const NAV_ITEMS: Record<PapelUsuario, NavItem[]> = {
     { to: '/admin/financeiro', label: 'Financeiro', icon: Wallet },
   ],
   atendente: [
-    { to: '/atendente', label: 'Atendimento', icon: UserCheck },
+    { to: '/atendente', label: 'Central', icon: UserCheck },
     { to: '/atendente/checkin', label: 'Check-in', icon: ScanFace },
     { to: '/atendente/planos', label: 'Planos', icon: CreditCard },
   ],
   professional: [
-    { to: '/profissional', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/profissional/alunos', label: 'Alunos', icon: Users },
-    { to: '/profissional/avaliacoes', label: 'Avaliações físicas', icon: ClipboardList },
-    { to: '/profissional/agenda', label: 'Agenda', icon: CalendarDays },
+    { to: '/profissional', label: 'Central', icon: LayoutDashboard },
+    { to: '/profissional/alunos', label: 'Meus alunos', icon: Users },
+    { to: '/profissional/agenda', label: 'Minha agenda', icon: CalendarDays },
   ],
   // /aluno/evolucao (RF-ALU-10) fica fora do menu até a tela existir — o path
   // continua reservado (o campo `tipo` da AvaliacaoFisica já foi entregue).

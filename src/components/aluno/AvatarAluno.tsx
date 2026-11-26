@@ -4,6 +4,7 @@ import type { Aluno } from '../../types'
 const TAMANHOS = {
   sm: 'h-9 w-9 text-xs',
   md: 'h-11 w-11 text-sm',
+  lg: 'h-14 w-14 text-lg',
 }
 
 function iniciais(nome: string): string {
