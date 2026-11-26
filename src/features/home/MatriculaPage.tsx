@@ -1,122 +1,93 @@
-// Pagina publica de matricula: mostra o que a academia oferece, os planos, e o
-// formulario de cadastro que cria um Aluno + Usuario de verdade no sistema.
+// Vitrine pública de planos (link "Planos"/"Matricule-se" da home). Não cria conta:
+// a matrícula acontece na recepção, com pagamento confirmado, e o aluno recebe um
+// convite pra criar a própria senha (RF-ATD-04 a 07 + RF-ALU-01).
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Button, Card, Input } from '../../components/common'
-import { obterPlanos, salvarAluno, salvarUsuario, buscarUsuarioPorEmail } from '../../data'
-import { useAuthStore } from '../../store/authStore'
-import type { Aluno, Usuario } from '../../types'
+import { CreditCard, KeyRound, MapPin } from 'lucide-react'
+import { Button } from '../../components/common'
+import { CartaoPlano } from '../../components/plano'
+import { obterPlanos } from '../../data'
+import biggymWordmark from '../../assets/biggym-wordmark.png'
 
-const OFERECIMENTOS = [
-  { title: 'Gestao de alunos', description: 'Cadastro, planos, evolucao fisica e historico em um so lugar.' },
-  { title: 'Treinos e metas', description: 'Profissionais montam treinos e acompanham metas de cada aluno.' },
-  { title: 'Financeiro automatico', description: 'Pagamentos, recibos e inadimplencia calculados a partir dos planos.' },
+const PASSOS = [
+  {
+    icon: MapPin,
+    titulo: 'Venha até a recepção',
+    descricao: 'Traga um documento com CPF. A recepção faz seu cadastro e o do seu rosto para a catraca.',
+  },
+  {
+    icon: CreditCard,
+    titulo: 'Pague a primeira mensalidade',
+    descricao: 'Pix, cartão ou dinheiro, direto no balcão. Sua matrícula é ativada na hora.',
+  },
+  {
+    icon: KeyRound,
+    titulo: 'Crie sua senha no celular',
+    descricao: 'Você recebe um link de ativação e cria sua própria senha para acessar o app.',
+  },
 ]
 
 export function MatriculaPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const login = useAuthStore((state) => state.login)
   const planos = obterPlanos()
-
-  const [planoAtualId, setPlanoAtualId] = useState(searchParams.get('plano') ?? '')
-  const [fullName, setFullName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [cpf, setCpf] = useState('')
-  const [address, setAddress] = useState('')
-  const [birthDate, setBirthDate] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-
-  function handleSubmit(event: React.FormEvent) {
-    event.preventDefault()
-
-    if (!planoAtualId) {
-      setError('Escolha um plano antes de se matricular.')
-      return
-    }
-    if (buscarUsuarioPorEmail(email)) {
-      setError('E-mail ja cadastrado.')
-      return
-    }
-
-    const alunoId = crypto.randomUUID()
-    const aluno: Aluno = {
-      id: alunoId,
-      fullName,
-      weight: 0,
-      height: 0,
-      phone,
-      cpf,
-      address,
-      birthDate,
-      notes: '',
-      planoAtualId,
-      startDate: new Date().toISOString().slice(0, 10),
-      status: 'active',
-    }
-    const usuario: Usuario = {
-      id: crypto.randomUUID(),
-      nome: fullName,
-      email,
-      password,
-      role: 'subscriber',
-      refId: alunoId,
-    }
-
-    salvarAluno(aluno)
-    salvarUsuario(usuario)
-    login(email, password)
-    navigate('/aluno')
-  }
+  const [planoEmDestaque, setPlanoEmDestaque] = useState(searchParams.get('plano') ?? '')
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16">
-      <h1 className="text-3xl font-bold">Conheca a BigGym</h1>
+    <div className="min-h-screen bg-zinc-100 p-4 sm:p-6">
+      <div className="mx-auto max-w-6xl rounded-2xl border border-zinc-900/10 bg-white px-6 py-8 sm:px-10">
+        <header className="flex items-center justify-between gap-4">
+          <button type="button" onClick={() => navigate('/')} aria-label="Voltar para o início">
+            <img src={biggymWordmark} alt="BigGym" className="h-8 w-auto" />
+          </button>
+          <Button variant="secondary" onClick={() => navigate('/login')}>
+            Já sou aluno — Entrar
+          </Button>
+        </header>
 
-      <section className="mt-8 grid gap-6 md:grid-cols-3">
-        {OFERECIMENTOS.map((item) => (
-          <Card key={item.title} title={item.title}>
-            <p>{item.description}</p>
-          </Card>
-        ))}
-      </section>
+        <section className="mt-12 max-w-2xl">
+          <h1 className="font-heading text-4xl font-semibold text-slate-900">Escolha o plano que combina com você</h1>
+          <p className="mt-3 text-base text-slate-500">
+            Conheça os planos da BigGym. A matrícula é feita na recepção — leva poucos minutos.
+          </p>
+        </section>
 
-      <section className="mt-12">
-        <h2 className="text-xl font-semibold">Escolha um plano</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
-          {planos.map((plano) => (
-            <button
-              key={plano.id}
-              type="button"
-              onClick={() => setPlanoAtualId(plano.id)}
-              className={`rounded-md border p-4 text-left ${
-                planoAtualId === plano.id ? 'border-rose-800 ring-2 ring-rose-800/30' : 'border-slate-300'
-              }`}
-            >
-              <p className="font-semibold">{plano.name}</p>
-              <p className="text-sm text-slate-600">R$ {plano.price.toFixed(2)}</p>
-              <p className="text-sm text-slate-500">{plano.modalities.join(', ')}</p>
-            </button>
-          ))}
-        </div>
-      </section>
+        {planos.length === 0 ? (
+          <p className="mt-10 text-sm text-slate-500">Nenhum plano disponível no momento.</p>
+        ) : (
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {planos.map((plano) => (
+              <CartaoPlano
+                key={plano.id}
+                plano={plano}
+                selecionado={plano.id === planoEmDestaque}
+                onSelecionar={() => setPlanoEmDestaque(plano.id)}
+              />
+            ))}
+          </div>
+        )}
 
-      <section className="mt-12">
-        <h2 className="text-xl font-semibold">Matricule-se</h2>
-        <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-4">
-          <Input id="fullName" label="Nome completo" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
-          <Input id="phone" label="Telefone" value={phone} onChange={(e) => setPhone(e.target.value)} required />
-          <Input id="cpf" label="CPF" value={cpf} onChange={(e) => setCpf(e.target.value)} required />
-          <Input id="address" label="Endereco" value={address} onChange={(e) => setAddress(e.target.value)} required />
-          <Input id="birthDate" label="Data de nascimento" type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} required />
-          <Input id="email" label="E-mail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <Input id="password" label="Senha" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          {error ? <p className="text-sm text-red-600">{error}</p> : null}
-          <Button type="submit">Matricular-se</Button>
-        </form>
-      </section>
+        <section className="mt-14 rounded-2xl border border-slate-200 bg-zinc-50/60 p-6 sm:p-8">
+          <h2 className="font-heading text-xl font-semibold text-slate-900">Como fazer sua matrícula</h2>
+          <ol className="mt-6 grid gap-6 md:grid-cols-3">
+            {PASSOS.map((passo, indice) => {
+              const Icone = passo.icon
+              return (
+                <li key={passo.titulo} className="flex gap-4">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+                    <Icone size={20} />
+                  </span>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">Passo {indice + 1}</p>
+                    <p className="mt-0.5 font-semibold text-slate-900">{passo.titulo}</p>
+                    <p className="mt-1 text-sm text-slate-500">{passo.descricao}</p>
+                  </div>
+                </li>
+              )
+            })}
+          </ol>
+        </section>
+      </div>
     </div>
   )
 }

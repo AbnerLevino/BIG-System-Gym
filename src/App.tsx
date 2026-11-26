@@ -1,15 +1,13 @@
-// Componente raiz: inicializa os dados mockados uma vez (inicializarTodosOsDados) e entrega
-// a navegacao pro BrowserRouter + AppRoutes.
-import { useEffect } from 'react'
+// Componente raiz: entrega a navegacao pro BrowserRouter + AppRoutes.
 import { BrowserRouter } from 'react-router-dom'
 import { AppRoutes } from './routes/AppRoutes'
 import { inicializarTodosOsDados } from './data'
 
-function App() {
-  useEffect(() => {
-    inicializarTodosOsDados()
-  }, [])
+// Roda uma vez, antes da primeira tela desenhar: assim nenhuma página chega a ler
+// dado salvo num formato antigo antes da troca de versão do seed.
+inicializarTodosOsDados()
 
+function App() {
   return (
     <BrowserRouter>
       <AppRoutes />

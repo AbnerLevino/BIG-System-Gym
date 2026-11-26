@@ -10,9 +10,12 @@ import { inicializarExercicios } from './exercicioRepository'
 import { inicializarMetas } from './metaRepository'
 import { inicializarAvaliacoesFisicas } from './avaliacaoFisicaRepository'
 import { inicializarCheckins } from './checkinRepository'
-import { inicializarAgendamentos } from './agendamentoRepository'
+import { inicializarHistoricoPlanos } from './historicoPlanoRepository'
+import { inicializarConvitesAtivacao } from './conviteAtivacaoRepository'
+import { inicializarObjetivosAlunos } from './objetivoAlunoRepository'
+import { inicializarAgendasProfissionais } from './agendaProfissionalRepository'
+import { garantirVersaoDosDados } from './storage'
 
-export * from './agendamentoRepository'
 export * from './usuarioRepository'
 export * from './alunoRepository'
 export * from './profissionalRepository'
@@ -25,8 +28,19 @@ export * from './exercicioRepository'
 export * from './metaRepository'
 export * from './avaliacaoFisicaRepository'
 export * from './checkinRepository'
+export * from './historicoPlanoRepository'
+export * from './matriculaService'
+export * from './recepcaoService'
+export * from './conviteAtivacaoRepository'
+export * from './ativacaoService'
+export * from './objetivoAlunoRepository'
+export * from './recomendacaoService'
+export * from './metaService'
+export * from './agendaProfissionalRepository'
+export * from './vitrinePersonalService'
 
 export function inicializarTodosOsDados(): void {
+  garantirVersaoDosDados()
   inicializarUsuarios()
   inicializarAlunos()
   inicializarProfissionais()
@@ -39,6 +53,8 @@ export function inicializarTodosOsDados(): void {
   inicializarMetas()
   inicializarAvaliacoesFisicas()
   inicializarCheckins()
-  inicializarAgendamentos()
-
+  inicializarHistoricoPlanos()
+  inicializarConvitesAtivacao()
+  inicializarObjetivosAlunos()
+  inicializarAgendasProfissionais()
 }

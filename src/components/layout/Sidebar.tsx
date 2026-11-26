@@ -15,10 +15,10 @@ import {
   UserCog,
   Wallet,
   UserCheck,
-  UserPlus,
   ScanFace,
   Dumbbell,
-  TrendingUp,
+  Target,
+  UserRoundCheck,
   User,
   LogOut,
   ChevronRight,
@@ -46,15 +46,19 @@ const NAV_ITEMS: Record<PapelUsuario, NavItem[]> = {
   ],
   atendente: [
     { to: '/atendente', label: 'Atendimento', icon: UserCheck },
-    { to: '/atendente/cadastro', label: 'Cadastrar aluno', icon: UserPlus },
     { to: '/atendente/checkin', label: 'Check-in', icon: ScanFace },
+    { to: '/atendente/planos', label: 'Planos', icon: CreditCard },
   ],
   professional: [{ to: '/profissional', label: 'Dashboard', icon: LayoutDashboard }],
+  // /aluno/evolucao (RF-ALU-10) fica fora do menu até o módulo Profissional
+  // entregar o campo `tipo` da AvaliacaoFisica — o path continua reservado.
   subscriber: [
     { to: '/aluno', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/aluno/treino', label: 'Treino', icon: Dumbbell },
-    { to: '/aluno/evolucao', label: 'Evolucao', icon: TrendingUp },
+    { to: '/aluno/objetivos', label: 'Objetivos', icon: Target },
+    { to: '/aluno/personal', label: 'Personal', icon: UserRoundCheck },
     { to: '/aluno/financeiro', label: 'Financeiro', icon: Wallet },
+    { to: '/aluno/plano', label: 'Meu plano', icon: CreditCard },
     { to: '/aluno/perfil', label: 'Perfil', icon: User },
   ],
 }

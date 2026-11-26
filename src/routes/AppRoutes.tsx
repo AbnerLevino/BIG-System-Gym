@@ -1,5 +1,4 @@
-
- // Mapa central de todas as URLs do app — bate com a seção 5 (Mapa de Paginas) do spec.
+// Mapa central de todas as URLs do app — bate com a seção 5 (Mapa de Paginas) do spec.
 // Fica num arquivo só pra dar pra ver todas as rotas existentes numa olhada.
 
 import { Navigate, Route, Routes } from 'react-router-dom'
@@ -7,14 +6,13 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { HomePage } from '../features/home/HomePage'
 import { MatriculaPage } from '../features/home/MatriculaPage'
 import { LoginPage } from '../features/auth/LoginPage'
-
+import { AtivarContaPage } from '../features/auth/AtivarContaPage'
 import { AdminDashboardPage } from '../features/admin/AdminDashboardPage'
 
 import { AttendantDashboardPage } from '../features/attendant/AttendantDashboardPage'
-import { AttendantCadastroPage } from '../features/attendant/AttendantCadastroPage'
 import { AttendantCheckinPage } from '../features/attendant/AttendantCheckinPage'
 import { AttendantPagamentoPage } from '../features/attendant/AttendantPagamentoPage'
-
+import { AttendantPlanosPage } from '../features/attendant/AttendantPlanosPage'
 import { ProfessionalDashboardPage } from '../features/professional/ProfessionalDashboardPage'
 import { ProfessionalAlunosPage } from '../features/professional/ProfessionalAlunosPage'
 import { ProfessionalAlunoPage } from '../features/professional/ProfessionalAlunoPage'
@@ -23,7 +21,11 @@ import { ProfessionalAgendaPage } from '../features/professional/ProfessionalAge
 
 import { SubscriberDashboardPage } from '../features/subscriber/SubscriberDashboardPage'
 import { SubscriberTreinoPage } from '../features/subscriber/SubscriberTreinoPage'
-
+import { SubscriberFinanceiroPage } from '../features/subscriber/SubscriberFinanceiroPage'
+import { SubscriberPlanoPage } from '../features/subscriber/SubscriberPlanoPage'
+import { SubscriberObjetivosPage } from '../features/subscriber/SubscriberObjetivosPage'
+import { SubscriberPersonalPage } from '../features/subscriber/SubscriberPersonalPage'
+import { SubscriberPerfilPage } from '../features/subscriber/SubscriberPerfilPage'
 import { ProtectedRoute } from './ProtectedRoute'
 
 export function AppRoutes() {
@@ -32,8 +34,8 @@ export function AppRoutes() {
       {/* Autenticação e matrícula */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/matricula" element={<MatriculaPage />} />
-
-      {/* Administrador */}
+      {/* Pública de propósito: quem chega aqui ainda não tem senha (RF-ALU-01). */}
+      <Route path="/ativar/:token" element={<AtivarContaPage />} />
       <Route
         path="/admin"
         element={
@@ -54,15 +56,6 @@ export function AppRoutes() {
       />
 
       <Route
-        path="/atendente/cadastro"
-        element={
-          <ProtectedRoute allowedRole="atendente">
-            <AttendantCadastroPage />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
         path="/atendente/checkin"
         element={
           <ProtectedRoute allowedRole="atendente">
@@ -71,6 +64,14 @@ export function AppRoutes() {
         }
       />
 
+      <Route
+        path="/atendente/planos"
+        element={
+          <ProtectedRoute allowedRole="atendente">
+            <AttendantPlanosPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/atendente/pagamento/:alunoId"
         element={
@@ -144,8 +145,46 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
-
-      {/* Página inicial e rota padrão */}
+      <Route
+        path="/aluno/financeiro"
+        element={
+          <ProtectedRoute allowedRole="subscriber">
+            <SubscriberFinanceiroPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/aluno/plano"
+        element={
+          <ProtectedRoute allowedRole="subscriber">
+            <SubscriberPlanoPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/aluno/objetivos"
+        element={
+          <ProtectedRoute allowedRole="subscriber">
+            <SubscriberObjetivosPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/aluno/personal"
+        element={
+          <ProtectedRoute allowedRole="subscriber">
+            <SubscriberPersonalPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/aluno/perfil"
+        element={
+          <ProtectedRoute allowedRole="subscriber">
+            <SubscriberPerfilPage />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/" element={<HomePage />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
