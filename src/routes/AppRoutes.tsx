@@ -5,6 +5,7 @@ import { HomePage } from '../features/home/HomePage'
 import { MatriculaPage } from '../features/home/MatriculaPage'
 import { LoginPage } from '../features/auth/LoginPage'
 import { AdminDashboardPage } from '../features/admin/AdminDashboardPage'
+import RHDashboardPage from '../features/hr/RHDashboardPage'
 import { AttendantDashboardPage } from '../features/attendant/AttendantDashboardPage'
 import { AttendantCadastroPage } from '../features/attendant/AttendantCadastroPage'
 import { AttendantCheckinPage } from '../features/attendant/AttendantCheckinPage'
@@ -24,6 +25,14 @@ export function AppRoutes() {
         element={
           <ProtectedRoute allowedRole="admin">
             <AdminDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+            <Route
+        path="/rh"
+        element={
+          <ProtectedRoute allowedRole="admin">
+            <RHDashboardPage />
           </ProtectedRoute>
         }
       />
