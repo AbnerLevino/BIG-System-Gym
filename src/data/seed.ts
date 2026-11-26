@@ -114,10 +114,11 @@ export const seedPagamentos: Pagamento[] = [
 ]
 
 export const seedAtendimentos: Atendimento[] = [
-  { id: 'assign-1', alunoId: 'sub-1', profissionalId: 'prof-1', type: 'standard' },
-  { id: 'assign-2', alunoId: 'sub-2', profissionalId: 'prof-1', type: 'standard' },
+  { id: 'assign-1', alunoId: 'sub-1', profissionalId: 'prof-1', type: 'personal', value: 150 },
+  { id: 'assign-2', alunoId: 'sub-2', profissionalId: 'prof-1', type: 'personal', value: 150 },
   { id: 'assign-3', alunoId: 'sub-1', profissionalId: 'prof-2', type: 'personal', value: 150 },
 ]
+
 
 export const seedTreinos: Treino[] = [
   {

@@ -9,7 +9,9 @@ import { inicializarTreinos } from './treinoRepository'
 import { inicializarMetas } from './metaRepository'
 import { inicializarAvaliacoesFisicas } from './avaliacaoFisicaRepository'
 import { inicializarCheckins } from './checkinRepository'
+import { inicializarAgendamentos } from './agendamentoRepository'
 
+export * from './agendamentoRepository'
 export * from './usuarioRepository'
 export * from './alunoRepository'
 export * from './profissionalRepository'
@@ -34,4 +36,6 @@ export function inicializarTodosOsDados(): void {
   inicializarMetas()
   inicializarAvaliacoesFisicas()
   inicializarCheckins()
+  inicializarAgendamentos()
+
 }
