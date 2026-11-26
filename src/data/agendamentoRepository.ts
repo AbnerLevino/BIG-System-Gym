@@ -11,7 +11,7 @@ const KEY = 'agendamentos'
 const seedAgendamentos = (): Agendamento[] => []
 
 export function inicializarAgendamentos(): void {
-  ensureSeeded<Agendamento>(KEY, seedAgendamentos)
+  ensureSeeded<Agendamento>(KEY, seedAgendamentos())
 }
 
 export function obterAgendamentos(): Agendamento[] {
